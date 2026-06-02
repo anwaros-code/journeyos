@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Life OS</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f5f0;--surface:#ffffff;--surface2:#f0efe9;--border:#e0ddd6;--accent:#b8892a;--accent2:#4a9e8e;--accent3:#b85a5a;--text:#1a1814;--text2:#5a5448;--text3:#9a9488;--success:#3a8a6e;--danger:#b85a5a;--warning:#b8892a;--r:12px;--rs:7px}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:15px;line-height:1.6}
+.app{display:flex;min-height:100vh}
+.sidebar{width:230px;min-width:230px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow-y:auto}
+.logo{padding:24px 20px 16px;border-bottom:1px solid var(--border)}
+.logo h1{font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent);letter-spacing:.02em}
+.logo p{font-size:11px;color:var(--text3);margin-top:2px;letter-spacing:.08em;text-transform:uppercase}
+.nav{padding:12px 0;flex:1}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 20px;cursor:pointer;color:var(--text2);font-size:13.5px;border-left:3px solid transparent;transition:all .15s}
+.nav-item:hover{color:var(--text);background:var(--surface2)}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(201,169,110,.06);font-weight:500}
+.nav-icon{font-size:17px;width:20px;text-align:center}
+.main{flex:1;padding:32px 36px;max-width:900px}
+.page{display:none}
+.page.active{display:block}
+.page-title{font-family:'DM Serif Display',serif;font-size:28px;color:var(--text);margin-bottom:6px}
+.page-sub{font-size:13px;color:var(--text3);margin-bottom:28px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:20px 24px;margin-bottom:16px}
+.card-title{font-size:13px;font-weight:500;color:var(--text2);text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+input[type=text],input[type=date],textarea,select{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;outline:none;transition:border-color .15s}
+input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+textarea{resize:vertical;min-height:80px}
+select option{background:var(--surface);color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:var(--rs);font-family:'DM Sans',sans-serif;font-size:13.5px;font-weight:500;cursor:pointer;border:1px solid transparent;transition:all .15s}
+.btn-primary{background:var(--accent);color:#1a1208;border-color:var(--accent)}
+.btn-primary:hover{opacity:.88}
+.btn-ghost{background:transparent;color:var(--text2);border-color:var(--border)}
+.btn-ghost:hover{color:var(--text);border-color:var(--text3);background:var(--surface2)}
+.btn-danger{background:transparent;color:var(--danger);border-color:var(--danger)}
+.btn-danger:hover{background:rgba(201,126,126,.1)}
+.badge{display:inline-block;font-size:11px;font-weight:500;padding:2px 9px;border-radius:20px;letter-spacing:.04em}
+.badge-done{background:rgba(126,184,164,.15);color:var(--success)}
+.badge-pending{background:rgba(201,169,110,.15);color:var(--warning)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.label{font-size:12px;color:var(--text3);margin-bottom:5px;font-weight:500;letter-spacing:.05em;text-transform:uppercase}
+.mt8{margin-top:8px}.mt16{margin-top:16px}.mt24{margin-top:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px 20px;text-align:center}
+.stat-num{font-family:'DM Serif Display',serif;font-size:32px;color:var(--accent)}
+.stat-label{font-size:12px;color:var(--text3);margin-top:3px;text-transform:uppercase;letter-spacing:.07em}
+.progress-wrap{background:var(--surface2);border-radius:6px;height:8px;overflow:hidden}
+.progress-fill{height:100%;border-radius:6px;background:var(--accent);transition:width .4s}
+.progress-fill.green{background:var(--success)}
+.item-row{display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid var(--border)}
+.item-row:last-child{border-bottom:none}
+.item-body{flex:1}
+.item-title{font-size:14px;color:var(--text);font-weight:500}
+.item-meta{font-size:12px;color:var(--text3);margin-top:3px}
+.check{width:20px;height:20px;border:2px solid var(--border);border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--success);font-size:13px;flex-shrink:0;margin-top:1px;transition:all .15s;user-select:none}
+.check.checked{border-color:var(--success);background:rgba(126,184,164,.15)}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+#save-status{font-size:11px;color:var(--text3);padding:2px 0;transition:color .3s}
+#save-status.saved{color:var(--success)}
+.day-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:5px;margin-bottom:16px}
+.day-dot{width:100%;aspect-ratio:1;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);color:var(--text3);background:var(--surface2);transition:all .12s}
+.day-dot:hover{border-color:var(--accent);color:var(--accent)}
+.day-dot.done{background:rgba(126,184,164,.15);border-color:var(--success);color:var(--success)}
+.day-dot.missed{background:rgba(201,126,126,.1);border-color:var(--danger);color:var(--danger)}
+.day-dot.today{border-color:var(--accent);color:var(--accent);font-weight:700}
+.time-table{width:100%;border-collapse:collapse;font-size:13px}
+.time-table th{background:var(--surface2);color:var(--text3);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.07em;padding:8px 10px;border:1px solid var(--border);text-align:left}
+.time-table td{padding:7px 10px;border:1px solid var(--border);vertical-align:top}
+.time-table td:first-child{color:var(--text3);font-size:12px;white-space:nowrap;width:80px}
+.time-table td input{background:transparent;border:none;padding:0;font-size:13px;color:var(--text);width:100%}
+.time-table td input:focus{outline:none}
+.time-table td textarea.task-input{background:transparent;border:none;padding:0;font-size:13px;color:var(--text);width:100%;resize:none;overflow:hidden;min-height:20px;height:auto;line-height:1.5;font-family:'DM Sans',sans-serif;display:block;box-sizing:border-box;white-space:pre-wrap;word-wrap:break-word;}
+.time-table td textarea.task-input:focus{outline:none;}
+.time-table tr{vertical-align:top;}
+.time-table td.task-cell{min-width:180px;}
+.time-table td select{background:transparent;border:none;padding:0;font-size:12px;color:var(--accent);width:auto}
+.time-table tr.uu td{background:rgba(184,90,90,0.07)}
+.time-table tr.un td{background:rgba(184,137,42,0.07)}
+.time-table tr.nu td{background:rgba(58,138,110,0.07)}
+.time-table tr.nn td{background:var(--surface2)}
+/* ── TASK COMPLETION CHECKBOX ── */
+.task-check{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .15s;user-select:none;background:var(--surface);margin-top:2px;}
+.task-check.done{border-color:var(--success);background:rgba(58,138,110,0.15);color:var(--success);}
+.task-check-cell{width:28px;text-align:center;}
+/* ── STATS SUMMARY GRID ── */
+.sched-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
+.sched-stat-row{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);font-size:13px;}
+.sched-stat-row.divider{border-top:2px solid var(--border);margin-top:4px;}
+.sched-stat-label{color:var(--text2);}
+.sched-stat-val{font-weight:600;font-family:'DM Serif Display',serif;font-size:15px;}
+.sched-stat-val.danger{color:var(--danger);}
+.sched-stat-val.warning{color:var(--warning);}
+.sched-stat-val.success{color:var(--success);}
+.sched-stat-val.accent{color:var(--accent);}
+.sched-stat-val.muted{color:var(--text3);}
+.completion-bar-wrap{margin-top:10px;background:var(--surface2);border-radius:6px;height:10px;overflow:hidden;border:1px solid var(--border);}
+.completion-bar-fill{height:100%;border-radius:6px;background:var(--success);transition:width .4s;}
+@media(max-width:700px){.sched-stats-grid{grid-template-columns:1fr;}}
+.chart-box{background:var(--surface2);border-radius:var(--rs);padding:16px;margin-top:12px;height:200px;position:relative}
+.habit-week{display:flex;gap:5px;margin-top:6px}
+.habit-day{width:32px;height:32px;border-radius:5px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);cursor:pointer;user-select:none;transition:all .12s}
+.habit-day.done{background:rgba(126,184,164,.2);border-color:var(--success);color:var(--success);font-weight:700}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;align-items:center;justify-content:center}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;width:520px;max-width:95vw;max-height:88vh;overflow-y:auto}
+.modal-title{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:20px;color:var(--accent)}
+.modal-footer{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+@media(max-width:700px){.sidebar{display:none}.main{padding:16px}.grid2,.grid3{grid-template-columns:1fr}.mobile-nav{display:flex !important;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:100;padding:4px 0 8px}body{padding-bottom:70px}}
+.mobile-nav{display:none}
+.mobile-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;cursor:pointer;color:var(--text3);font-size:10px}
+.mobile-nav-item.active{color:var(--accent)}
+.mobile-nav-item .ico{font-size:20px}
+.export-bar{padding:12px 20px;border-top:1px solid var(--border)}
+.g1-sub{border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px;overflow:hidden}
+.g1-sub-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);cursor:pointer;user-select:none;transition:background .15s}
+.g1-sub-header:hover{background:#e8e6df}
+.g1-sub-title-input{font-size:14px;font-weight:500;color:var(--text);background:transparent;border:none;outline:none;flex:1;font-family:'DM Sans',sans-serif;cursor:text}
+.g1-sub-toggle{font-size:13px;color:var(--text3);flex-shrink:0;transition:transform .2s;display:inline-block}
+.g1-sub-toggle.open{transform:rotate(90deg)}
+.g1-sub-body{display:none;padding:0}
+.g1-sub-body.open{display:block}
+.rich-toolbar{display:flex;gap:4px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid var(--border);background:#faf9f7;align-items:center}
+.rich-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:5px;border:1px solid transparent;cursor:pointer;font-size:13px;color:var(--text2);background:transparent;transition:all .12s;font-family:'DM Sans',sans-serif;font-weight:500}
+.rich-btn:hover{background:var(--surface2);border-color:var(--border);color:var(--text)}
+.rich-btn.active{background:rgba(184,137,42,.15);border-color:var(--accent);color:var(--accent)}
+.rich-sep{width:1px;height:20px;background:var(--border);margin:0 3px}
+.draw-toolbar{display:flex;gap:6px;padding:8px 12px;background:#faf9f7;border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center}
+.draw-canvas{display:block;width:100%;cursor:crosshair;background:#fff;touch-action:none}
+.color-dot{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .12s;flex-shrink:0}
+.color-dot.sel{border-color:var(--text)}
+.rich-editor{min-height:120px;padding:12px 14px;outline:none;font-size:14px;line-height:1.7;color:var(--text);font-family:'DM Sans',sans-serif}
+.rich-editor:empty::before{content:attr(data-ph);color:var(--text3);pointer-events:none}
+.rich-editor ul,.rich-editor ol{padding-left:20px}
+.hide-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(184,137,42,.12);color:var(--warning);border:1px solid rgba(184,137,42,.25);flex-shrink:0}
+.show-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(58,138,110,.1);color:var(--success);border:1px solid rgba(58,138,110,.25);flex-shrink:0}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:18px;}
+.tab-btn{padding:9px 20px;font-size:13.5px;font-weight:500;color:var(--text3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.tab-btn:hover{color:var(--text2);}
+.tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-panel{display:none;}
+.tab-panel.active{display:block;}
+/* ── RICH EDITOR ── */
+.re-wrap{border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;background:#fff;}
+.re-tools-toggle{display:flex;align-items:center;gap:6px;padding:7px 12px;font-size:11px;font-weight:600;color:var(--text3);cursor:pointer;user-select:none;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid transparent;transition:all .15s;}
+.re-tools-toggle:hover{color:var(--text2);}
+.re-tools-toggle .arr{font-size:10px;transition:transform .2s;display:inline-block;}
+.re-tools-toggle .arr.open{transform:rotate(90deg);}
+.re-toolbar{display:none;flex-wrap:wrap;gap:3px;padding:7px 10px;border-bottom:1px solid var(--border);background:#faf9f7;align-items:center;}
+.re-toolbar.open{display:flex;}
+.re-btn{min-width:28px;height:26px;padding:0 6px;display:inline-flex;align-items:center;justify-content:center;border-radius:4px;border:1px solid transparent;cursor:pointer;font-size:13px;color:var(--text2);background:transparent;font-family:'DM Sans',sans-serif;font-weight:500;transition:all .12s;}
+.re-btn:hover{background:var(--surface2);border-color:var(--border);color:var(--text);}
+.re-btn.on{background:rgba(184,137,42,.15);border-color:var(--accent);color:var(--accent);}
+.re-sep{width:1px;height:18px;background:var(--border);margin:0 2px;}
+.re-editor{min-height:110px;padding:12px 14px;outline:none;font-size:14px;line-height:1.75;color:var(--text);font-family:'DM Sans',sans-serif;}
+.re-editor:empty::before{content:attr(data-ph);color:var(--text3);pointer-events:none;}
+.re-editor ul,.re-editor ol{padding-left:22px;}
+/* draw panel inside rich editor */
+.re-draw{display:none;border-top:1px solid var(--border);}
+.re-draw.open{display:block;}
+.re-draw-bar{display:flex;gap:6px;padding:7px 10px;background:#faf9f7;border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center;}
+.re-canvas{display:block;width:100%;cursor:crosshair;background:#fff;touch-action:none;}
+.cdot{width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid transparent;flex-shrink:0;}
+.cdot.sel{border-color:#333;}
+/* ── GOAL 1 DETAIL SUBS (keep existing) ── */
+.g1-sub{border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px;overflow:hidden;}
+.g1-sub-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);cursor:pointer;user-select:none;transition:background .15s;}
+.g1-sub-header:hover{background:#e8e6df;}
+.g1-sub-title-input{font-size:14px;font-weight:500;color:var(--text);background:transparent;border:none;outline:none;flex:1;font-family:'DM Sans',sans-serif;cursor:text;}
+.g1-sub-toggle{font-size:12px;color:var(--text3);flex-shrink:0;transition:transform .2s;display:inline-block;}
+.g1-sub-toggle.open{transform:rotate(90deg);}
+.g1-sub-body{display:none;}
+.g1-sub-body.open{display:block;}
+.hide-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(184,137,42,.12);color:var(--warning);border:1px solid rgba(184,137,42,.25);flex-shrink:0;cursor:pointer;}
+.show-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(58,138,110,.1);color:var(--success);border:1px solid rgba(58,138,110,.25);flex-shrink:0;cursor:pointer;}
+
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="sidebar">
+  <div class="logo"><h1>My Life OS</h1><p>5-year journey · 1825 days</p></div>
+  <div class="nav">
+    <div class="nav-item active" onclick="goto('home')"><span class="nav-icon">⬡</span> Dashboard</div>
+    <div class="nav-item" onclick="goto('definitions')"><span class="nav-icon">📖</span> Definitions</div>
+    <div class="nav-item" onclick="goto('goals')"><span class="nav-icon">🎯</span> My Goals</div>
+    <div class="nav-item" onclick="goto('spiritual')"><span class="nav-icon">✦</span> Spiritual</div>
+    <div class="nav-item" onclick="goto('adventure')"><span class="nav-icon">⚔</span> Adventure Log</div>
+    <div class="nav-item" onclick="goto('schedule')"><span class="nav-icon">🗓</span> Time Schedule</div>
+    <div class="nav-item" onclick="goto('progress')"><span class="nav-icon">📊</span> Progress</div>
+  </div>
+  <div class="export-bar">
+    <div id="save-status" style="margin-bottom:8px;">All changes saved</div>
+    <button class="btn btn-ghost" onclick="exportData()" style="width:100%;font-size:12px;justify-content:center;">⬇ Download backup</button>
+  </div>
+</nav>
+
+<main class="main">
+
+<!-- DASHBOARD -->
+<div id="page-home" class="page active">
+  <h1 class="page-title">Good day ✦</h1>
+  <p class="page-sub" id="home-date"></p>
+  <div class="grid3" id="home-stats" style="margin-bottom:20px;"></div>
+  <div class="grid2">
+    <div class="card"><div class="card-title"><span>🎯</span> Main goal</div><div id="home-biggoal" style="font-size:16px;color:var(--accent);font-family:'DM Serif Display',serif;line-height:1.5;"></div></div>
+    <div class="card"><div class="card-title"><span>⚔</span> Journey progress</div><div id="home-day-num" style="font-size:28px;font-family:'DM Serif Display',serif;color:var(--accent);"></div><div style="font-size:12px;color:var(--text3);margin-bottom:10px;">of 1825 days</div><div class="progress-wrap"><div class="progress-fill" id="home-progress"></div></div></div>
+  </div>
+  <div class="card mt8"><div class="card-title"><span>✦</span> Today's spiritual habits</div><div id="home-spiritual" style="color:var(--text2);font-size:13px;"></div></div>
+</div>
+
+<!-- DEFINITIONS -->
+<div id="page-definitions" class="page">
+  <div class="section-header">
+    <div><h1 class="page-title">Definitions</h1><p class="page-sub">Your personal meaning of important words &amp; concepts</p></div>
+    <button class="btn btn-primary" onclick="openDefModal()">+ Add definition</button>
+  </div>
+  <div id="def-list"></div>
+</div>
+
+<!-- GOALS -->
+<div id="page-goals" class="page">
+  <h1 class="page-title">My Goals</h1>
+  <p class="page-sub">Purpose, 5-year vision, and step-by-step milestones</p>
+
+  <!-- PURPOSE with rich editor -->
+  <div class="card">
+    <div class="card-title"><span>🌟</span> My purpose statement</div>
+    <div class="re-wrap" id="re-purpose-wrap">
+      <div class="re-tools-toggle" onclick="toggleReTools('purpose')">
+        <span class="arr" id="arr-purpose">&#9658;</span> TOOLS
+      </div>
+      <div class="re-toolbar" id="tb-purpose">
+        <button class="re-btn" onclick="reCmd('purpose','bold')"><b>B</b></button>
+        <button class="re-btn" onclick="reCmd('purpose','italic')"><i>I</i></button>
+        <button class="re-btn" onclick="reCmd('purpose','underline')"><u>U</u></button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="reCmd('purpose','insertUnorderedList')" title="Bullet list">&#8801;</button>
+        <button class="re-btn" onclick="reCmd('purpose','insertOrderedList')" title="Numbered list">&#9312;</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReDraw('purpose')" id="draw-btn-purpose" title="Draw">&#9998; Draw</button>
+      </div>
+      <div class="re-draw" id="draw-purpose">
+        <div class="re-draw-bar" id="dbar-purpose"></div>
+        <canvas id="dc-purpose" class="re-canvas" height="180"></canvas>
+      </div>
+      <div class="re-editor" id="ed-purpose" contenteditable="true" data-ph="Why do you exist? What drives you every day?" oninput="saveReEditor('purpose')"></div>
+    </div>
+  </div>
+
+  <!-- 3 MAIN GOALS -->
+  <div class="card">
+    <div class="card-title"><span>🎯</span> My 3 main goals — next 5 years</div>
+    <div class="label mt8">Goal 1</div><input type="text" id="goals-g1" placeholder="e.g. Get a HR job in a top company">
+    <div class="label mt8">Goal 2</div><input type="text" id="goals-g2" placeholder="e.g. Complete all HR certifications">
+    <div class="label mt8">Goal 3</div><input type="text" id="goals-g3" placeholder="e.g. Build financial independence">
+  </div>
+
+  <!-- GOAL DETAILS — tabbed Goal 1 / Goal 2 / Goal 3 -->
+  <div class="card">
+    <div class="card-title"><span>📋</span> Goal Details &amp; Tasks</div>
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchGoalTab(1,this)">Goal 1</button>
+      <button class="tab-btn" onclick="switchGoalTab(2,this)">Goal 2</button>
+      <button class="tab-btn" onclick="switchGoalTab(3,this)">Goal 3</button>
+    </div>
+
+    <!-- GOAL 1 TAB -->
+    <div class="tab-panel active" id="gtab-1">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:13px;color:var(--text3);font-style:italic;" id="gtab1-heading">Set Goal 1 above to title this section.</div>
+        <button class="btn btn-ghost" onclick="addGoalSub(1)" style="font-size:12px;padding:5px 12px;">+ Add sub-section</button>
+      </div>
+      <div id="gsubs-1"></div>
+    </div>
+
+    <!-- GOAL 2 TAB -->
+    <div class="tab-panel" id="gtab-2">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:13px;color:var(--text3);font-style:italic;" id="gtab2-heading">Set Goal 2 above to title this section.</div>
+        <button class="btn btn-ghost" onclick="addGoalSub(2)" style="font-size:12px;padding:5px 12px;">+ Add sub-section</button>
+      </div>
+      <div id="gsubs-2"></div>
+    </div>
+
+    <!-- GOAL 3 TAB -->
+    <div class="tab-panel" id="gtab-3">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+        <div style="font-size:13px;color:var(--text3);font-style:italic;" id="gtab3-heading">Set Goal 3 above to title this section.</div>
+        <button class="btn btn-ghost" onclick="addGoalSub(3)" style="font-size:12px;padding:5px 12px;">+ Add sub-section</button>
+      </div>
+      <div id="gsubs-3"></div>
+    </div>
+  </div>
+
+  <!-- MILESTONES -->
+  <div class="card">
+    <div class="section-header" style="margin-bottom:12px;">
+      <div class="card-title" style="margin:0;"><span>📌</span> Step-by-step milestones</div>
+      <button class="btn btn-ghost" onclick="openMilestoneModal()" style="font-size:12px;padding:6px 14px;">+ Add milestone</button>
+    </div>
+    <div id="milestone-list"></div>
+  </div>
+</div>
+
+<!-- SPIRITUAL -->
+<div id="page-spiritual" class="page">
+  <div class="section-header">
+    <div><h1 class="page-title">Spiritual Goals</h1><p class="page-sub">Daily habits and inner growth tracking</p></div>
+    <button class="btn btn-primary" onclick="openHabitModal()">+ Add habit</button>
+  </div>
+  <div class="card">
+    <div class="card-title"><span>✦</span> My spiritual intention</div>
+    <textarea id="spiritual-intention" placeholder="What does your spiritual life mean to you? What do you want to cultivate?" rows="2"></textarea>
+  </div>
+  <div id="habit-list"></div>
+</div>
+
+<!-- ADVENTURE LOG -->
+<div id="page-adventure" class="page">
+  <h1 class="page-title">Adventure Log</h1>
+  <p class="page-sub" id="adventure-sub">Your 1825-day journey — click any day dot to log it</p>
+  <div class="card">
+    <div class="card-title"><span>⚔</span> Day map</div>
+    <div class="day-grid" id="day-grid"></div>
+    <div style="display:flex;gap:14px;font-size:12px;color:var(--text3);margin-top:4px;flex-wrap:wrap;">
+      <span style="color:var(--success);">■ Done</span>
+      <span style="color:var(--danger);">■ Missed</span>
+      <span style="color:var(--accent);">■ Today</span>
+      <span style="color:var(--text3);">■ Not logged</span>
+    </div>
+  </div>
+</div>
+
+<!-- SCHEDULE -->
+<div id="page-schedule" class="page">
+  <div class="section-header">
+    <div><h1 class="page-title">Time Schedule</h1><p class="page-sub" id="schedule-sub">Every day of every month — block your hours, track urgent vs important.</p></div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+      <select id="schedule-month" onchange="switchScheduleMonth()" style="width:auto;padding:8px 12px;font-size:13px;"></select>
+      <button class="btn btn-ghost" onclick="addScheduleMonth()" style="font-size:12px;padding:7px 14px;">+ New month</button>
+    </div>
+  </div>
+
+  <div class="card" id="month-day-nav">
+    <div class="card-title"><span>📅</span> Days in this month — click a day to fill its schedule</div>
+    <div id="month-day-pills" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+    <div style="display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;font-size:11px;">
+      <span style="color:var(--success);">■ Filled</span>
+      <span style="color:var(--text3);">■ Empty</span>
+      <span style="color:var(--accent);">■ Selected</span>
+    </div>
+  </div>
+
+  <div class="card" style="overflow-x:auto;" id="day-schedule-card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
+      <div id="day-schedule-title" style="font-size:15px;font-weight:500;color:var(--text);"></div>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-ghost" onclick="prevDay()" style="font-size:12px;padding:5px 12px;">← Prev</button>
+        <button class="btn btn-ghost" onclick="nextDay()" style="font-size:12px;padding:5px 12px;">Next →</button>
+      </div>
+    </div>
+    <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap;">
+      <span style="font-size:12px;color:var(--danger);">■ Urgent + Important</span>
+      <span style="font-size:12px;color:var(--warning);">■ Urgent only</span>
+      <span style="font-size:12px;color:var(--success);">■ Important only</span>
+      <span style="font-size:12px;color:var(--text3);">■ Neither</span>
+    </div>
+    <table class="time-table"><thead><tr><th>Time slot</th><th>Task</th><th>Urgent?</th><th>Important?</th><th style="width:36px;text-align:center;">Done?</th></tr></thead><tbody id="schedule-body"></tbody></table>
+    <div style="margin-top:16px;" id="schedule-summary"></div>
+    <div style="margin-top:12px;" id="schedule-stats"></div>
+    <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
+      <div class="label">Happy with today?</div>
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="btn btn-ghost" id="sched-happy-y" onclick="setSchedHappy(true)" style="font-size:13px;padding:7px 18px;">😊 Yes</button>
+        <button class="btn btn-ghost" id="sched-happy-n" onclick="setSchedHappy(false)" style="font-size:13px;padding:7px 18px;">😔 No</button>
+      </div>
+      <div class="label mt8">Why? (optional)</div>
+      <textarea id="sched-why" rows="2" placeholder="Because..." style="margin-top:5px;" oninput="saveSchedWhy()"></textarea>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span>📊</span> Month summary</div>
+    <div id="schedule-happy-summary" style="font-size:13px;color:var(--text2);"></div>
+  </div>
+</div>
+
+<!-- PROGRESS -->
+<div id="page-progress" class="page">
+  <h1 class="page-title">Progress</h1>
+  <p class="page-sub">Your journey at a glance</p>
+  <div class="grid3" id="progress-stats" style="margin-bottom:20px;"></div>
+  <div class="card"><div class="card-title"><span>📊</span> Adventure log — last 30 days</div><div class="chart-box"><canvas id="chart-adventure"></canvas></div></div>
+  <div class="card"><div class="card-title"><span>✦</span> Spiritual habits — this week</div><div id="progress-spiritual-week"></div></div>
+  <div class="card">
+    <div class="card-title"><span>🎯</span> Milestones</div>
+    <div id="progress-milestones"></div>
+    <div class="progress-wrap mt8"><div class="progress-fill green" id="milestone-bar"></div></div>
+    <div id="milestone-pct" style="font-size:12px;color:var(--text3);margin-top:6px;"></div>
+  </div>
+</div>
+
+</main>
+</div>
+
+<!-- MOBILE NAV -->
+<div class="mobile-nav">
+  <div class="mobile-nav-item active" onclick="goto('home')"><span class="ico">⬡</span>Home</div>
+  <div class="mobile-nav-item" onclick="goto('goals')"><span class="ico">🎯</span>Goals</div>
+  <div class="mobile-nav-item" onclick="goto('adventure')"><span class="ico">⚔</span>Log</div>
+  <div class="mobile-nav-item" onclick="goto('schedule')"><span class="ico">🗓</span>Schedule</div>
+  <div class="mobile-nav-item" onclick="goto('progress')"><span class="ico">📊</span>Progress</div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="modal-def">
+  <div class="modal">
+    <div class="modal-title">Add definition</div>
+    <div class="label">Word or concept</div>
+    <input type="text" id="def-word" placeholder="e.g. Success">
+    <div class="label mt16">My personal definition</div>
+    <div class="re-wrap" style="margin-top:6px;">
+      <div class="re-tools-toggle" onclick="toggleReTools('defed')">
+        <span class="arr" id="arr-defed">&#9658;</span> TOOLS
+      </div>
+      <div class="re-toolbar" id="tb-defed">
+        <button class="re-btn" onclick="reCmd('defed','bold')"><b>B</b></button>
+        <button class="re-btn" onclick="reCmd('defed','italic')"><i>I</i></button>
+        <button class="re-btn" onclick="reCmd('defed','underline')"><u>U</u></button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="reCmd('defed','insertUnorderedList')">&#8801;</button>
+        <button class="re-btn" onclick="reCmd('defed','insertOrderedList')">&#9312;</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReDraw('defed')" id="draw-btn-defed">&#9998; Draw</button>
+      </div>
+      <div class="re-draw" id="draw-defed">
+        <div class="re-draw-bar" id="dbar-defed"></div>
+        <canvas id="dc-defed" class="re-canvas" height="150"></canvas>
+      </div>
+      <div class="re-editor" id="ed-defed" contenteditable="true" data-ph="What does this mean to you personally?" style="min-height:90px;"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-def')">Cancel</button><button class="btn btn-primary" onclick="saveDef()">Save</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-milestone">
+  <div class="modal">
+    <div class="modal-title">Add milestone</div>
+    <div class="label">Milestone title</div><input type="text" id="ms-title" placeholder="e.g. Complete Excel course on Coursera">
+    <div class="label mt16">Category</div><input type="text" id="ms-cat" placeholder="e.g. HR Career, Education, Finance">
+    <div class="label mt16">Target date</div><input type="date" id="ms-date">
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-milestone')">Cancel</button><button class="btn btn-primary" onclick="saveMilestone()">Save</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-habit">
+  <div class="modal">
+    <div class="modal-title">Add spiritual habit</div>
+    <div class="label">Habit name</div><input type="text" id="habit-name" placeholder="e.g. Morning prayer, Gratitude journal">
+    <div class="label mt16">Daily goal</div><input type="text" id="habit-goal" placeholder="e.g. 5 minutes, 1 page, 2 rakats">
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-habit')">Cancel</button><button class="btn btn-primary" onclick="saveHabit()">Save</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-day">
+  <div class="modal">
+    <div class="modal-title" id="modal-day-title">Day Log</div>
+
+    <!-- Today's Adventure with rich editor -->
+    <div class="label">Today's Adventure</div>
+    <div class="re-wrap" style="margin-top:6px;" id="re-adv-wrap">
+      <div class="re-tools-toggle" onclick="toggleReTools('adv')">
+        <span class="arr" id="arr-adv">&#9658;</span> TOOLS
+      </div>
+      <div class="re-toolbar" id="tb-adv">
+        <button class="re-btn" onclick="reCmd('adv','bold')"><b>B</b></button>
+        <button class="re-btn" onclick="reCmd('adv','italic')"><i>I</i></button>
+        <button class="re-btn" onclick="reCmd('adv','underline')"><u>U</u></button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="reCmd('adv','insertUnorderedList')" title="Bullet">&#8801;</button>
+        <button class="re-btn" onclick="reCmd('adv','insertOrderedList')" title="Numbered">&#9312;</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReDraw('adv')" id="draw-btn-adv">&#9998; Draw</button>
+      </div>
+      <div class="re-draw" id="draw-adv">
+        <div class="re-draw-bar" id="dbar-adv"></div>
+        <canvas id="dc-adv" class="re-canvas" height="150"></canvas>
+      </div>
+      <div class="re-editor" id="ed-adv" contenteditable="true" data-ph="Write your adventure for today — goals, intentions, plans..." style="min-height:80px;"></div>
+    </div>
+
+    <div class="label mt16">Did you complete your plan?</div>
+    <div style="display:flex;gap:10px;margin-top:6px;">
+      <button class="btn btn-ghost" id="btn-complete" onclick="setDayStatus('done')" style="flex:1;">✓ Yes, completed</button>
+      <button class="btn btn-ghost" id="btn-missed" onclick="setDayStatus('missed')" style="flex:1;">✗ No, missed</button>
+    </div>
+    <div id="day-happy-row" style="margin-top:14px;display:none;">
+      <div class="label">Are you happy with the day?</div>
+      <div style="display:flex;gap:8px;margin-top:6px;">
+        <button class="btn btn-ghost" id="btn-happy-y" onclick="setDayHappy(true)" style="flex:1;">😊 Yes</button>
+        <button class="btn btn-ghost" id="btn-happy-n" onclick="setDayHappy(false)" style="flex:1;">😔 Not really</button>
+      </div>
+    </div>
+    <div id="day-missed-row" style="display:none;">
+      <div class="label mt16">3 reasons you couldn't follow the plan</div>
+      <input type="text" id="day-r1" placeholder="Reason 1" style="margin-bottom:7px;">
+      <input type="text" id="day-r2" placeholder="Reason 2" style="margin-bottom:7px;">
+      <input type="text" id="day-r3" placeholder="Reason 3">
+      <div class="label mt16">3 reasons the plan might not work</div>
+      <input type="text" id="day-f1" placeholder="Insight 1" style="margin-bottom:7px;">
+      <input type="text" id="day-f2" placeholder="Insight 2" style="margin-bottom:7px;">
+      <input type="text" id="day-f3" placeholder="Insight 3">
+    </div>
+    <div class="label mt16">Notes / reflections</div>
+    <div class="re-wrap" style="margin-top:6px;" id="re-notes-wrap">
+      <div class="re-tools-toggle" onclick="toggleReTools('notes')">
+        <span class="arr" id="arr-notes">&#9658;</span> TOOLS
+      </div>
+      <div class="re-toolbar" id="tb-notes">
+        <button class="re-btn" onclick="reCmd('notes','bold')"><b>B</b></button>
+        <button class="re-btn" onclick="reCmd('notes','italic')"><i>I</i></button>
+        <button class="re-btn" onclick="reCmd('notes','underline')"><u>U</u></button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="reCmd('notes','insertUnorderedList')">&#8801;</button>
+        <button class="re-btn" onclick="reCmd('notes','insertOrderedList')">&#9312;</button>
+      </div>
+      <div class="re-editor" id="ed-notes" contenteditable="true" data-ph="Reflections, anything else about this day..." style="min-height:70px;"></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-day')">Cancel</button><button class="btn btn-primary" onclick="saveDayLog()">Save day</button></div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const KEY='mylifeos_v3';
+const _tomorrow=new Date();_tomorrow.setDate(_tomorrow.getDate()+1);let D={startDate:_tomorrow.toISOString().split('T')[0],definitions:[],goals:{purpose:'',g1:'',g2:'',g3:''},milestones:[],spiritual:{intention:'',habits:[]},adventureDays:{},scheduleMonths:[],curMonth:0};
+const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
+
+// ── DATE HELPERS ─────────────────────────────────────────────
+const MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const MONTH_NAMES_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+// Get the actual calendar date (Date object) for a given month label + 1-based day index
+function getActualDateForMonthDay(monthLabel, dayNum){
+  if(!monthLabel)return null;
+  const mIdx=MONTH_NAMES.findIndex(m=>monthLabel.includes(m));
+  const parts=monthLabel.split(' ');
+  const yr=parseInt(parts[parts.length-1])||new Date().getFullYear();
+  if(mIdx===-1)return null;
+  return new Date(yr, mIdx, dayNum);
+}
+
+// Format: "Day 5 — 5 June 2026"
+function formatDayLabel(dayNum, dateObj){
+  if(!dateObj||isNaN(dateObj))return 'Day '+dayNum;
+  return 'Day '+dayNum+' — '+dateObj.getDate()+' '+MONTH_NAMES[dateObj.getMonth()]+' '+dateObj.getFullYear();
+}
+
+function getDaysInMonth(label){const months=['January','February','March','April','May','June','July','August','September','October','November','December'];if(!label)return 31;const parts=label.split(' ');const mIdx=months.findIndex(m=>label.includes(m));const yr=parseInt(parts[parts.length-1])||new Date().getFullYear();if(mIdx===-1)return 31;return new Date(yr,mIdx+1,0).getDate();}
+
+function mkMonth(){const n=new Date();const label=n.toLocaleDateString('en-IN',{month:'long',year:'numeric'});const daysCount=getDaysInMonth(label);return{label,days:Array.from({length:daysCount},(_,i)=>({dayNum:i+1,rows:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}))}}
+
+function load(){
+  try{const s=localStorage.getItem(KEY);if(s)D=JSON.parse(s);}catch(e){}
+  // Day 1 = tomorrow (set on first ever load only)
+  if(!D.startDate){const t=new Date();t.setDate(t.getDate()+1);D.startDate=t.toISOString().split('T')[0];}
+  // Init schedule months — use the month containing Day 1 (tomorrow)
+  if(!D.scheduleMonths||D.scheduleMonths.length===0){
+    const day1=new Date(D.startDate);
+    const initLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
+    const initDays=new Date(day1.getFullYear(),day1.getMonth()+1,0).getDate();
+    const firstMonth={label:initLabel,days:Array.from({length:initDays},(_,i)=>({dayNum:i+1,rows:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}))};
+    D.scheduleMonths=[firstMonth];D.curMonth=0;
+  }
+  // Init goal subs
+  if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
+  if(!D.reContent)D.reContent={};
+  if(!D.definitions)D.definitions=[];
+  if(!D.milestones)D.milestones=[];
+}
+
+function save(){localStorage.setItem(KEY,JSON.stringify(D));const el=document.getElementById('save-status');if(el){el.textContent='Saved ✓';el.className='saved';setTimeout(()=>{el.textContent='All changes saved';el.className='';},1500);}}
+
+function exportData(){const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mylifeos-backup-'+new Date().toISOString().split('T')[0]+'.json';a.click();}
+
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function goto(pg){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+pg).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  const map={home:0,definitions:1,goals:2,spiritual:3,adventure:4,schedule:5,progress:6};
+  const items=document.querySelectorAll('.nav-item');
+  if(items[map[pg]])items[map[pg]].classList.add('active');
+  document.querySelectorAll('.mobile-nav-item').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.mobile-nav-item').forEach(n=>{if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes(pg))n.classList.add('active');});
+  if(pg==='home')renderHome();
+  if(pg==='definitions')renderDefs();
+  if(pg==='goals')renderGoalsExtended();
+  if(pg==='spiritual')renderSpiritual();
+  if(pg==='adventure')renderAdventure();
+  if(pg==='schedule')renderScheduleNav();
+  if(pg==='progress')renderProgress();
+}
+
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+
+// Definitions — rich editor version
+function openDefModal(idx){
+  const eiEl=document.getElementById('modal-def');
+  eiEl.dataset.ei=idx!==undefined?idx:'';
+  document.getElementById('def-word').value=idx!==undefined?(D.definitions[idx].word||''):'';
+  document.getElementById('modal-def').classList.add('open');
+  setTimeout(()=>{
+    const ed=document.getElementById('ed-defed');
+    if(ed){
+      if(idx!==undefined&&D.definitions[idx]){
+        ed.innerHTML=D.definitions[idx].meaningRich||esc(D.definitions[idx].meaning||'');
+      } else { ed.innerHTML=''; }
+    }
+    // reset draw canvas
+    const canvas=document.getElementById('dc-defed');
+    if(canvas){canvas._init=false; const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);}
+  },20);
+}
+function saveDef(){
+  const w=document.getElementById('def-word').value.trim();
+  if(!w)return;
+  const ed=document.getElementById('ed-defed');
+  const richContent=ed?ed.innerHTML:'';
+  const plainContent=ed?(ed.textContent||ed.innerText||'').trim():'';
+  const eiEl=document.getElementById('modal-def');
+  const ei=eiEl?eiEl.dataset.ei:'';
+  if(ei!==''){
+    D.definitions[parseInt(ei)].word=w;
+    D.definitions[parseInt(ei)].meaning=plainContent;
+    D.definitions[parseInt(ei)].meaningRich=richContent;
+  } else {
+    D.definitions.push({word:w,meaning:plainContent,meaningRich:richContent});
+  }
+  save();closeModal('modal-def');renderDefs();
+}
+function renderDefs(){
+  const el=document.getElementById('def-list');
+  if(!D.definitions.length){el.innerHTML='<div style="color:var(--text3);font-size:14px;text-align:center;padding:40px 0;">No definitions yet. Click &quot;+ Add definition&quot; to begin.</div>';return;}
+  el.innerHTML=D.definitions.map((d,i)=>`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;"><div style="flex:1"><div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--accent);margin-bottom:6px;">${esc(d.word)}</div><div style="font-size:14px;color:var(--text2);line-height:1.75;">${d.meaningRich||esc(d.meaning||'')}</div></div><div style="display:flex;gap:7px;flex-shrink:0;"><button class="btn btn-ghost" onclick="openDefModal(${i})" style="font-size:12px;padding:5px 12px;">Edit</button><button class="btn btn-danger" onclick="delDef(${i})" style="font-size:12px;padding:5px 12px;">Del</button></div></div></div>`).join('');
+}
+function delDef(i){if(confirm('Delete this definition?')){D.definitions.splice(i,1);save();renderDefs();}}
+
+function renderGoals(){['purpose','g1','g2','g3'].forEach(k=>{const el=document.getElementById('goals-'+k);el.value=D.goals[k]||'';el.oninput=()=>{D.goals[k]=el.value;save();};});const el=document.getElementById('milestone-list');if(!D.milestones.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No milestones yet. Add your first step.</div>';return;}el.innerHTML=D.milestones.map((m,i)=>`<div class="item-row"><div class="check ${m.done?'checked':''}" onclick="toggleMs(${i})">${m.done?'✓':''}</div><div class="item-body"><div class="item-title" style="${m.done?'text-decoration:line-through;color:var(--text3)':''}">${esc(m.title)}</div><div class="item-meta">${m.cat?esc(m.cat)+' · ':''} ${m.date||'No target date'}</div></div><span class="badge ${m.done?'badge-done':'badge-pending'}">${m.done?'Done':'Pending'}</span><button class="btn btn-danger" onclick="delMs(${i})" style="font-size:11px;padding:4px 10px;">✕</button></div>`).join('');}
+function openMilestoneModal(){document.getElementById('ms-title').value='';document.getElementById('ms-cat').value='';document.getElementById('ms-date').value='';document.getElementById('modal-milestone').classList.add('open');}
+function saveMilestone(){const t=document.getElementById('ms-title').value.trim();if(!t)return;D.milestones.push({title:t,cat:document.getElementById('ms-cat').value.trim(),date:document.getElementById('ms-date').value,done:false});save();closeModal('modal-milestone');renderGoals();}
+function toggleMs(i){D.milestones[i].done=!D.milestones[i].done;save();renderGoals();}
+function delMs(i){D.milestones.splice(i,1);save();renderGoals();}
+
+function renderSpiritual(){const si=document.getElementById('spiritual-intention');si.value=D.spiritual.intention||'';si.oninput=()=>{D.spiritual.intention=si.value;save();};const today=new Date();const week=[];for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);week.push(d.toISOString().split('T')[0]);}const dl=['M','T','W','T','F','S','S'];const el=document.getElementById('habit-list');if(!D.spiritual.habits.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:40px 0;">No habits yet.</div>';return;}el.innerHTML=D.spiritual.habits.map((h,hi)=>`<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div><div style="font-weight:500;font-size:14px;">${esc(h.name)}</div>${h.goal?`<div style="font-size:12px;color:var(--text3);margin-top:2px;">${esc(h.goal)}</div>`:''}</div><button class="btn btn-danger" onclick="delHabit(${hi})" style="font-size:11px;padding:4px 10px;">✕</button></div><div class="habit-week">${week.map((day,di)=>`<div class="habit-day${h.log&&h.log[day]?' done':''}" onclick="toggleHabit(${hi},'${day}')">${dl[di]}</div>`).join('')}</div></div>`).join('');}
+function openHabitModal(){document.getElementById('habit-name').value='';document.getElementById('habit-goal').value='';document.getElementById('modal-habit').classList.add('open');}
+function saveHabit(){const n=document.getElementById('habit-name').value.trim();if(!n)return;D.spiritual.habits.push({name:n,goal:document.getElementById('habit-goal').value.trim(),log:{}});save();closeModal('modal-habit');renderSpiritual();}
+function toggleHabit(hi,day){if(!D.spiritual.habits[hi].log)D.spiritual.habits[hi].log={};D.spiritual.habits[hi].log[day]=!D.spiritual.habits[hi].log[day];save();renderSpiritual();}
+function delHabit(i){D.spiritual.habits.splice(i,1);save();renderSpiritual();}
+
+let selDay=null,dayStatus=null,dayHappy=null;
+function renderAdventure(){const grid=document.getElementById('day-grid');const start=new Date(D.startDate);const today=new Date().toISOString().split('T')[0];const todayDate=new Date();const dayNum=Math.max(1,Math.floor((todayDate-start)/86400000)+1);const subEl=document.getElementById('adventure-sub');if(subEl){const prettyToday=todayDate.getDate()+' '+MONTH_NAMES[todayDate.getMonth()]+' '+todayDate.getFullYear();subEl.textContent='Your 1825-day journey · Today is Day '+dayNum+' — '+prettyToday;}grid.innerHTML='';for(let i=0;i<1825;i++){const d=new Date(start);d.setDate(start.getDate()+i);const key=d.toISOString().split('T')[0];const log=D.adventureDays[key];const status=log?log.status:'';const isToday=key===today;const div=document.createElement('div');div.className='day-dot'+(status==='done'?' done':status==='missed'?' missed':isToday?' today':'');div.textContent=i+1;const prettyDate=(i+1)+' '+MONTH_NAMES[d.getMonth()]+' '+d.getFullYear();div.title='Day '+(i+1)+' — '+prettyDate;div.onclick=()=>openDayModal(key,i+1);grid.appendChild(div);}}
+function openDayModal(key,dayNum){
+  selDay=key;dayStatus=null;dayHappy=null;
+  const log=D.adventureDays[key]||{};
+  const dParts=key.split('-');
+  const mNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const prettyDate=parseInt(dParts[2])+' '+mNames[parseInt(dParts[1])-1]+' '+dParts[0];
+  document.getElementById('modal-day-title').textContent='Day '+dayNum+' — '+prettyDate;
+  ['r1','r2','r3'].forEach((r,i)=>{const el=document.getElementById('day-'+r);if(el)el.value=(log.reasons&&log.reasons[i])||'';});
+  ['f1','f2','f3'].forEach((f,i)=>{const el=document.getElementById('day-'+f);if(el)el.value=(log.fixes&&log.fixes[i])||'';});
+  dayStatus=log.status||null;
+  dayHappy=log.happy!==undefined?log.happy:null;
+  updateDayUI();
+  document.getElementById('modal-day').classList.add('open');
+  // Load rich editors after modal is visible
+  setTimeout(()=>{
+    const edAdv=document.getElementById('ed-adv');
+    const edNotes=document.getElementById('ed-notes');
+    if(edAdv)edAdv.innerHTML=log.advRich||'';
+    if(edNotes)edNotes.innerHTML=log.notesRich||'';
+    // Reset draw canvases for fresh use
+    ['adv'].forEach(id=>{
+      const cv=document.getElementById('dc-'+id);
+      if(cv){cv._init=false;}
+    });
+  },20);
+}
+function setDayStatus(s){dayStatus=s;updateDayUI();}
+function setDayHappy(v){dayHappy=v;updateDayUI();}
+function updateDayUI(){const bc=document.getElementById('btn-complete'),bm=document.getElementById('btn-missed');bc.style.background=dayStatus==='done'?'var(--success)':'';bc.style.color=dayStatus==='done'?'#fff':'';bc.style.borderColor=dayStatus==='done'?'var(--success)':'var(--border)';bm.style.background=dayStatus==='missed'?'var(--danger)':'';bm.style.color=dayStatus==='missed'?'#fff':'';bm.style.borderColor=dayStatus==='missed'?'var(--danger)':'var(--border)';document.getElementById('day-happy-row').style.display=dayStatus==='done'?'block':'none';document.getElementById('day-missed-row').style.display=dayStatus==='missed'?'block':'none';const by=document.getElementById('btn-happy-y'),bn=document.getElementById('btn-happy-n');by.style.background=dayHappy===true?'var(--success)':'';by.style.color=dayHappy===true?'#fff':'';by.style.borderColor=dayHappy===true?'var(--success)':'var(--border)';bn.style.background=dayHappy===false?'var(--danger)':'';bn.style.color=dayHappy===false?'#fff':'';bn.style.borderColor=dayHappy===false?'var(--danger)':'var(--border)';}
+function saveDayLog(){
+  if(!selDay)return;
+  const edAdv=document.getElementById('ed-adv');
+  const edNotes=document.getElementById('ed-notes');
+  const advRich=edAdv?edAdv.innerHTML:'';
+  const notesRich=edNotes?edNotes.innerHTML:'';
+  const advPlain=edAdv?(edAdv.textContent||edAdv.innerText||'').trim():'';
+  const notesPlain=edNotes?(edNotes.textContent||edNotes.innerText||'').trim():'';
+  D.adventureDays[selDay]={
+    status:dayStatus,
+    happy:dayHappy,
+    goals:advPlain,
+    advRich:advRich,
+    notes:notesPlain,
+    notesRich:notesRich,
+    reasons:['r1','r2','r3'].map(r=>{const el=document.getElementById('day-'+r);return el?el.value:'';}),
+    fixes:['f1','f2','f3'].map(f=>{const el=document.getElementById('day-'+f);return el?el.value:'';})
+  };
+  save();closeModal('modal-day');renderAdventure();
+}
+
+let curDayIdx=0;
+function renderScheduleNav(){const sel=document.getElementById('schedule-month');sel.innerHTML=D.scheduleMonths.map((m,i)=>`<option value="${i}" ${i==D.curMonth?'selected':''}>${m.label||'Month '+(i+1)}</option>`).join('');renderSchedule();}
+function switchScheduleMonth(){D.curMonth=parseInt(document.getElementById('schedule-month').value);curDayIdx=0;renderSchedule();}
+function addScheduleMonth(){
+  var nextLabel='';
+  if(D.scheduleMonths.length>0){
+    var lastLabel=D.scheduleMonths[D.scheduleMonths.length-1].label;
+    var mIdx=MONTH_NAMES.findIndex(function(m){return lastLabel.includes(m);});
+    var yr=parseInt(lastLabel.split(' ').pop())||new Date().getFullYear();
+    if(mIdx!==-1){var nextM=(mIdx+1)%12;var nextY=mIdx===11?yr+1:yr;nextLabel=MONTH_NAMES[nextM]+' '+nextY;}
+  }
+  if(!nextLabel){var day1=new Date(D.startDate);nextLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();}
+  if(D.scheduleMonths.some(function(m){return m.label===nextLabel;})){
+    var btn=document.querySelector('[onclick="addScheduleMonth()"]');
+    if(btn){var orig=btn.textContent;btn.textContent='This month already exists.';btn.style.color='var(--danger)';btn.disabled=true;setTimeout(function(){btn.textContent=orig;btn.style.color='';btn.disabled=false;},2200);}
+    return;
+  }
+  var daysCount=getDaysInMonth(nextLabel);
+  var m={label:nextLabel,days:Array.from({length:daysCount},function(_,i){return{dayNum:i+1,rows:TIME_SLOTS.map(function(t){return{time:t,task:'',urgent:'',important:''};;}),happy:null,why:''};})};
+  D.scheduleMonths.push(m);D.curMonth=D.scheduleMonths.length-1;curDayIdx=0;save();renderScheduleNav();
+}
+
+function renderSchedule(){const month=D.scheduleMonths[D.curMonth];if(!month)return;if(!month.days){const daysCount=getDaysInMonth(month.label);month.days=Array.from({length:daysCount},(_,i)=>({dayNum:i+1,rows:month.rows?[...month.rows.map(r=>({...r}))]:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}));delete month.rows;save();}if(curDayIdx>=month.days.length)curDayIdx=0;const pillsEl=document.getElementById('month-day-pills');pillsEl.innerHTML=month.days.map((d,i)=>{const filled=d.rows&&d.rows.some(r=>r.task);const sel=i===curDayIdx;const actualDate=getActualDateForMonthDay(month.label,d.dayNum);const tooltip=actualDate?formatDayLabel(d.dayNum,actualDate):'Day '+d.dayNum;return`<div onclick="selectDay(${i})" title="${tooltip}" style="width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:${sel?'700':'400'};cursor:pointer;background:${sel?'var(--accent)':filled?'rgba(58,138,110,0.12)':'var(--surface2)'};color:${sel?'#fff':filled?'var(--success)':'var(--text3)'};border:1px solid ${sel?'var(--accent)':filled?'var(--success)':'var(--border)'};transition:all .12s;">${d.dayNum}</div>`;}).join('');renderDaySchedule();renderSchedSummary();}
+
+function selectDay(idx){curDayIdx=idx;renderSchedule();}
+function prevDay(){if(curDayIdx>0){curDayIdx--;renderSchedule();}}
+function nextDay(){const month=D.scheduleMonths[D.curMonth];if(month&&curDayIdx<month.days.length-1){curDayIdx++;renderSchedule();}}
+
+function autoGrowTextarea(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
+
+function renderDaySchedule(){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const day=month.days[curDayIdx];if(!day)return;const actualDate=getActualDateForMonthDay(month.label,day.dayNum);document.getElementById('day-schedule-title').textContent=formatDayLabel(day.dayNum,actualDate);const tbody=document.getElementById('schedule-body');tbody.innerHTML=day.rows.map((r,ri)=>{const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const isDone=!!r.done;const taskStyle=isDone?'text-decoration:line-through;opacity:0.6;':'';return`<tr class="${cls}" id="sr-${ri}"><td style="white-space:nowrap;width:80px;font-size:12px;color:var(--text3);">${r.time}</td><td class="task-cell"><textarea class="task-input" rows="1" placeholder="Enter task…" oninput="updSchedTA(${ri},this)" style="${taskStyle}">${esc(r.task)}</textarea></td><td><select onchange="updSched(${ri},'urgent',this.value)"><option value="">-</option><option value="Y" ${r.urgent==='Y'?'selected':''}>Y</option><option value="N" ${r.urgent==='N'?'selected':''}>N</option></select></td><td><select onchange="updSched(${ri},'important',this.value)"><option value="">-</option><option value="Y" ${r.important==='Y'?'selected':''}>Y</option><option value="N" ${r.important==='N'?'selected':''}>N</option></select></td><td class="task-check-cell"><div class="task-check${isDone?' done':''}" onclick="toggleTaskDone(${ri})" title="${isDone?'Mark incomplete':'Mark complete'}">${isDone?'✓':''}</div></td></tr>`;}).join('');tbody.querySelectorAll('textarea.task-input').forEach(ta=>{autoGrowTextarea(ta);});const hy=document.getElementById('sched-happy-y');const hn=document.getElementById('sched-happy-n');hy.style.background=day.happy===true?'var(--success)':'';hy.style.color=day.happy===true?'#fff':'';hy.style.borderColor=day.happy===true?'var(--success)':'var(--border)';hn.style.background=day.happy===false?'var(--danger)':'';hn.style.color=day.happy===false?'#fff':'';hn.style.borderColor=day.happy===false?'var(--danger)':'var(--border)';document.getElementById('sched-why').value=day.why||'';}
+
+function updSchedTA(ri,el){autoGrowTextarea(el);updSched(ri,'task',el.value);}
+
+function toggleTaskDone(ri){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const row=month.days[curDayIdx].rows[ri];row.done=!row.done;save();// Update just this row's checkbox and task style without full re-render
+const checkEl=document.querySelector('#sr-'+ri+' .task-check');const taEl=document.querySelector('#sr-'+ri+' textarea.task-input');if(checkEl){checkEl.classList.toggle('done',row.done);checkEl.textContent=row.done?'✓':'';}if(taEl){taEl.style.textDecoration=row.done?'line-through':'none';taEl.style.opacity=row.done?'0.6':'1';}renderSchedSummary();}
+
+function updSched(ri,field,val){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;month.days[curDayIdx].rows[ri][field]=val;save();const r=month.days[curDayIdx].rows[ri];const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const row=document.getElementById('sr-'+ri);if(row)row.className=cls;renderSchedSummary();}
+
+function setSchedHappy(val){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;month.days[curDayIdx].happy=val;save();const hy=document.getElementById('sched-happy-y');const hn=document.getElementById('sched-happy-n');hy.style.background=val===true?'var(--success)':'';hy.style.color=val===true?'#fff':'';hy.style.borderColor=val===true?'var(--success)':'var(--border)';hn.style.background=val===false?'var(--danger)':'';hn.style.color=val===false?'#fff':'';hn.style.borderColor=val===false?'var(--danger)':'var(--border)';renderSchedSummary();}
+
+function saveSchedWhy(){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;month.days[curDayIdx].why=document.getElementById('sched-why').value;save();}
+
+function renderSchedSummary(){
+  const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;
+  const day=month.days[curDayIdx];
+  const allRows=day.rows;
+  const taskRows=allRows.filter(r=>r.task&&r.task.trim());
+  const uu=taskRows.filter(r=>r.urgent==='Y'&&r.important==='Y').length;
+  const un=taskRows.filter(r=>r.urgent==='Y'&&r.important==='N').length;
+  const nu=taskRows.filter(r=>r.urgent==='N'&&r.important==='Y').length;
+  const nn=taskRows.filter(r=>r.urgent==='N'&&r.important==='N').length;
+  const total=taskRows.length;
+  const planned=total; // 1 slot = 1 hour
+  const completed=taskRows.filter(r=>r.done).length;
+  const completedHrs=completed;
+  const remaining=total-completed;
+  const remainingHrs=planned-completedHrs;
+  const rate=total>0?Math.round(completed/total*100):0;
+
+  // Existing inline summary (urgent/important breakdown)
+  document.getElementById('schedule-summary').innerHTML=`<div style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px;">
+    <span style="color:var(--danger);">■ Urgent+Important: <b>${uu}</b></span>
+    <span style="color:var(--warning);">■ Urgent only: <b>${un}</b></span>
+    <span style="color:var(--success);">■ Important only: <b>${nu}</b></span>
+    <span style="color:var(--text3);">■ Neither: <b>${nn}</b></span>
+  </div>`;
+
+  // New detailed stats panel
+  const statsEl=document.getElementById('schedule-stats');
+  if(!statsEl)return;
+  statsEl.innerHTML=`
+  <div style="border-top:1px solid var(--border);padding-top:14px;">
+    <div class="card-title" style="margin-bottom:10px;"><span>📋</span> Day Statistics</div>
+    <div class="sched-stats-grid">
+      <div class="sched-stat-row"><span class="sched-stat-label" style="color:var(--danger);">■ Urgent + Important</span><span class="sched-stat-val danger">${uu}</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label" style="color:var(--warning);">■ Urgent Only</span><span class="sched-stat-val warning">${un}</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label" style="color:var(--success);">■ Important Only</span><span class="sched-stat-val success">${nu}</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label" style="color:var(--text3);">■ Neither</span><span class="sched-stat-val muted">${nn}</span></div>
+    </div>
+    <div style="height:1px;background:var(--border);margin:10px 0;"></div>
+    <div class="sched-stats-grid">
+      <div class="sched-stat-row"><span class="sched-stat-label">Total Tasks</span><span class="sched-stat-val accent">${total}</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label">Planned Hours</span><span class="sched-stat-val accent">${planned}h</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label">✓ Completed Tasks</span><span class="sched-stat-val success">${completed}</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label">✓ Completed Hours</span><span class="sched-stat-val success">${completedHrs}h</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label">Remaining Tasks</span><span class="sched-stat-val${remaining>0?' warning':' muted'}">${remaining}</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label">Remaining Hours</span><span class="sched-stat-val${remainingHrs>0?' warning':' muted'}">${remainingHrs}h</span></div>
+    </div>
+    <div style="margin-top:10px;padding:10px 12px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+        <span style="font-size:13px;color:var(--text2);font-weight:500;">Completion Rate</span>
+        <span style="font-family:'DM Serif Display',serif;font-size:20px;color:${rate>=80?'var(--success)':rate>=50?'var(--warning)':'var(--danger)'};">${rate}%</span>
+      </div>
+      <div class="completion-bar-wrap"><div class="completion-bar-fill" style="width:${rate}%;background:${rate>=80?'var(--success)':rate>=50?'var(--warning)':'var(--danger)'};"></div></div>
+      <div style="font-size:11px;color:var(--text3);margin-top:5px;text-align:right;">${completed} of ${total} tasks done</div>
+    </div>
+  </div>`;
+
+  // Month summary card
+  const happyDays=month.days.filter(d=>d.happy===true).length;
+  const loggedDays=month.days.filter(d=>d.happy!==null).length;
+  const filledDays=month.days.filter(d=>d.rows.some(r=>r.task)).length;
+  document.getElementById('schedule-happy-summary').innerHTML=`<div style="display:flex;gap:20px;flex-wrap:wrap;">
+    <div><div style="font-size:22px;font-weight:700;color:var(--accent);font-family:'DM Serif Display',serif;">${filledDays}</div><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;">Days filled</div></div>
+    <div><div style="font-size:22px;font-weight:700;color:var(--success);font-family:'DM Serif Display',serif;">${happyDays}</div><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;">Happy days</div></div>
+    <div><div style="font-size:22px;font-weight:700;color:var(--text2);font-family:'DM Serif Display',serif;">${loggedDays>0?Math.round(happyDays/loggedDays*100):0}%</div><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;">Happiness rate</div></div>
+    <div><div style="font-size:22px;font-weight:700;color:var(--text2);font-family:'DM Serif Display',serif;">${month.days.length}</div><div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;">Total days</div></div>
+  </div>`;
+}
+
+function renderHome(){document.getElementById('home-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const start=new Date(D.startDate),today=new Date();const dayNum=Math.max(1,Math.floor((today-start)/86400000)+1);const pct=Math.min(100,Math.round(dayNum/1825*100));const done=Object.values(D.adventureDays).filter(d=>d.status==='done').length;const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;document.getElementById('home-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Day of journey</div></div><div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days completed</div></div><div class="stat-card"><div class="stat-num">${msDone}/${msTotal}</div><div class="stat-label">Milestones done</div></div>`;document.getElementById('home-biggoal').textContent=D.goals.g1||'No main goal set yet — go to My Goals to add one';document.getElementById('home-day-num').textContent='Day '+dayNum;document.getElementById('home-progress').style.width=pct+'%';const todayKey=new Date().toISOString().split('T')[0];document.getElementById('home-spiritual').innerHTML=D.spiritual.habits.length===0?'No spiritual habits added yet.':D.spiritual.habits.map(h=>{const d=h.log&&h.log[todayKey];return`<span style="margin-right:14px;color:${d?'var(--success)':'var(--text3)'}">${d?'✓':'○'} ${esc(h.name)}</span>`;}).join('');}
+
+let advChart=null;
+function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>d.status==='done').length;const logged=Object.values(D.adventureDays).filter(d=>d.status).length;const start=new Date(D.startDate);const dayNum=Math.max(1,Math.floor((new Date()-start)/86400000)+1);document.getElementById('progress-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days done</div></div><div class="stat-card"><div class="stat-num">${Math.round(logged>0?done/logged*100:0)}%</div><div class="stat-label">Success rate</div></div><div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Current day</div></div>`;const labels=[],doneD=[],missD=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];const l=D.adventureDays[k];labels.push(d.toLocaleDateString('en-IN',{month:'short',day:'numeric'}));doneD.push(l&&l.status==='done'?1:0);missD.push(l&&l.status==='missed'?1:0);}const ctx=document.getElementById('chart-adventure');if(advChart)advChart.destroy();advChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Done',data:doneD,backgroundColor:'rgba(58,138,110,0.7)',borderRadius:4},{label:'Missed',data:missD,backgroundColor:'rgba(184,90,90,0.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#5a5448',font:{size:11}}}},scales:{x:{stacked:true,ticks:{color:'#9a9488',font:{size:9},maxTicksLimit:10},grid:{color:'#e0ddd6'}},y:{stacked:true,ticks:{color:'#9a9488',stepSize:1},grid:{color:'#e0ddd6'},max:1}}}});const today=new Date();const week=[];for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);week.push(d.toISOString().split('T')[0]);}const spEl=document.getElementById('progress-spiritual-week');spEl.innerHTML=D.spiritual.habits.length===0?'<div style="color:var(--text3);font-size:13px;">No habits tracked yet.</div>':D.spiritual.habits.map(h=>{const t=week.filter(d=>h.log&&h.log[d]).length;return`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;"><span>${esc(h.name)}</span><span style="color:var(--accent);">${t}/7</span></div><div class="progress-wrap"><div class="progress-fill green" style="width:${Math.round(t/7*100)}%"></div></div></div>`;}).join('');const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;document.getElementById('progress-milestones').textContent=msTotal===0?'No milestones added.':`${msDone} of ${msTotal} milestones completed`;document.getElementById('milestone-bar').style.width=msTotal>0?Math.round(msDone/msTotal*100)+'%':'0%';document.getElementById('milestone-pct').textContent=msTotal>0?Math.round(msDone/msTotal*100)+'% complete':'';}
+
+load();renderHome();renderScheduleNav();
+
+// ============================================================
+// RICH EDITOR SYSTEM — shared by definitions, goals, adventure
+// ============================================================
+
+// Toggle TOOLS bar visibility
+function toggleReTools(id){
+  const tb=document.getElementById('tb-'+id);
+  const arr=document.getElementById('arr-'+id);
+  if(!tb)return;
+  const open=tb.classList.toggle('open');
+  if(arr)arr.classList.toggle('open',open);
+}
+
+// execCommand wrapper
+function reCmd(id,cmd){
+  const ed=document.getElementById('ed-'+id);
+  if(!ed)return;
+  ed.focus();
+  document.execCommand(cmd,false,null);
+}
+
+// Save rich editor content to D
+function saveReEditor(id){
+  const ed=document.getElementById('ed-'+id);
+  if(!ed)return;
+  if(!D.reContent)D.reContent={};
+  D.reContent[id]=ed.innerHTML;
+  save();
+}
+
+// Load rich editor content from D
+function loadReEditor(id){
+  const ed=document.getElementById('ed-'+id);
+  if(!ed)return;
+  if(D.reContent&&D.reContent[id])ed.innerHTML=D.reContent[id];
+}
+
+// ── DRAWING inside rich editors ──────────────────────────────
+const reDrawState={};
+const DRAW_COLORS=['#1a1814','#b8892a','#3a8a6e','#b85a5a','#4a9e8e','#6060c0'];
+
+function toggleReDraw(id){
+  const area=document.getElementById('draw-'+id);
+  const btn=document.getElementById('draw-btn-'+id);
+  if(!area)return;
+  const showing=area.classList.toggle('open');
+  if(btn)btn.classList.toggle('on',showing);
+  if(showing)initReDraw(id);
+}
+
+function initReDraw(id){
+  const canvas=document.getElementById('dc-'+id);
+  if(!canvas||canvas._init)return;
+  canvas._init=true;
+  const bar=document.getElementById('dbar-'+id);
+  // Build color dots + size selector
+  if(bar){
+    bar.innerHTML=`<span style="font-size:11px;color:var(--text3);margin-right:4px;">Colour:</span>`+
+      DRAW_COLORS.map(c=>`<div class="cdot${c===DRAW_COLORS[0]?' sel':''}" style="background:${c}" onclick="setReColor('${id}','${c}',this)"></div>`).join('')+
+      `<span style="font-size:11px;color:var(--text3);margin-left:8px;">Size:</span>
+       <select onchange="setReSize('${id}',this.value)" style="width:auto;padding:2px 6px;font-size:12px;">
+         <option value="2">Thin</option><option value="4" selected>Medium</option><option value="8">Thick</option>
+       </select>
+       <button class="re-btn" onclick="clearReDraw('${id}')" style="width:auto;padding:0 8px;font-size:11px;margin-left:4px;">&#128465; Clear</button>
+       <button class="re-btn" onclick="saveReDraw('${id}')" style="width:auto;padding:0 8px;font-size:11px;color:var(--success);">&#128190; Save</button>`;
+  }
+  if(!reDrawState[id])reDrawState[id]={color:DRAW_COLORS[0],size:4,on:false};
+  const ctx=canvas.getContext('2d');
+  canvas.width=canvas.offsetWidth||600;
+  ctx.strokeStyle=reDrawState[id].color;
+  ctx.lineWidth=reDrawState[id].size;
+  ctx.lineCap='round';ctx.lineJoin='round';
+  function pos(e){const r=canvas.getBoundingClientRect();const t=e.touches?e.touches[0]:e;return{x:(t.clientX-r.left)*(canvas.width/r.width),y:(t.clientY-r.top)*(canvas.height/r.height)};}
+  canvas.onmousedown=e=>{reDrawState[id].on=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);};
+  canvas.onmousemove=e=>{if(!reDrawState[id].on)return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();};
+  canvas.onmouseup=canvas.onmouseleave=()=>{reDrawState[id].on=false;};
+  canvas.ontouchstart=e=>{e.preventDefault();reDrawState[id].on=true;const p=pos(e);ctx.beginPath();ctx.moveTo(p.x,p.y);};
+  canvas.ontouchmove=e=>{e.preventDefault();if(!reDrawState[id].on)return;const p=pos(e);ctx.lineTo(p.x,p.y);ctx.stroke();};
+  canvas.ontouchend=()=>{reDrawState[id].on=false;};
+}
+
+function setReColor(id,color,el){
+  if(!reDrawState[id])reDrawState[id]={color,size:4,on:false};
+  reDrawState[id].color=color;
+  const canvas=document.getElementById('dc-'+id);
+  if(canvas)canvas.getContext('2d').strokeStyle=color;
+  document.querySelectorAll('#dbar-'+id+' .cdot').forEach(d=>d.classList.remove('sel'));
+  if(el)el.classList.add('sel');
+}
+
+function setReSize(id,size){
+  if(!reDrawState[id])reDrawState[id]={color:DRAW_COLORS[0],size:parseInt(size),on:false};
+  reDrawState[id].size=parseInt(size);
+  const canvas=document.getElementById('dc-'+id);
+  if(canvas)canvas.getContext('2d').lineWidth=parseInt(size);
+}
+
+function clearReDraw(id){
+  const canvas=document.getElementById('dc-'+id);
+  if(canvas){const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);}
+}
+
+function saveReDraw(id){
+  const canvas=document.getElementById('dc-'+id);
+  if(!canvas)return;
+  if(!D.reContent)D.reContent={};
+  D.reContent[id+'_draw']=canvas.toDataURL();
+  save();
+  const btn=document.getElementById('draw-btn-'+id);
+  if(btn){const orig=btn.innerHTML;btn.innerHTML='Saved ✓';btn.style.color='var(--success)';setTimeout(()=>{btn.innerHTML=orig;btn.style.color='';},1500);}
+}
+
+// ── GOAL TABS ────────────────────────────────────────────────
+function switchGoalTab(n, btn){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  const panel=document.getElementById('gtab-'+n);
+  if(panel)panel.classList.add('active');
+}
+
+// ── GOAL SUB-SECTIONS (Goal 1 / 2 / 3) ──────────────────────
+if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
+
+function renderGoalSubs(n){
+  if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
+  if(!D.goalSubs[n])D.goalSubs[n]=[];
+  const container=document.getElementById('gsubs-'+n);
+  if(!container)return;
+  if(!D.goalSubs[n].length){
+    container.innerHTML='<div style="color:var(--text3);font-size:13px;padding:6px 0;">No sub-sections yet.</div>';
+    return;
+  }
+  container.innerHTML=D.goalSubs[n].map((sub,i)=>buildGSubHTML(n,sub,i)).join('');
+}
+
+function buildGSubHTML(n,sub,i){
+  const isOpen=sub.open!==false;
+  const isHidden=sub.hidden===true;
+  const eid='gsub-'+n+'-'+i;
+  return `<div class="g1-sub" id="${eid}">
+    <div class="g1-sub-header" onclick="toggleGSub(${n},${i},event)">
+      <span class="g1-sub-toggle ${isOpen?'open':''}">&#9658;</span>
+      <input class="g1-sub-title-input" type="text" value="${esc(sub.title||'')}" placeholder="Sub-section title..."
+        onclick="event.stopPropagation()" onchange="updateGSubTitle(${n},${i},this.value)"
+        style="text-decoration:${isHidden?'line-through':'none'};opacity:${isHidden?'.5':'1'}">
+      <span class="${isHidden?'show-badge':'hide-badge'}" onclick="event.stopPropagation();toggleHideGSub(${n},${i})">
+        ${isHidden?'Hidden &mdash; tap to show':'Hide'}
+      </span>
+      <button onclick="event.stopPropagation();delGSub(${n},${i})" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:14px;padding:2px 6px;">&#10005;</button>
+    </div>
+    <div class="g1-sub-body ${isOpen&&!isHidden?'open':''}" id="gbody-${n}-${i}">
+      ${isHidden?`<div style="padding:12px 14px;color:var(--text3);font-size:13px;font-style:italic;">Hidden. Tap badge above to reveal.</div>`:
+      `<div class="re-wrap" style="border:none;border-radius:0;">
+        <div class="re-tools-toggle" onclick="toggleReTools('gs${n}${i}')">
+          <span class="arr" id="arr-gs${n}${i}">&#9658;</span> TOOLS
+        </div>
+        <div class="re-toolbar" id="tb-gs${n}${i}">
+          <button class="re-btn" onclick="reCmd('gs${n}${i}','bold')"><b>B</b></button>
+          <button class="re-btn" onclick="reCmd('gs${n}${i}','italic')"><i>I</i></button>
+          <button class="re-btn" onclick="reCmd('gs${n}${i}','underline')"><u>U</u></button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="reCmd('gs${n}${i}','insertUnorderedList')">&#8801;</button>
+          <button class="re-btn" onclick="reCmd('gs${n}${i}','insertOrderedList')">&#9312;</button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="toggleReDraw('gs${n}${i}')" id="draw-btn-gs${n}${i}">&#9998; Draw</button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="clearGSub(${n},${i})" style="color:var(--danger);width:auto;padding:0 8px;font-size:11px;">Clear</button>
+        </div>
+        <div class="re-draw" id="draw-gs${n}${i}">
+          <div class="re-draw-bar" id="dbar-gs${n}${i}"></div>
+          <canvas id="dc-gs${n}${i}" class="re-canvas" height="180"></canvas>
+        </div>
+        <div class="re-editor" id="ed-gs${n}${i}" contenteditable="true"
+          data-ph="Write detailed tasks, notes, steps..."
+          oninput="saveGSubContent(${n},${i})">${sub.content||''}</div>
+      </div>`}
+    </div>
+  </div>`;
+}
+
+function addGoalSub(n){
+  if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
+  if(!D.goalSubs[n])D.goalSubs[n]=[];
+  D.goalSubs[n].push({title:'New sub-section',content:'',open:true,hidden:false});
+  save();renderGoalSubs(n);
+}
+
+function toggleGSub(n,i,e){
+  D.goalSubs[n][i].open=!D.goalSubs[n][i].open;
+  save();
+  const body=document.getElementById('gbody-'+n+'-'+i);
+  const tog=document.querySelector('#gsub-'+n+'-'+i+' .g1-sub-toggle');
+  if(body)body.classList.toggle('open',D.goalSubs[n][i].open&&!D.goalSubs[n][i].hidden);
+  if(tog)tog.classList.toggle('open',D.goalSubs[n][i].open);
+}
+
+function toggleHideGSub(n,i){D.goalSubs[n][i].hidden=!D.goalSubs[n][i].hidden;save();renderGoalSubs(n);}
+function updateGSubTitle(n,i,v){D.goalSubs[n][i].title=v;save();}
+function saveGSubContent(n,i){const ed=document.getElementById('ed-gs'+n+i);if(ed){D.goalSubs[n][i].content=ed.innerHTML;save();}}
+function clearGSub(n,i){if(!confirm('Clear content?'))return;D.goalSubs[n][i].content='';save();renderGoalSubs(n);}
+function delGSub(n,i){if(!confirm('Delete sub-section?'))return;D.goalSubs[n].splice(i,1);save();renderGoalSubs(n);}
+
+// ── UPDATE goal headings from goal inputs ─────────────────────
+function updateGoalTabHeadings(){
+  const g1=document.getElementById('goals-g1');
+  const g2=document.getElementById('goals-g2');
+  const g3=document.getElementById('goals-g3');
+  const h1=document.getElementById('gtab1-heading');
+  const h2=document.getElementById('gtab2-heading');
+  const h3=document.getElementById('gtab3-heading');
+  if(h1&&g1&&g1.value)h1.textContent=g1.value;
+  if(h2&&g2&&g2.value)h2.textContent=g2.value;
+  if(h3&&g3&&g3.value)h3.textContent=g3.value;
+}
+
+// ── ADVENTURE DAY MODAL — rich editor connect ─────────────────
+// definitions, adventure modals handled above directly
+
+// ── Extended renderGoals — handles goals + subs + tabs + purpose editor ──
+function renderGoalsExtended(){
+  // Load basic text inputs
+  ['purpose','g1','g2','g3'].forEach(k=>{
+    const el=document.getElementById('goals-'+k);
+    if(!el)return;
+    el.value=D.goals[k]||'';
+    el.oninput=()=>{D.goals[k]=el.value;save();updateGoalTabHeadings();};
+  });
+  // Milestones
+  const mel=document.getElementById('milestone-list');
+  if(mel){
+    if(!D.milestones.length){mel.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No milestones yet.</div>';}
+    else{mel.innerHTML=D.milestones.map((m,i)=>`<div class="item-row"><div class="check ${m.done?'checked':''}" onclick="toggleMs(${i})">${m.done?'✓':''}</div><div class="item-body"><div class="item-title" style="${m.done?'text-decoration:line-through;color:var(--text3)':''}">${esc(m.title)}</div><div class="item-meta">${m.cat?esc(m.cat)+' · ':''} ${m.date||'No target date'}</div></div><span class="badge ${m.done?'badge-done':'badge-pending'}">${m.done?'Done':'Pending'}</span><button class="btn btn-danger" onclick="delMs(${i})" style="font-size:11px;padding:4px 10px;">&#10005;</button></div>`).join('');}
+  }
+  // Goal subs
+  if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
+  [1,2,3].forEach(n=>renderGoalSubs(n));
+  updateGoalTabHeadings();
+  // Load purpose rich editor content
+  setTimeout(()=>{
+    const ed=document.getElementById('ed-purpose');
+    if(ed&&D.reContent&&D.reContent['purpose'])ed.innerHTML=D.reContent['purpose'];
+    else if(ed&&D.goals.purpose)ed.textContent=D.goals.purpose;
+  },20);
+}
+
+</script>
+</body>
+</html>
