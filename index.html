@@ -108,7 +108,18 @@ select option{background:var(--surface);color:var(--text)}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:28px;width:520px;max-width:95vw;max-height:88vh;overflow-y:auto}
 .modal-title{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:20px;color:var(--accent)}
 .modal-footer{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
-@media(max-width:700px){.sidebar{display:none}.main{padding:16px}.grid2,.grid3{grid-template-columns:1fr}.mobile-nav{display:flex !important;position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);z-index:100;padding:4px 0 8px}body{padding-bottom:70px}}
+@media(max-width:700px){
+  .app{flex-direction:row;align-items:flex-start;}
+  .sidebar{display:flex !important;width:200px;min-width:160px;max-width:200px;flex-shrink:0;height:100vh;position:sticky;top:0;overflow-y:auto;-webkit-overflow-scrolling:touch;}
+  .main{padding:14px 12px;min-width:0;flex:1;overflow-x:hidden;}
+  .grid2,.grid3{grid-template-columns:1fr;}
+  .logo h1{font-size:15px;}
+  .logo p{display:none;}
+  .nav-item{padding:9px 12px;font-size:12px;}
+  .nav-icon{font-size:15px;}
+  .export-bar{padding:10px 12px;}
+  .mobile-nav{display:none !important;}
+}
 .mobile-nav{display:none}
 .mobile-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;cursor:pointer;color:var(--text3);font-size:10px}
 .mobile-nav-item.active{color:var(--accent)}
@@ -204,10 +215,16 @@ select option{background:var(--surface);color:var(--text)}
     <div id="auth-panel" style="margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid var(--border);">
       <div id="auth-signed-out" style="display:flex;flex-direction:column;gap:6px;">
         <div style="font-size:11px;color:var(--text3);margin-bottom:2px;">Sign in to sync your data</div>
+        <input type="email" id="auth-email" placeholder="Email" style="font-size:12px;padding:7px 10px;margin-bottom:0;">
+        <input type="password" id="auth-password" placeholder="Password" style="font-size:12px;padding:7px 10px;margin-bottom:0;">
+        <div id="auth-error" style="font-size:11px;color:var(--danger);display:none;"></div>
+        <button class="btn btn-primary" onclick="fbSignInEmail()" style="width:100%;font-size:12px;justify-content:center;">Sign in</button>
+        <div style="font-size:11px;color:var(--text3);text-align:center;">— or —</div>
         <button class="btn btn-ghost" onclick="fbSignIn()" style="width:100%;font-size:12px;justify-content:center;">
           <svg width="14" height="14" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#4285F4" d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z"/></svg>
           Sign in with Google
         </button>
+        <div id="google-signin-loading" style="display:none;font-size:11px;color:var(--text3);text-align:center;padding:4px 0;">Completing Google sign-in…</div>
       </div>
       <div id="auth-signed-in" style="display:none;font-size:12px;color:var(--text2);">
         <div id="auth-user-name" style="font-weight:500;margin-bottom:4px;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
@@ -833,8 +850,11 @@ select option{background:var(--surface);color:var(--text)}
 <!-- Firebase SDK -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-  import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import {
+    getAuth, GoogleAuthProvider,
+    signInWithRedirect, getRedirectResult,
+    signInWithEmailAndPassword, signOut, onAuthStateChanged
+  } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, getDoc, setDoc }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
@@ -852,28 +872,61 @@ select option{background:var(--surface);color:var(--text)}
   const db = getFirestore(app);
   const provider = new GoogleAuthProvider();
 
-  // Expose to global scope so the non-module script can use them
+  // Expose to global scope
   window._fbAuth = auth;
   window._fbDb = db;
   window._fbProvider = provider;
   window._fbDoc = doc;
   window._fbGetDoc = getDoc;
   window._fbSetDoc = setDoc;
-  window._fbSignInWithPopup = signInWithPopup;
+  window._fbSignInWithRedirect = signInWithRedirect;
+  window._fbSignInWithEmail = signInWithEmailAndPassword;
   window._fbSignOut = signOut;
-  window._fbOnAuthStateChanged = onAuthStateChanged;
 
-  // Trigger auth state observer once page script is ready
-  window.addEventListener('DOMContentLoaded', () => {
-    onAuthStateChanged(auth, (user) => {
-      if (typeof window._onAuthChange === 'function') window._onAuthChange(user);
-    });
+  // Register onAuthStateChanged immediately (not inside DOMContentLoaded)
+  // Use a small poll to wait for _onAuthChange to be defined by the non-module script
+  let _authUnsub = onAuthStateChanged(auth, (user) => {
+    // Poll until the non-module script has defined _onAuthChange
+    if (typeof window._onAuthChange === 'function') {
+      window._onAuthChange(user);
+    } else {
+      // Retry in 50ms — handles the rare case where module fires before non-module script runs
+      setTimeout(() => {
+        if (typeof window._onAuthChange === 'function') window._onAuthChange(user);
+      }, 50);
+    }
+  });
+
+  // Handle Google redirect sign-in result when user returns to the page
+  // This fires after Google redirects back to the app
+  getRedirectResult(auth).then((result) => {
+    // Hide the "signing in…" indicator if present
+    const indicator = document.getElementById('google-signin-loading');
+    if (indicator) indicator.style.display = 'none';
+    // result is null on normal page loads (no redirect pending)
+    // onAuthStateChanged handles the user session automatically
+    if (result && result.user) {
+      // Explicitly clear any error shown before the redirect
+      const errEl = document.getElementById('auth-error');
+      if (errEl) errEl.style.display = 'none';
+    }
+  }).catch((e) => {
+    const indicator = document.getElementById('google-signin-loading');
+    if (indicator) indicator.style.display = 'none';
+    // Show error in UI if redirect sign-in failed
+    const errEl = document.getElementById('auth-error');
+    if (errEl && e.code !== 'auth/popup-closed-by-user') {
+      errEl.textContent = 'Google sign-in failed: ' + (e.message || e.code);
+      errEl.style.display = 'block';
+    }
+    console.error('getRedirectResult error:', e);
   });
 </script>
 
 <script>
 const KEY='mylifeos_v3';
-const _tomorrow=new Date();_tomorrow.setDate(_tomorrow.getDate()+1);let D={startDate:_tomorrow.toISOString().split('T')[0],definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[]};
+const JOURNEY_START='2026-06-05';
+let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[]};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
 // ── DATE HELPERS ─────────────────────────────────────────────
@@ -902,9 +955,20 @@ function mkMonth(){const n=new Date();const label=n.toLocaleDateString('en-IN',{
 
 function load(){
   try{const s=localStorage.getItem(KEY);if(s)D=JSON.parse(s);}catch(e){}
-  // Day 1 = tomorrow (set on first ever load only)
-  if(!D.startDate){const t=new Date();t.setDate(t.getDate()+1);D.startDate=t.toISOString().split('T')[0];}
-  // Init schedule months — use the month containing Day 1 (tomorrow)
+  // Day 1 = 5 June 2026 (fixed journey start)
+  if(!D.startDate){D.startDate=JOURNEY_START;}
+  // Always enforce the correct start date
+  D.startDate=JOURNEY_START;
+  // If returning from Google redirect, show loading indicator immediately
+  // Firebase sets a sessionStorage key while redirect is pending
+  try{
+    const hasPending=Object.keys(sessionStorage).some(k=>k.includes('firebase:pendingRedirect')||k.includes('firebaseui:'));
+    if(hasPending){
+      const loadingEl=document.getElementById('google-signin-loading');
+      if(loadingEl){loadingEl.textContent='Completing Google sign-in…';loadingEl.style.display='block';}
+    }
+  }catch(e){}
+  // Init schedule months — use the month containing Day 1 (5 June 2026)
   if(!D.scheduleMonths||D.scheduleMonths.length===0){
     const day1=new Date(D.startDate);
     const initLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
@@ -989,11 +1053,42 @@ async function cloudLoad(uid){
 // ── FIREBASE AUTH HANDLERS ────────────────────────────────────
 window._fbCurrentUser=null;
 
-async function fbSignIn(){
-  if(!window._fbAuth||!window._fbProvider)return alert('Firebase not ready yet. Try again in a moment.');
+async function fbSignInEmail(){
+  if(!window._fbAuth||!window._fbSignInWithEmail)return alert('Firebase not ready yet. Try again in a moment.');
+  const email=document.getElementById('auth-email').value.trim();
+  const password=document.getElementById('auth-password').value;
+  const errEl=document.getElementById('auth-error');
+  if(!email||!password){errEl.textContent='Please enter your email and password.';errEl.style.display='block';return;}
+  errEl.style.display='none';
   try{
-    await window._fbSignInWithPopup(window._fbAuth,window._fbProvider);
-  }catch(e){console.error('Sign in failed:',e);}
+    await window._fbSignInWithEmail(window._fbAuth,email,password);
+    document.getElementById('auth-password').value='';
+  }catch(e){
+    let msg='Sign in failed. Check your email and password.';
+    if(e.code==='auth/user-not-found'||e.code==='auth/wrong-password'||e.code==='auth/invalid-credential')msg='Incorrect email or password.';
+    else if(e.code==='auth/invalid-email')msg='Invalid email address.';
+    else if(e.code==='auth/too-many-requests')msg='Too many attempts. Try again later.';
+    errEl.textContent=msg;errEl.style.display='block';
+  }
+}
+
+async function fbSignIn(){
+  if(!window._fbAuth||!window._fbProvider||!window._fbSignInWithRedirect)return alert('Firebase not ready yet. Try again in a moment.');
+  const errEl=document.getElementById('auth-error');
+  const loadingEl=document.getElementById('google-signin-loading');
+  if(errEl)errEl.style.display='none';
+  // Show "redirecting…" message — page will reload after Google auth
+  if(loadingEl){loadingEl.textContent='Redirecting to Google…';loadingEl.style.display='block';}
+  try{
+    // signInWithRedirect navigates away from the page to Google,
+    // then redirects back. getRedirectResult() in the module script handles the return.
+    await window._fbSignInWithRedirect(window._fbAuth,window._fbProvider);
+  }catch(e){
+    if(loadingEl)loadingEl.style.display='none';
+    const errEl2=document.getElementById('auth-error');
+    if(errEl2){errEl2.textContent='Google sign-in failed. Try again.';errEl2.style.display='block';}
+    console.error('Sign in failed:',e);
+  }
 }
 
 async function fbSignOut(){
