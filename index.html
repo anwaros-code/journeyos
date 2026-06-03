@@ -1009,6 +1009,7 @@ async function cloudLoad(uid){
     if(snap.exists()){
       const parsed=JSON.parse(snap.data().data);
       D=parsed;
+      D.startDate=JOURNEY_START; // always enforce correct start, cloud data may have old value
       localStorage.setItem(KEY,JSON.stringify(D));
       setSaveStatus('synced');
       return true;
@@ -1084,6 +1085,7 @@ window._onAuthChange=async function(user){
     // Load cloud data, then re-render current page
     const loaded=await cloudLoad(user.uid);
     if(loaded){
+      D.startDate=JOURNEY_START; // re-enforce after cloud overwrite
       // Re-init defaults
       if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
       if(!D.reContent)D.reContent={};
