@@ -852,7 +852,7 @@ select option{background:var(--surface);color:var(--text)}
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
     getAuth, GoogleAuthProvider,
-    signInWithRedirect, getRedirectResult,
+    signInWithPopup,
     signInWithEmailAndPassword, signOut, onAuthStateChanged
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
   import { getFirestore, doc, getDoc, setDoc }
@@ -879,7 +879,7 @@ select option{background:var(--surface);color:var(--text)}
   window._fbDoc = doc;
   window._fbGetDoc = getDoc;
   window._fbSetDoc = setDoc;
-  window._fbSignInWithRedirect = signInWithRedirect;
+  window._fbSignInWithPopup = signInWithPopup;
   window._fbSignInWithEmail = signInWithEmailAndPassword;
   window._fbSignOut = signOut;
 
@@ -897,30 +897,7 @@ select option{background:var(--surface);color:var(--text)}
     }
   });
 
-  // Handle Google redirect sign-in result when user returns to the page
-  // This fires after Google redirects back to the app
-  getRedirectResult(auth).then((result) => {
-    // Hide the "signing in…" indicator if present
-    const indicator = document.getElementById('google-signin-loading');
-    if (indicator) indicator.style.display = 'none';
-    // result is null on normal page loads (no redirect pending)
-    // onAuthStateChanged handles the user session automatically
-    if (result && result.user) {
-      // Explicitly clear any error shown before the redirect
-      const errEl = document.getElementById('auth-error');
-      if (errEl) errEl.style.display = 'none';
-    }
-  }).catch((e) => {
-    const indicator = document.getElementById('google-signin-loading');
-    if (indicator) indicator.style.display = 'none';
-    // Show error in UI if redirect sign-in failed
-    const errEl = document.getElementById('auth-error');
-    if (errEl && e.code !== 'auth/popup-closed-by-user') {
-      errEl.textContent = 'Google sign-in failed: ' + (e.message || e.code);
-      errEl.style.display = 'block';
-    }
-    console.error('getRedirectResult error:', e);
-  });
+  // onAuthStateChanged handles session persistence automatically after popup sign-in
 </script>
 
 <script>
@@ -959,15 +936,6 @@ function load(){
   if(!D.startDate){D.startDate=JOURNEY_START;}
   // Always enforce the correct start date
   D.startDate=JOURNEY_START;
-  // If returning from Google redirect, show loading indicator immediately
-  // Firebase sets a sessionStorage key while redirect is pending
-  try{
-    const hasPending=Object.keys(sessionStorage).some(k=>k.includes('firebase:pendingRedirect')||k.includes('firebaseui:'));
-    if(hasPending){
-      const loadingEl=document.getElementById('google-signin-loading');
-      if(loadingEl){loadingEl.textContent='Completing Google sign-in…';loadingEl.style.display='block';}
-    }
-  }catch(e){}
   // Init schedule months — use the month containing Day 1 (5 June 2026)
   if(!D.scheduleMonths||D.scheduleMonths.length===0){
     const day1=new Date(D.startDate);
@@ -1064,27 +1032,29 @@ async function fbSignInEmail(){
     await window._fbSignInWithEmail(window._fbAuth,email,password);
     document.getElementById('auth-password').value='';
   }catch(e){
-  alert('EMAIL ERROR\n\nCode: '+e.code+'\n\nMessage: '+e.message);
-}
+    if(errEl){errEl.textContent='Sign-in failed: '+(e.message||e.code);errEl.style.display='block';}
+    console.error('Email sign-in error:',e);
   }
 }
 
 async function fbSignIn(){
-  if(!window._fbAuth||!window._fbProvider||!window._fbSignInWithRedirect)return alert('Firebase not ready yet. Try again in a moment.');
+  if(!window._fbAuth||!window._fbProvider||!window._fbSignInWithPopup)return alert('Firebase not ready yet. Try again in a moment.');
   const errEl=document.getElementById('auth-error');
   const loadingEl=document.getElementById('google-signin-loading');
   if(errEl)errEl.style.display='none';
-  // Show "redirecting…" message — page will reload after Google auth
-  if(loadingEl){loadingEl.textContent='Redirecting to Google…';loadingEl.style.display='block';}
+  if(loadingEl){loadingEl.textContent='Opening Google sign-in…';loadingEl.style.display='block';}
   try{
-    // signInWithRedirect navigates away from the page to Google,
-    // then redirects back. getRedirectResult() in the module script handles the return.
-    await window._fbSignInWithRedirect(window._fbAuth,window._fbProvider);
+    await window._fbSignInWithPopup(window._fbAuth,window._fbProvider);
+    // onAuthStateChanged fires automatically after success
   }catch(e){
     if(loadingEl)loadingEl.style.display='none';
-    const errEl2=document.getElementById('auth-error');
-    if(errEl2){errEl2.textContent='Google sign-in failed. Try again.';errEl2.style.display='block';}
-    console.error('Sign in failed:',e);
+    if(errEl&&e.code!=='auth/popup-closed-by-user'&&e.code!=='auth/cancelled-popup-request'){
+      errEl.textContent='Google sign-in failed: '+(e.message||e.code);
+      errEl.style.display='block';
+    }
+    console.error('Google sign-in error:',e);
+  } finally {
+    if(loadingEl)loadingEl.style.display='none';
   }
 }
 
