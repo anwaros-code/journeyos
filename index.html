@@ -1203,14 +1203,38 @@ function toggleHabit(hi,day){if(!D.spiritual.habits[hi].log)D.spiritual.habits[h
 function delHabit(i){D.spiritual.habits.splice(i,1);save();renderSpiritual();}
 
 let selDay=null,dayStatus=null,dayHappy=null;
-function renderAdventure(){const grid=document.getElementById('day-grid');const start=new Date(D.startDate);const today=new Date().toISOString().split('T')[0];const todayDate=new Date();const dayNum=Math.max(0,Math.floor((todayDate-start)/86400000));const subEl=document.getElementById('adventure-sub');if(subEl){const prettyToday=todayDate.getDate()+' '+MONTH_NAMES[todayDate.getMonth()]+' '+todayDate.getFullYear();subEl.textContent='Your 1825-day journey · Today is Day '+dayNum+' — '+prettyToday;}grid.innerHTML='';for(let i=0;i<1825;i++){const d=new Date(start);d.setDate(start.getDate()+i);const key=d.toISOString().split('T')[0];const log=D.adventureDays[key];const status=log?log.status:'';const isToday=key===today;const div=document.createElement('div');// Build class: status color + today gold border always wins visually via inline style
-let cls='day-dot';if(status==='done')cls+=' done';else if(status==='missed')cls+=' missed';if(isToday)cls+=' today';div.className=cls;div.innerHTML='<span class="dd-num">'+i+'</span><span class="dd-mark">'+(isToday?'⭐':status==='done'?'✓':status==='missed'?'✕':'')+'</span>';const prettyDate=i+' '+MONTH_NAMES[d.getMonth()]+' '+d.getFullYear();div.title='Day '+i+' — '+prettyDate;div.onclick=()=>openDayModal(key,i);grid.appendChild(div);}}
-function openDayModal(key,dayNum){
+function renderAdventure(){
+  const grid=document.getElementById('day-grid');
+  // Parse start date from parts to avoid UTC offset shift
+  const [sy,sm,sd]=D.startDate.split('-').map(Number);
+  const start=new Date(sy,sm-1,sd); // local midnight
+  const todayDate=new Date();
+  const ty=todayDate.getFullYear(),tm=todayDate.getMonth(),td=todayDate.getDate();
+  const todayKey=ty+'-'+String(tm+1).padStart(2,'0')+'-'+String(td).padStart(2,'0');
+  const dayNum=Math.max(0,Math.floor((new Date(ty,tm,td)-start)/86400000));
+  const subEl=document.getElementById('adventure-sub');
+  if(subEl){const prettyToday=td+' '+MONTH_NAMES[tm]+' '+ty;subEl.textContent='Your 1825-day journey · Today is Day '+dayNum+' — '+prettyToday;}
+  grid.innerHTML='';
+  for(let i=0;i<1825;i++){
+    const d=new Date(sy,sm-1,sd+i); // always local midnight
+    const dy=d.getFullYear(),dmo=d.getMonth(),dd=d.getDate();
+    const key=dy+'-'+String(dmo+1).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
+    const log=D.adventureDays[key];
+    const status=log?log.status:'';
+    const isToday=key===todayKey;
+    const div=document.createElement('div');
+    let cls='day-dot';if(status==='done')cls+=' done';else if(status==='missed')cls+=' missed';if(isToday)cls+=' today';
+    div.className=cls;
+    div.innerHTML='<span class="dd-num">'+i+'</span><span class="dd-mark">'+(isToday?'⭐':status==='done'?'✓':status==='missed'?'✕':'')+'</span>';
+    div.title='Day '+i+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy;
+    div.onclick=()=>openDayModal(key,i,dd,dmo,dy);
+    grid.appendChild(div);
+  }
+}
+function openDayModal(key,dayNum,dd,dmo,dy){
   selDay=key;dayStatus=null;dayHappy=null;
   const log=D.adventureDays[key]||{};
-  const dParts=key.split('-');
-  const mNames=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  const prettyDate=parseInt(dParts[2])+' '+mNames[parseInt(dParts[1])-1]+' '+dParts[0];
+  const prettyDate=(dd!==undefined?dd:parseInt(key.split('-')[2]))+' '+MONTH_NAMES[dmo!==undefined?dmo:parseInt(key.split('-')[1])-1]+' '+(dy!==undefined?dy:key.split('-')[0]);
   document.getElementById('modal-day-title').textContent='Day '+dayNum+' — '+prettyDate;
   ['r1','r2','r3'].forEach((r,i)=>{const el=document.getElementById('day-'+r);if(el)el.value=(log.reasons&&log.reasons[i])||'';});
   ['f1','f2','f3'].forEach((f,i)=>{const el=document.getElementById('day-'+f);if(el)el.value=(log.fixes&&log.fixes[i])||'';});
@@ -1238,6 +1262,7 @@ function clearDayLog(){
   selDay=null;dayStatus=null;dayHappy=null;
   save();closeModal('modal-day');renderAdventure();
 }
+function setDayStatus(s){dayStatus=s;updateDayUI();}
 function setDayHappy(v){dayHappy=v;updateDayUI();}
 function updateDayUI(){const bc=document.getElementById('btn-complete'),bm=document.getElementById('btn-missed');bc.style.background=dayStatus==='done'?'var(--success)':'';bc.style.color=dayStatus==='done'?'#fff':'';bc.style.borderColor=dayStatus==='done'?'var(--success)':'var(--border)';bm.style.background=dayStatus==='missed'?'var(--danger)':'';bm.style.color=dayStatus==='missed'?'#fff':'';bm.style.borderColor=dayStatus==='missed'?'var(--danger)':'var(--border)';document.getElementById('day-happy-row').style.display=dayStatus==='done'?'block':'none';document.getElementById('day-missed-row').style.display=dayStatus==='missed'?'block':'none';const by=document.getElementById('btn-happy-y'),bn=document.getElementById('btn-happy-n');by.style.background=dayHappy===true?'var(--success)':'';by.style.color=dayHappy===true?'#fff':'';by.style.borderColor=dayHappy===true?'var(--success)':'var(--border)';bn.style.background=dayHappy===false?'var(--danger)':'';bn.style.color=dayHappy===false?'#fff':'';bn.style.borderColor=dayHappy===false?'var(--danger)':'var(--border)';}
 function saveDayLog(){
