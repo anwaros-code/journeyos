@@ -1064,11 +1064,8 @@ async function fbSignInEmail(){
     await window._fbSignInWithEmail(window._fbAuth,email,password);
     document.getElementById('auth-password').value='';
   }catch(e){
-    let msg='Sign in failed. Check your email and password.';
-    if(e.code==='auth/user-not-found'||e.code==='auth/wrong-password'||e.code==='auth/invalid-credential')msg='Incorrect email or password.';
-    else if(e.code==='auth/invalid-email')msg='Invalid email address.';
-    else if(e.code==='auth/too-many-requests')msg='Too many attempts. Try again later.';
-    errEl.textContent=msg;errEl.style.display='block';
+  alert('EMAIL ERROR\n\nCode: '+e.code+'\n\nMessage: '+e.message);
+}
   }
 }
 
