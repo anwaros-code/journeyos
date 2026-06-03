@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- MyLifeOS v5 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -1236,9 +1237,9 @@ function renderAdventure(){
 function openDayModal(key,dayNum,dd,dmo,dy){
   selDay=key;dayStatus=null;dayHappy=null;
   const log=D.adventureDays[key]||{};
-  const [sy,sm,sd]=D.startDate.split('-').map(Number);
-  const d=new Date(sy,sm-1,sd);d.setDate(d.getDate()+dayNum);
-  const prettyDate=d.getDate()+' '+MONTH_NAMES[d.getMonth()]+' '+d.getFullYear();
+  // dd, dmo, dy are local date parts computed in renderAdventure — use them directly
+  // to avoid any possible UTC/timezone shift from re-parsing D.startDate
+  const prettyDate=dd+' '+MONTH_NAMES[dmo]+' '+dy;
   document.getElementById('modal-day-title').textContent='Day '+dayNum+' — '+prettyDate;
   ['r1','r2','r3'].forEach((r,i)=>{const el=document.getElementById('day-'+r);if(el)el.value=(log.reasons&&log.reasons[i])||'';});
   ['f1','f2','f3'].forEach((f,i)=>{const el=document.getElementById('day-'+f);if(el)el.value=(log.fixes&&log.fixes[i])||'';});
