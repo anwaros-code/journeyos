@@ -1234,7 +1234,9 @@ function renderAdventure(){
 function openDayModal(key,dayNum,dd,dmo,dy){
   selDay=key;dayStatus=null;dayHappy=null;
   const log=D.adventureDays[key]||{};
-  const prettyDate=(dd!==undefined?dd:parseInt(key.split('-')[2]))+' '+MONTH_NAMES[dmo!==undefined?dmo:parseInt(key.split('-')[1])-1]+' '+(dy!==undefined?dy:key.split('-')[0]);
+  const [sy,sm,sd]=D.startDate.split('-').map(Number);
+  const d=new Date(sy,sm-1,sd);d.setDate(d.getDate()+dayNum);
+  const prettyDate=d.getDate()+' '+MONTH_NAMES[d.getMonth()]+' '+d.getFullYear();
   document.getElementById('modal-day-title').textContent='Day '+dayNum+' — '+prettyDate;
   ['r1','r2','r3'].forEach((r,i)=>{const el=document.getElementById('day-'+r);if(el)el.value=(log.reasons&&log.reasons[i])||'';});
   ['f1','f2','f3'].forEach((f,i)=>{const el=document.getElementById('day-'+f);if(el)el.value=(log.fixes&&log.fixes[i])||'';});
