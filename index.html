@@ -214,6 +214,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="nav-item" onclick="goto('progress')"><span class="nav-icon">📊</span> Progress</div>
     <div class="nav-item" onclick="goto('reviews')"><span class="nav-icon">📈</span> Reviews</div>
     <div class="nav-item" onclick="goto('search')"><span class="nav-icon">🔍</span> Search</div>
+    <div class="nav-item" onclick="goto('settings')"><span class="nav-icon">⚙</span> Settings</div>
   </div>
   <div class="export-bar">
     <!-- Auth panel -->
@@ -543,6 +544,81 @@ select option{background:var(--surface);color:var(--text)}
     <input type="text" id="search-input" placeholder="🔍  Type to search everything..." oninput="runSearch(this.value)" style="font-size:15px;padding:12px 16px;">
   </div>
   <div id="search-results"></div>
+</div>
+
+<!-- SETTINGS -->
+<div id="page-settings" class="page">
+  <h1 class="page-title">Settings</h1>
+  <p class="page-sub">Manage your data and app preferences</p>
+
+  <!-- BACKUP & RESTORE CARD -->
+  <div class="card">
+    <div class="card-title"><span>💾</span> Backup &amp; Restore</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">
+      Keep your data safe by downloading a backup file. You can restore it anytime if you switch devices or browsers.
+    </p>
+
+    <!-- Export -->
+    <div style="border:1px solid var(--border);border-radius:var(--rs);padding:18px 20px;margin-bottom:14px;background:var(--surface2);">
+      <div style="display:flex;align-items:flex-start;gap:14px;">
+        <div style="font-size:28px;line-height:1;">⬇</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;">Export Backup</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Downloads a complete JSON backup of all your data — goals, logs, reviews, habits, and more.</div>
+          <button class="btn btn-primary" onclick="exportBackup()" id="btn-export-backup">⬇ Download Backup</button>
+        </div>
+      </div>
+      <div id="export-msg" style="display:none;margin-top:12px;padding:10px 14px;border-radius:var(--rs);background:rgba(58,138,110,0.1);border:1px solid rgba(58,138,110,0.25);color:var(--success);font-size:13px;">
+        ✓ Backup downloaded successfully.
+      </div>
+    </div>
+
+    <!-- Import -->
+    <div style="border:1px solid var(--border);border-radius:var(--rs);padding:18px 20px;background:var(--surface2);">
+      <div style="display:flex;align-items:flex-start;gap:14px;">
+        <div style="font-size:28px;line-height:1;">⬆</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;">Import Backup</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Select a previously downloaded <code style="font-size:11px;background:var(--border);padding:1px 5px;border-radius:3px;">JourneyOS-Backup-*.json</code> file to restore your data.</div>
+          <input type="file" id="import-file-input" accept=".json" style="display:none;" onchange="handleImportFile(this)">
+          <button class="btn btn-ghost" onclick="document.getElementById('import-file-input').click()" id="btn-import-backup">⬆ Select Backup File</button>
+        </div>
+      </div>
+      <div id="import-msg-success" style="display:none;margin-top:12px;padding:10px 14px;border-radius:var(--rs);background:rgba(58,138,110,0.1);border:1px solid rgba(58,138,110,0.25);color:var(--success);font-size:13px;">
+        ✓ Backup restored successfully.
+      </div>
+      <div id="import-msg-error" style="display:none;margin-top:12px;padding:10px 14px;border-radius:var(--rs);background:rgba(184,90,90,0.1);border:1px solid rgba(184,90,90,0.25);color:var(--danger);font-size:13px;"></div>
+    </div>
+  </div>
+
+  <!-- ABOUT CARD -->
+  <div class="card">
+    <div class="card-title"><span>ℹ</span> About</div>
+    <div style="font-size:13px;color:var(--text2);line-height:1.8;">
+      <div><span style="color:var(--text3);">App:</span> My Life OS · JourneyOS</div>
+      <div><span style="color:var(--text3);">Journey Start:</span> 4 June 2026</div>
+      <div><span style="color:var(--text3);">Duration:</span> 5 Years · 1825 Days</div>
+      <div><span style="color:var(--text3);">Storage:</span> localStorage + Firestore sync</div>
+    </div>
+  </div>
+</div>
+
+<!-- BACKUP CONFIRM MODAL -->
+<div class="modal-overlay" id="modal-import-confirm">
+  <div class="modal" style="width:460px;">
+    <div class="modal-title" style="color:var(--warning);">⚠ Confirm Restore</div>
+    <p style="font-size:14px;color:var(--text2);margin-bottom:6px;line-height:1.7;">
+      Importing a backup will <strong>replace your current data</strong>. This cannot be undone.
+    </p>
+    <p style="font-size:13px;color:var(--text3);margin-bottom:6px;">
+      Tip: Export a backup of your current data first if you want to keep it.
+    </p>
+    <div id="import-confirm-filename" style="font-size:12px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:8px 12px;margin-bottom:4px;"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="cancelImport()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmImport()">Yes, Replace My Data</button>
+    </div>
+  </div>
 </div>
 
 </main>
@@ -1130,7 +1206,134 @@ window._onAuthChange=async function(user){
   }
 };
 
-function exportData(){const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mylifeos-backup-'+new Date().toISOString().split('T')[0]+'.json';a.click();}
+function exportData(){exportBackup();}
+
+// ── BACKUP & RESTORE ──────────────────────────────────────────
+
+function exportBackup(){
+  const date=new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+  const filename='JourneyOS-Backup-'+date+'.json';
+  const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download=filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  // Show success message
+  const msg=document.getElementById('export-msg');
+  if(msg){msg.style.display='block';setTimeout(()=>{msg.style.display='none';},4000);}
+}
+
+// Holds the parsed JSON while waiting for confirmation
+let _pendingImportData=null;
+let _pendingImportName='';
+
+function handleImportFile(input){
+  const file=input.files[0];
+  if(!file)return;
+  // Reset file input so same file can be re-selected if needed
+  input.value='';
+  const errEl=document.getElementById('import-msg-error');
+  const successEl=document.getElementById('import-msg-success');
+  if(errEl)errEl.style.display='none';
+  if(successEl)successEl.style.display='none';
+
+  const reader=new FileReader();
+  reader.onload=function(e){
+    let parsed;
+    try{
+      parsed=JSON.parse(e.target.result);
+    }catch(err){
+      showImportError('Invalid file — could not parse JSON. Please select a valid JourneyOS backup file.');
+      return;
+    }
+    // Basic validation: must be an object and have at least one expected key
+    if(typeof parsed!=='object'||parsed===null||Array.isArray(parsed)){
+      showImportError('Invalid backup file — the file does not contain valid app data.');
+      return;
+    }
+    // Must have at least one known top-level key
+    const knownKeys=['goals','definitions','spiritual','adventureDays','scheduleMonths','weeklyReviews','monthlyReviews','quarterlyReviews','annualReviews','milestones'];
+    const hasKey=knownKeys.some(k=>Object.prototype.hasOwnProperty.call(parsed,k));
+    if(!hasKey){
+      showImportError('Invalid backup file — this does not appear to be a JourneyOS backup.');
+      return;
+    }
+    // Valid — store and show confirmation modal
+    _pendingImportData=parsed;
+    _pendingImportName=file.name;
+    document.getElementById('import-confirm-filename').textContent='File: '+file.name;
+    document.getElementById('modal-import-confirm').classList.add('open');
+  };
+  reader.onerror=function(){
+    showImportError('Could not read the file. Please try again.');
+  };
+  reader.readAsText(file);
+}
+
+function showImportError(msg){
+  const el=document.getElementById('import-msg-error');
+  if(el){el.textContent='✕ '+msg;el.style.display='block';}
+}
+
+function cancelImport(){
+  _pendingImportData=null;
+  _pendingImportName='';
+  document.getElementById('modal-import-confirm').classList.remove('open');
+}
+
+async function confirmImport(){
+  if(!_pendingImportData)return;
+  document.getElementById('modal-import-confirm').classList.remove('open');
+
+  // Replace app data
+  D=_pendingImportData;
+  // Always enforce correct journey start date
+  D.startDate=JOURNEY_START;
+  // Ensure all required keys exist (graceful upgrade for older backups)
+  if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
+  if(!D.reContent)D.reContent={};
+  if(!D.definitions)D.definitions=[];
+  if(!D.milestones)D.milestones=[];
+  if(!D.weeklyReviews)D.weeklyReviews=[];
+  if(!D.monthlyReviews)D.monthlyReviews=[];
+  if(!D.quarterlyReviews)D.quarterlyReviews=[];
+  if(!D.annualReviews)D.annualReviews=[];
+  if(!D.goals)D.goals={purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0};
+  if(D.goals.g1pct===undefined)D.goals.g1pct=0;
+  if(D.goals.g2pct===undefined)D.goals.g2pct=0;
+  if(D.goals.g3pct===undefined)D.goals.g3pct=0;
+  if(!D.scheduleMonths||D.scheduleMonths.length===0){
+    const day1=new Date(D.startDate);
+    const initLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
+    const initDays=new Date(day1.getFullYear(),day1.getMonth()+1,0).getDate();
+    D.scheduleMonths=[{label:initLabel,days:Array.from({length:initDays},(_,i)=>({dayNum:i+1,rows:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}))}];
+    D.curMonth=0;
+  }
+  // Save to localStorage immediately
+  localStorage.setItem(KEY,JSON.stringify(D));
+  // Sync to Firestore if signed in
+  if(window._fbCurrentUser){
+    setSaveStatus('syncing');
+    try{
+      const ref=window._fbDoc(window._fbDb,'users',window._fbCurrentUser.uid,'journeyos','main');
+      await window._fbSetDoc(ref,{data:JSON.stringify(D),updatedAt:new Date().toISOString()});
+      setSaveStatus('synced');
+    }catch(err){
+      console.warn('Firestore sync after import failed:',err);
+      setSaveStatus('offline');
+    }
+  }
+  _pendingImportData=null;
+  _pendingImportName='';
+  // Show success message
+  const successEl=document.getElementById('import-msg-success');
+  if(successEl){successEl.style.display='block';setTimeout(()=>{successEl.style.display='none';},5000);}
+  // Re-render current page
+  goto('settings');
+}
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
@@ -1138,7 +1341,7 @@ function goto(pg){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+pg).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const map={home:0,definitions:1,goals:2,spiritual:3,adventure:4,schedule:5,progress:6,reviews:7,search:8};
+  const map={home:0,definitions:1,goals:2,spiritual:3,adventure:4,schedule:5,progress:6,reviews:7,search:8,settings:9};
   const items=document.querySelectorAll('.nav-item');
   if(items[map[pg]])items[map[pg]].classList.add('active');
   document.querySelectorAll('.mobile-nav-item').forEach(n=>n.classList.remove('active'));
