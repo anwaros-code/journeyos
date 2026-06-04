@@ -1024,6 +1024,9 @@ async function cloudLoad(uid){
   }
 }
 
+// ── ACCESS CONTROL ───────────────────────────────────────────
+const ALLOWED_EMAIL = 'anwarbeg292@gmail.com';
+
 // ── FIREBASE AUTH HANDLERS ────────────────────────────────────
 window._fbCurrentUser=null;
 
@@ -1075,13 +1078,29 @@ async function fbSignOut(){
 
 // Called by the module script when auth state changes
 window._onAuthChange=async function(user){
-  window._fbCurrentUser=user;
   const signedIn=document.getElementById('auth-signed-in');
   const signedOut=document.getElementById('auth-signed-out');
   const nameEl=document.getElementById('auth-user-name');
+  const errEl=document.getElementById('auth-error');
+
   if(user){
+    // ── EMAIL ALLOWLIST CHECK ─────────────────────────────────
+    if(user.email !== ALLOWED_EMAIL){
+      // Immediately sign out the unauthorised user
+      if(window._fbSignOut && window._fbAuth) await window._fbSignOut(window._fbAuth);
+      window._fbCurrentUser = null;
+      if(signedIn)signedIn.style.display='none';
+      if(signedOut){signedOut.style.display='flex';signedOut.style.flexDirection='column';}
+      if(errEl){errEl.textContent='Access denied. This app is private.';errEl.style.display='block';}
+      setSaveStatus('offline');
+      return; // do NOT load Firestore data
+    }
+    // ─────────────────────────────────────────────────────────
+
+    window._fbCurrentUser=user;
     if(signedIn){signedIn.style.display='flex';signedIn.style.flexDirection='column';}
     if(signedOut)signedOut.style.display='none';
+    if(errEl)errEl.style.display='none';
     if(nameEl)nameEl.textContent=user.displayName||user.email||'Signed in';
     // Load cloud data, then re-render current page
     const loaded=await cloudLoad(user.uid);
