@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<!-- MyLifeOS v5 -->
+<!-- JourneyOS v1.1 -->
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Life OS</title>
+<title>JourneyOS v1.1</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#f5f5f0;--surface:#ffffff;--surface2:#f0efe9;--border:#e0ddd6;--accent:#b8892a;--accent2:#4a9e8e;--accent3:#b85a5a;--text:#1a1814;--text2:#5a5448;--text3:#9a9488;--success:#3a8a6e;--danger:#b85a5a;--warning:#b8892a;--r:12px;--rs:7px}
@@ -197,6 +197,32 @@ select option{background:var(--surface);color:var(--text)}
 #save-status.syncing{color:var(--warning);}
 #save-status.synced{color:var(--success);}
 #save-status.offline{color:var(--text3);}
+/* ── SYNC STATUS PILL ── */
+.sync-pill{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:4px 10px;border-radius:20px;border:1px solid transparent;transition:all .3s;white-space:nowrap;}
+.sync-pill.saved{background:rgba(58,138,110,.08);border-color:rgba(58,138,110,.2);color:var(--success);}
+.sync-pill.syncing{background:rgba(184,137,42,.08);border-color:rgba(184,137,42,.2);color:var(--warning);}
+.sync-pill.error{background:rgba(184,90,90,.08);border-color:rgba(184,90,90,.2);color:var(--danger);}
+.sync-pill.offline{background:var(--surface2);border-color:var(--border);color:var(--text3);}
+.sync-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.sync-dot.saved{background:var(--success);}
+.sync-dot.syncing{background:var(--warning);animation:blink .9s infinite;}
+.sync-dot.error{background:var(--danger);}
+.sync-dot.offline{background:var(--text3);}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+/* ── SUMMARY / STREAK CARDS ── */
+.v11-stat-row{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--border);}
+.v11-stat-row:last-child{border-bottom:none;padding-bottom:0;}
+.v11-stat-label{font-size:13px;color:var(--text2);}
+.v11-stat-val{font-family:'DM Serif Display',serif;font-size:20px;}
+.v11-streak-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px;}
+.v11-streak-box{background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:14px 16px;text-align:center;}
+.v11-streak-num{font-family:'DM Serif Display',serif;font-size:36px;color:var(--accent);line-height:1;}
+.v11-streak-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-top:4px;}
+.v11-streak-best .v11-streak-num{color:var(--success);}
+.v11-pct-bar{height:6px;background:var(--surface2);border-radius:4px;overflow:hidden;margin-top:6px;border:1px solid var(--border);}
+.v11-pct-fill{height:100%;border-radius:4px;transition:width .4s;}
+/* version badge */
+.version-badge{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.06em;padding:3px 10px;border-radius:20px;background:rgba(184,137,42,.1);color:var(--accent);border:1px solid rgba(184,137,42,.25);}
 
 </style>
 </head>
@@ -237,8 +263,13 @@ select option{background:var(--surface);color:var(--text)}
         <button class="btn btn-ghost" onclick="fbSignOut()" style="width:100%;font-size:11px;justify-content:center;padding:5px 10px;">Sign out</button>
       </div>
     </div>
-    <!-- Cloud status -->
-    <div id="save-status" style="margin-bottom:8px;">All changes saved</div>
+    <!-- Sync Status Pill (v1.1) -->
+    <div id="sync-status-pill" class="sync-pill offline" style="width:100%;justify-content:center;margin-bottom:8px;">
+      <span class="sync-dot offline" id="sync-dot"></span>
+      <span id="sync-status-text">Offline Mode</span>
+    </div>
+    <!-- hidden legacy element so setSaveStatus calls don't error -->
+    <div id="save-status" style="display:none;"></div>
     <button class="btn btn-ghost" onclick="exportData()" style="width:100%;font-size:12px;justify-content:center;">⬇ Download backup</button>
   </div>
 </nav>
@@ -256,6 +287,21 @@ select option{background:var(--surface);color:var(--text)}
   </div>
   <div class="card mt8"><div class="card-title"><span>✦</span> Today's spiritual habits</div><div id="home-spiritual" style="color:var(--text2);font-size:13px;"></div></div>
   <div class="card mt8"><div class="card-title"><span>📈</span> Reviews completed</div><div id="home-review-stats" style="color:var(--text2);font-size:13px;"></div></div>
+  <!-- v1.1: Weekly & Monthly Summary + Streak -->
+  <div class="grid2" style="margin-top:14px;">
+    <div class="card" id="home-weekly-card">
+      <div class="card-title"><span>📅</span> This Week</div>
+      <div id="home-weekly-summary" style="font-size:13px;color:var(--text2);"></div>
+    </div>
+    <div class="card" id="home-monthly-card">
+      <div class="card-title"><span>🗓</span> This Month</div>
+      <div id="home-monthly-summary" style="font-size:13px;color:var(--text2);"></div>
+    </div>
+  </div>
+  <div class="card mt8" id="home-streak-card">
+    <div class="card-title"><span>🔥</span> Streak</div>
+    <div id="home-streak-content"></div>
+  </div>
 </div>
 
 <!-- DEFINITIONS -->
@@ -549,7 +595,21 @@ select option{background:var(--surface);color:var(--text)}
 <!-- SETTINGS -->
 <div id="page-settings" class="page">
   <h1 class="page-title">Settings</h1>
-  <p class="page-sub">Manage your data and app preferences</p>
+  <p class="page-sub">Manage your data, backups, and app preferences</p>
+
+  <!-- SYNC STATUS CARD (v1.1) -->
+  <div class="card">
+    <div class="card-title"><span>🔄</span> Sync Status</div>
+    <div style="display:flex;align-items:center;gap:14px;padding:10px 0;">
+      <div id="settings-sync-pill" class="sync-pill offline" style="font-size:13px;padding:8px 16px;">
+        <span class="sync-dot offline" id="settings-sync-dot"></span>
+        <span id="settings-sync-text">Offline Mode</span>
+      </div>
+      <div style="font-size:12px;color:var(--text3);line-height:1.5;">
+        🟢 All changes saved &nbsp;·&nbsp; 🟡 Saving… &nbsp;·&nbsp; 🔴 Sync error
+      </div>
+    </div>
+  </div>
 
   <!-- BACKUP & RESTORE CARD -->
   <div class="card">
@@ -557,6 +617,12 @@ select option{background:var(--surface);color:var(--text)}
     <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">
       Keep your data safe by downloading a backup file. You can restore it anytime if you switch devices or browsers.
     </p>
+
+    <!-- Last Backup Info (v1.1) -->
+    <div id="last-backup-row" style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text3);margin-bottom:14px;padding:8px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);">
+      <span>🗓</span>
+      <span id="last-backup-text">Last backup: Never</span>
+    </div>
 
     <!-- Export -->
     <div style="border:1px solid var(--border);border-radius:var(--rs);padding:18px 20px;margin-bottom:14px;background:var(--surface2);">
@@ -591,14 +657,44 @@ select option{background:var(--surface);color:var(--text)}
     </div>
   </div>
 
-  <!-- ABOUT CARD -->
+  <!-- BACKUP CENTER — Google Drive placeholder (v1.1) -->
+  <div class="card">
+    <div class="card-title"><span>☁</span> Backup Center</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:14px;line-height:1.6;">
+      Your data is currently backed up as JSON files. Cloud backup options are being added in future updates.
+    </p>
+    <!-- Local JSON backup status -->
+    <div style="border:1px solid var(--border);border-radius:var(--rs);padding:14px 18px;margin-bottom:12px;background:var(--surface2);display:flex;align-items:center;gap:14px;">
+      <div style="font-size:24px;">📄</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;">Local JSON Backup</div>
+        <div style="font-size:12px;color:var(--text3);">Download a backup file to your device. Works offline. Restore anytime.</div>
+      </div>
+      <span class="badge badge-done">Active</span>
+    </div>
+    <!-- Google Drive placeholder -->
+    <div style="border:1px dashed var(--border);border-radius:var(--rs);padding:14px 18px;background:var(--surface2);display:flex;align-items:center;gap:14px;opacity:.7;">
+      <div style="font-size:24px;">🟡</div>
+      <div style="flex:1;">
+        <div style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:2px;">Google Drive Backup <span style="font-size:11px;background:rgba(184,137,42,.12);color:var(--warning);border:1px solid rgba(184,137,42,.25);border-radius:20px;padding:1px 8px;margin-left:6px;">Coming Soon</span></div>
+        <div style="font-size:12px;color:var(--text3);">Automatically sync your backup to Google Drive. No setup needed once enabled.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABOUT CARD (v1.1) -->
   <div class="card">
     <div class="card-title"><span>ℹ</span> About</div>
-    <div style="font-size:13px;color:var(--text2);line-height:1.8;">
-      <div><span style="color:var(--text3);">App:</span> My Life OS · JourneyOS</div>
-      <div><span style="color:var(--text3);">Journey Start:</span> 4 June 2026</div>
-      <div><span style="color:var(--text3);">Duration:</span> 5 Years · 1825 Days</div>
-      <div><span style="color:var(--text3);">Storage:</span> localStorage + Firestore sync</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+      <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--text);">JourneyOS</div>
+      <span class="version-badge">v1.1</span>
+    </div>
+    <div style="font-size:13px;color:var(--text2);line-height:2;">
+      <div><span style="color:var(--text3);width:110px;display:inline-block;">Journey Start</span> 4 June 2026</div>
+      <div><span style="color:var(--text3);width:110px;display:inline-block;">Duration</span> 5 Years · 1825 Days</div>
+      <div><span style="color:var(--text3);width:110px;display:inline-block;">Storage</span> localStorage + Firestore</div>
+      <div><span style="color:var(--text3);width:110px;display:inline-block;">Auth</span> Google Sign-In · Private</div>
+      <div><span style="color:var(--text3);width:110px;display:inline-block;">Version</span> <span class="version-badge">v1.1</span></div>
     </div>
   </div>
 </div>
@@ -1038,6 +1134,8 @@ function load(){
   if(D.goals.g1pct===undefined)D.goals.g1pct=0;
   if(D.goals.g2pct===undefined)D.goals.g2pct=0;
   if(D.goals.g3pct===undefined)D.goals.g3pct=0;
+  if(D.lastBackupDate===undefined)D.lastBackupDate=null;
+  if(D.bestStreak===undefined)D.bestStreak=0;
   // Show offline status until auth resolves
   setSaveStatus('offline');
 }
@@ -1047,25 +1145,58 @@ let _saveTimer=null;
 function save(){
   // Always save to localStorage as offline backup
   localStorage.setItem(KEY,JSON.stringify(D));
+  // Show saving indicator immediately
+  setSaveStatus('syncing');
   // Debounced cloud save
   clearTimeout(_saveTimer);
   _saveTimer=setTimeout(()=>cloudSave(),800);
-  // Local status
-  const el=document.getElementById('save-status');
-  if(el){el.textContent='Saved ✓';el.className='saved';setTimeout(()=>{if(!window._fbCurrentUser)setSaveStatus('offline');},1500);}
 }
 
 function setSaveStatus(state,txt){
+  // Legacy hidden element (keeps confirmImport / cloudLoad compat)
   const el=document.getElementById('save-status');
-  if(!el)return;
-  if(state==='syncing'){el.textContent='Syncing...';el.className='syncing';}
-  else if(state==='synced'){el.textContent='Synced ✓';el.className='synced';setTimeout(()=>{el.textContent='All changes saved';el.className='';},2000);}
-  else if(state==='offline'){el.textContent='Offline Mode';el.className='offline';}
-  else{el.textContent=txt||'All changes saved';el.className='';}
+  if(el){
+    if(state==='syncing')el.textContent='Syncing...';
+    else if(state==='synced')el.textContent='All changes saved';
+    else if(state==='offline')el.textContent='Offline Mode';
+    else el.textContent=txt||'All changes saved';
+  }
+  // v1.1 sync pills (sidebar + settings page)
+  _updateSyncPill('sync-status-pill','sync-dot','sync-status-text',state,txt);
+  _updateSyncPill('settings-sync-pill','settings-sync-dot','settings-sync-text',state,txt);
+}
+function _updateSyncPill(pillId,dotId,textId,state,txt){
+  const pill=document.getElementById(pillId);
+  const dot=document.getElementById(dotId);
+  const label=document.getElementById(textId);
+  if(!pill||!dot||!label)return;
+  pill.className='sync-pill';dot.className='sync-dot';
+  if(state==='syncing'){
+    pill.classList.add('syncing');dot.classList.add('syncing');
+    label.textContent='Saving…';
+  }else if(state==='synced'){
+    pill.classList.add('saved');dot.classList.add('saved');
+    label.textContent='All changes saved';
+    // revert label after 3s but keep green (data is still saved)
+    setTimeout(()=>{if(label.textContent==='All changes saved'){/* keep */}},3000);
+  }else if(state==='offline'){
+    pill.classList.add('offline');dot.classList.add('offline');
+    label.textContent='Offline Mode';
+  }else if(state==='error'){
+    pill.classList.add('error');dot.classList.add('error');
+    label.textContent='Sync error';
+  }else{
+    pill.classList.add('saved');dot.classList.add('saved');
+    label.textContent=txt||'All changes saved';
+  }
 }
 
 async function cloudSave(){
-  if(!window._fbCurrentUser||!window._fbDb)return;
+  if(!window._fbCurrentUser||!window._fbDb){
+    // Not signed in — localStorage save already done, show offline
+    setSaveStatus('offline');
+    return;
+  }
   try{
     setSaveStatus('syncing');
     const ref=window._fbDoc(window._fbDb,'users',window._fbCurrentUser.uid,'journeyos','main');
@@ -1073,7 +1204,7 @@ async function cloudSave(){
     setSaveStatus('synced');
   }catch(e){
     console.warn('Cloud save failed:',e);
-    setSaveStatus('offline');
+    setSaveStatus('error');
   }
 }
 
@@ -1191,6 +1322,8 @@ window._onAuthChange=async function(user){
       if(D.goals&&D.goals.g1pct===undefined)D.goals.g1pct=0;
       if(D.goals&&D.goals.g2pct===undefined)D.goals.g2pct=0;
       if(D.goals&&D.goals.g3pct===undefined)D.goals.g3pct=0;
+      if(D.lastBackupDate===undefined)D.lastBackupDate=null;
+      if(D.bestStreak===undefined)D.bestStreak=0;
       // Re-render whichever page is active
       const activePage=document.querySelector('.page.active');
       if(activePage){
@@ -1213,6 +1346,9 @@ function exportData(){exportBackup();}
 function exportBackup(){
   const date=new Date().toISOString().split('T')[0]; // YYYY-MM-DD
   const filename='JourneyOS-Backup-'+date+'.json';
+  // Record backup date BEFORE serialising so it's included in the backup too
+  D.lastBackupDate=date;
+  save();
   const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
   const a=document.createElement('a');
   a.href=URL.createObjectURL(blob);
@@ -1221,6 +1357,8 @@ function exportBackup(){
   a.click();
   document.body.removeChild(a);
   URL.revokeObjectURL(a.href);
+  // Refresh last-backup display
+  renderLastBackupDate();
   // Show success message
   const msg=document.getElementById('export-msg');
   if(msg){msg.style.display='block';setTimeout(()=>{msg.style.display='none';},4000);}
@@ -1312,6 +1450,8 @@ async function confirmImport(){
     D.scheduleMonths=[{label:initLabel,days:Array.from({length:initDays},(_,i)=>({dayNum:i+1,rows:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}))}];
     D.curMonth=0;
   }
+  if(D.lastBackupDate===undefined)D.lastBackupDate=null;
+  if(D.bestStreak===undefined)D.bestStreak=0;
   // Save to localStorage immediately
   localStorage.setItem(KEY,JSON.stringify(D));
   // Sync to Firestore if signed in
@@ -1335,7 +1475,157 @@ async function confirmImport(){
   goto('settings');
 }
 
-function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+// ── v1.1 HELPERS ─────────────────────────────────────────────
+
+// Format a YYYY-MM-DD date into "4 June 2026" or "15 days ago"
+function formatBackupDate(isoDate){
+  if(!isoDate)return'Never';
+  const parts=isoDate.split('-');
+  const d=new Date(parseInt(parts[0]),parseInt(parts[1])-1,parseInt(parts[2]));
+  const now=new Date();
+  const todayMidnight=new Date(now.getFullYear(),now.getMonth(),now.getDate());
+  const diffDays=Math.round((todayMidnight-d)/86400000);
+  if(diffDays===0)return'Today';
+  if(diffDays===1)return'Yesterday';
+  if(diffDays<30)return diffDays+' days ago';
+  return d.getDate()+' '+MONTH_NAMES[d.getMonth()]+' '+d.getFullYear();
+}
+
+function renderLastBackupDate(){
+  const el=document.getElementById('last-backup-text');
+  if(el)el.textContent='Last backup: '+formatBackupDate(D.lastBackupDate||null);
+}
+
+// Calculate current and best streak from adventureDays
+// A streak is consecutive calendar days (from journey start onwards) marked 'done'
+function calcStreaks(){
+  const start=new Date(D.startDate);
+  const today=new Date();
+  const todayMidnight=new Date(today.getFullYear(),today.getMonth(),today.getDate());
+  let currentStreak=0, bestStreak=D.bestStreak||0, running=0;
+  // Walk every day from start through today
+  for(let d=new Date(start);d<=todayMidnight;d.setDate(d.getDate()+1)){
+    const key=d.toISOString().split('T')[0];
+    const status=(D.adventureDays[key]||{}).status;
+    if(status==='done'){
+      running++;
+      if(running>bestStreak)bestStreak=running;
+    }else if(status==='missed'){
+      running=0;
+    }
+    // Days with no status yet (future or unlogged) don't break or extend — treat as gap
+    // but only if they're in the past
+    else{
+      const isPast=new Date(d)<todayMidnight;
+      if(isPast)running=0;
+    }
+  }
+  currentStreak=running;
+  // Persist best streak if improved
+  if(bestStreak>(D.bestStreak||0)){D.bestStreak=bestStreak;save();}
+  return{currentStreak,bestStreak};
+}
+
+// Days Mon-Sun of the current ISO week (Mon=0)
+function currentWeekKeys(){
+  const now=new Date();
+  const dow=now.getDay(); // 0=Sun
+  const mon=new Date(now);
+  mon.setDate(now.getDate()-(dow===0?6:dow-1));
+  const keys=[];
+  for(let i=0;i<7;i++){
+    const d=new Date(mon);d.setDate(mon.getDate()+i);
+    keys.push(d.toISOString().split('T')[0]);
+  }
+  return keys;
+}
+
+function calcWeeklySummary(){
+  const keys=currentWeekKeys();
+  let done=0,missed=0;
+  keys.forEach(k=>{
+    const s=(D.adventureDays[k]||{}).status;
+    if(s==='done')done++;
+    else if(s==='missed')missed++;
+  });
+  const logged=done+missed;
+  const pct=logged>0?Math.round(done/logged*100):0;
+  return{done,missed,pct,logged};
+}
+
+function calcMonthlySummary(){
+  const now=new Date();
+  const yr=now.getFullYear(),mo=now.getMonth();
+  const daysInMo=new Date(yr,mo+1,0).getDate();
+  let done=0,missed=0;
+  for(let d=1;d<=daysInMo;d++){
+    const k=yr+'-'+String(mo+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const s=(D.adventureDays[k]||{}).status;
+    if(s==='done')done++;
+    else if(s==='missed')missed++;
+  }
+  const logged=done+missed;
+  const pct=logged>0?Math.round(done/logged*100):0;
+  const monthName=MONTH_NAMES[mo]+' '+yr;
+  return{done,missed,pct,logged,monthName};
+}
+
+function renderHomeSummaries(){
+  // Weekly
+  const wEl=document.getElementById('home-weekly-summary');
+  if(wEl){
+    const w=calcWeeklySummary();
+    const barColor=w.pct>=80?'var(--success)':w.pct>=50?'var(--warning)':'var(--danger)';
+    wEl.innerHTML=`
+      <div class="v11-stat-row"><span class="v11-stat-label" style="color:var(--success);">✓ Completed</span><span class="v11-stat-val" style="color:var(--success);">${w.done}</span></div>
+      <div class="v11-stat-row"><span class="v11-stat-label" style="color:var(--danger);">✕ Missed</span><span class="v11-stat-val" style="color:var(--danger);">${w.missed}</span></div>
+      <div class="v11-stat-row" style="border-bottom:none;padding-bottom:0;"><span class="v11-stat-label">Success rate</span><span class="v11-stat-val" style="color:${barColor};">${w.logged>0?w.pct+'%':'—'}</span></div>
+      ${w.logged>0?`<div class="v11-pct-bar"><div class="v11-pct-fill" style="width:${w.pct}%;background:${barColor};"></div></div>`:''}
+    `;
+  }
+  // Monthly
+  const mEl=document.getElementById('home-monthly-summary');
+  if(mEl){
+    const m=calcMonthlySummary();
+    const barColor=m.pct>=80?'var(--success)':m.pct>=50?'var(--warning)':'var(--danger)';
+    mEl.innerHTML=`
+      <div style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px;">${m.monthName}</div>
+      <div class="v11-stat-row"><span class="v11-stat-label" style="color:var(--success);">✓ Completed</span><span class="v11-stat-val" style="color:var(--success);">${m.done}</span></div>
+      <div class="v11-stat-row"><span class="v11-stat-label" style="color:var(--danger);">✕ Missed</span><span class="v11-stat-val" style="color:var(--danger);">${m.missed}</span></div>
+      <div class="v11-stat-row" style="border-bottom:none;padding-bottom:0;"><span class="v11-stat-label">Success rate</span><span class="v11-stat-val" style="color:${barColor};">${m.logged>0?m.pct+'%':'—'}</span></div>
+      ${m.logged>0?`<div class="v11-pct-bar"><div class="v11-pct-fill" style="width:${m.pct}%;background:${barColor};"></div></div>`:''}
+    `;
+  }
+  // Streak
+  const sEl=document.getElementById('home-streak-content');
+  if(sEl){
+    const{currentStreak,bestStreak}=calcStreaks();
+    const flame=currentStreak>=7?'🔥':currentStreak>=3?'⚡':'📅';
+    sEl.innerHTML=`
+      <div class="v11-streak-grid">
+        <div class="v11-streak-box">
+          <div style="font-size:18px;margin-bottom:4px;">${flame}</div>
+          <div class="v11-streak-num">${currentStreak}</div>
+          <div class="v11-streak-label">Current Streak</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px;">${currentStreak===1?'day':'days'}</div>
+        </div>
+        <div class="v11-streak-box v11-streak-best">
+          <div style="font-size:18px;margin-bottom:4px;">🏆</div>
+          <div class="v11-streak-num">${bestStreak}</div>
+          <div class="v11-streak-label">Best Streak</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:4px;">${bestStreak===1?'day':'days'}</div>
+        </div>
+      </div>
+      ${currentStreak>0&&currentStreak===bestStreak?`<div style="margin-top:10px;font-size:12px;color:var(--accent);text-align:center;">🎯 You're on your best streak ever!</div>`:''}
+    `;
+  }
+}
+
+// Called when Settings page is opened to refresh dynamic content
+function renderSettingsPage(){
+  renderLastBackupDate();
+  // Sync pill mirrors current state — already up to date via setSaveStatus
+}
 
 function goto(pg){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -1346,7 +1636,7 @@ function goto(pg){
   if(items[map[pg]])items[map[pg]].classList.add('active');
   document.querySelectorAll('.mobile-nav-item').forEach(n=>n.classList.remove('active'));
   document.querySelectorAll('.mobile-nav-item').forEach(n=>{if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes(pg))n.classList.add('active');});
-  if(pg==='home')renderHome();
+  if(pg==='home'){renderHome();renderHomeSummaries();}
   if(pg==='definitions')renderDefs();
   if(pg==='goals')renderGoalsExtended();
   if(pg==='spiritual')renderSpiritual();
@@ -1355,6 +1645,7 @@ function goto(pg){
   if(pg==='progress')renderProgress();
   if(pg==='reviews')renderReviews();
   if(pg==='search'){setTimeout(()=>{const si=document.getElementById('search-input');if(si)si.focus();},80);}
+  if(pg==='settings')renderSettingsPage();
 }
 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
@@ -1667,7 +1958,7 @@ function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>d.
   ${D.goals.g3?`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;"><span style="color:var(--text);">${esc(D.goals.g3)}</span><span style="color:var(--accent);font-weight:600;">${g3p}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${g3p}%"></div></div></div>`:''}
   `;}
 }
-load();renderHome();renderScheduleNav();
+load();renderHome();renderHomeSummaries();renderScheduleNav();
 
 // ============================================================
 // RICH EDITOR SYSTEM — shared by definitions, goals, adventure
