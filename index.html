@@ -198,10 +198,38 @@ select option{background:var(--surface);color:var(--text)}
 #save-status.synced{color:var(--success);}
 #save-status.offline{color:var(--text3);}
 
+/* ── LOCK SCREEN ── */
+#lock-screen{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);align-items:center;justify-content:center;}
+#lock-screen.visible{display:flex;}
+.lock-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:40px 36px;width:360px;max-width:94vw;display:flex;flex-direction:column;gap:14px;}
+.lock-title{font-family:'DM Serif Display',serif;font-size:26px;color:var(--accent);text-align:center;margin-bottom:2px;}
+.lock-msg{font-size:13px;color:var(--text3);text-align:center;line-height:1.6;margin-bottom:4px;}
+.lock-divider{text-align:center;font-size:11px;color:var(--text3);}
+
 </style>
 </head>
 <body>
-<div class="app">
+<!-- ── LOCK SCREEN ── shown when no authenticated user ── -->
+<div id="lock-screen" class="visible">
+  <div class="lock-box">
+    <div class="lock-title">JourneyOS</div>
+    <div class="lock-msg">Please sign in with your authorized account to access JourneyOS.</div>
+    <!-- Email sign-in -->
+    <input type="email" id="lock-email" placeholder="Email" style="font-size:13px;padding:9px 12px;">
+    <input type="password" id="lock-password" placeholder="Password" style="font-size:13px;padding:9px 12px;">
+    <div id="lock-error" style="font-size:12px;color:var(--danger);display:none;text-align:center;"></div>
+    <button class="btn btn-primary" onclick="lockSignInEmail()" style="width:100%;justify-content:center;">Sign in</button>
+    <div class="lock-divider">— or —</div>
+    <!-- Google sign-in -->
+    <button class="btn btn-ghost" onclick="fbSignIn()" style="width:100%;justify-content:center;">
+      <svg width="14" height="14" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#4285F4" d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z"/></svg>
+      Sign in with Google
+    </button>
+    <div id="lock-google-loading" style="display:none;font-size:11px;color:var(--text3);text-align:center;padding:2px 0;">Completing Google sign-in…</div>
+  </div>
+</div>
+
+<div class="app" style="display:none">
 <nav class="sidebar">
   <div class="logo"><h1>My Life OS</h1><p>5-year journey · 1825 days</p></div>
   <div class="nav">
@@ -597,7 +625,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="card-title"><span>ℹ</span> About</div>
     <div style="font-size:13px;color:var(--text2);line-height:1.8;">
       <div><span style="color:var(--text3);">App:</span> My Life OS · JourneyOS</div>
-      <div><span style="color:var(--text3);">Journey Start:</span> 13 June 2026</div>
+      <div><span style="color:var(--text3);">Journey Start:</span> 14 June 2026</div>
       <div><span style="color:var(--text3);">Duration:</span> 5 Years · 1825 Days</div>
       <div><span style="color:var(--text3);">Storage:</span> localStorage + Firestore sync</div>
     </div>
@@ -984,7 +1012,7 @@ select option{background:var(--surface);color:var(--text)}
 
 <script>
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-06-13';
+const JOURNEY_START='2026-06-14';
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[]};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -1014,11 +1042,11 @@ function mkMonth(){const n=new Date();const label=n.toLocaleDateString('en-IN',{
 
 function load(){
   try{const s=localStorage.getItem(KEY);if(s)D=JSON.parse(s);}catch(e){}
-  // Day 1 = 13 June 2026 (fixed journey start)
+  // Day 1 = 14 June 2026 (fixed journey start)
   if(!D.startDate){D.startDate=JOURNEY_START;}
   // Always enforce the correct start date
   D.startDate=JOURNEY_START;
-  // Init schedule months — use the month containing Day 1 (13 June 2026)
+  // Init schedule months — use the month containing Day 1 (14 June 2026)
   if(!D.scheduleMonths||D.scheduleMonths.length===0){
     const day1=new Date(D.startDate);
     const initLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
@@ -1170,6 +1198,10 @@ window._onAuthChange=async function(user){
       if(signedOut){signedOut.style.display='flex';signedOut.style.flexDirection='column';}
       if(errEl){errEl.textContent='Access denied. This app is private.';errEl.style.display='block';}
       setSaveStatus('offline');
+      showLockScreen();
+      // Lock screen error display
+      const lockErr=document.getElementById('lock-error');
+      if(lockErr){lockErr.textContent='Access denied. This app is private.';lockErr.style.display='block';}
       return; // do NOT load Firestore data
     }
     // ─────────────────────────────────────────────────────────
@@ -1179,6 +1211,7 @@ window._onAuthChange=async function(user){
     if(signedOut)signedOut.style.display='none';
     if(errEl)errEl.style.display='none';
     if(nameEl)nameEl.textContent=user.displayName||user.email||'Signed in';
+    hideLockScreen();
     // Load cloud data, then re-render current page
     const loaded=await cloudLoad(user.uid);
     if(loaded){
@@ -1204,6 +1237,7 @@ window._onAuthChange=async function(user){
     if(signedOut){signedOut.style.display='flex';signedOut.style.flexDirection='column';}
     window._fbCurrentUser=null;
     setSaveStatus('offline');
+    showLockScreen();
   }
 };
 
@@ -2432,7 +2466,44 @@ function runSearch(query){
   `).join('');
 }
 
+// ── LOCK SCREEN HELPERS ───────────────────────────────────────
+function showLockScreen(){
+  const ls=document.getElementById('lock-screen');
+  const app=document.querySelector('.app');
+  if(ls)ls.classList.add('visible');
+  if(app)app.style.display='none';
+  // Mirror any error message from the sidebar auth panel to the lock screen
+  const sideErr=document.getElementById('auth-error');
+  const lockErr=document.getElementById('lock-error');
+  if(lockErr&&sideErr&&sideErr.style.display!=='none'){
+    lockErr.textContent=sideErr.textContent;
+    lockErr.style.display='block';
+  }
+}
+function hideLockScreen(){
+  const ls=document.getElementById('lock-screen');
+  const app=document.querySelector('.app');
+  if(ls)ls.classList.remove('visible');
+  if(app)app.style.display='';
+}
+// Email sign-in from the lock screen — delegates to the real fbSignInEmail
+// but reads from the lock screen fields instead of the sidebar fields.
+async function lockSignInEmail(){
+  if(!window._fbAuth||!window._fbSignInWithEmail)return alert('Firebase not ready yet. Try again in a moment.');
+  const email=document.getElementById('lock-email').value.trim();
+  const password=document.getElementById('lock-password').value;
+  const errEl=document.getElementById('lock-error');
+  if(!email||!password){errEl.textContent='Please enter your email and password.';errEl.style.display='block';return;}
+  errEl.style.display='none';
+  try{
+    await window._fbSignInWithEmail(window._fbAuth,email,password);
+    document.getElementById('lock-password').value='';
+  }catch(e){
+    if(errEl){errEl.textContent='Sign-in failed: '+(e.message||e.code);errEl.style.display='block';}
+    console.error('Lock screen email sign-in error:',e);
+  }
+}
+
 
 </script>
-</body>
 </html>
