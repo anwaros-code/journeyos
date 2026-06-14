@@ -1020,7 +1020,7 @@ select option{background:var(--surface);color:var(--text)}
 <script>
 const KEY='mylifeos_v3';
 const JOURNEY_START='2026-06-15';
-let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:''};
+let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:''};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
 // ── DATE HELPERS ─────────────────────────────────────────────
@@ -2526,17 +2526,25 @@ function renderMotivPhoto(){
   const card=document.getElementById('motiv-photo-card');
   if(!card)return;
   const photo=D.motivPhoto||'';
+  const msg=D.motivMsg||'';
   card.innerHTML=`<div class="card" style="margin-bottom:16px;">
     <div class="card-title"><span>🖼</span> Personal Motivation</div>
-    <div style="font-size:13px;color:var(--text3);margin-bottom:12px;font-style:italic;">Remember why you started.</div>
-    ${photo?`<img src="${photo}" alt="Personal motivation" style="width:100%;max-width:100%;border-radius:10px;display:block;margin-bottom:12px;object-fit:cover;max-height:320px;">
-    <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <label class="btn btn-ghost" style="cursor:pointer;font-size:12px;padding:6px 14px;">Replace Photo<input type="file" accept=".jpg,.jpeg,.png,.webp" style="display:none;" onchange="uploadMotivPhoto(this)"></label>
-      <button class="btn btn-danger" onclick="removeMotivPhoto()" style="font-size:12px;padding:6px 14px;">Remove Photo</button>
-    </div>`:`<label class="btn btn-primary" style="cursor:pointer;font-size:12px;padding:6px 16px;display:inline-flex;align-items:center;gap:6px;">
-      ⬆ Upload Photo<input type="file" accept=".jpg,.jpeg,.png,.webp" style="display:none;" onchange="uploadMotivPhoto(this)">
-    </label>
-    <div style="font-size:11px;color:var(--text3);margin-top:8px;">JPG, PNG or WEBP · Max 1 MB</div>`}
+    <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+      ${photo
+        ?`<img src="${photo}" alt="Personal motivation" style="width:clamp(140px,40%,220px);border-radius:14px;display:block;object-fit:cover;aspect-ratio:1/1;box-shadow:0 4px 16px rgba(0,0,0,0.18);">`
+        :`<label class="btn btn-primary" style="cursor:pointer;font-size:12px;padding:6px 16px;display:inline-flex;align-items:center;gap:6px;">
+        ⬆ Upload Photo<input type="file" accept=".jpg,.jpeg,.png,.webp" style="display:none;" onchange="uploadMotivPhoto(this)">
+        </label>
+        <div style="font-size:11px;color:var(--text3);">JPG, PNG or WEBP · Max 1 MB</div>`
+      }
+      <textarea id="motiv-msg-input" rows="2" placeholder="Remember why you started."
+        style="width:100%;max-width:320px;text-align:center;background:transparent;border:none;border-bottom:1px solid var(--border);border-radius:0;resize:none;font-size:13px;font-style:italic;color:var(--text2);line-height:1.6;padding:4px 0;outline:none;font-family:'DM Sans',sans-serif;white-space:pre-wrap;"
+        oninput="saveMotivMsg(this)">${msg}</textarea>
+      ${photo?`<div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+        <label class="btn btn-ghost" style="cursor:pointer;font-size:12px;padding:6px 14px;">Replace Photo<input type="file" accept=".jpg,.jpeg,.png,.webp" style="display:none;" onchange="uploadMotivPhoto(this)"></label>
+        <button class="btn btn-danger" onclick="removeMotivPhoto()" style="font-size:12px;padding:6px 14px;">Remove Photo</button>
+      </div>`:``}
+    </div>
   </div>`;
 }
 function uploadMotivPhoto(input){
@@ -2552,6 +2560,9 @@ function uploadMotivPhoto(input){
 function removeMotivPhoto(){
   if(!confirm('Remove the motivation photo?'))return;
   D.motivPhoto='';save();renderMotivPhoto();
+}
+function saveMotivMsg(ta){
+  D.motivMsg=ta.value;save();
 }
 function ynBlur(inp,ri,field){
   // Sanitise any freehand input: only Y/N allowed; anything else clears
