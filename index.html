@@ -200,7 +200,9 @@ select option{background:var(--surface);color:var(--text)}
 
 /* ── YN INPUT (Urgent/Important keyboard shortcut) ── */
 .yn-input{width:38px;text-align:center;font-size:13px;font-weight:600;padding:5px 4px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);cursor:pointer;caret-color:transparent;outline:none;user-select:none;}
-.yn-input:focus{border-color:var(--accent);background:var(--surface);}
+.yn-input::placeholder{color:var(--text3);opacity:1;font-weight:400;}
+.yn-input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 22%,transparent);}
+.yn-input:focus::placeholder{color:var(--accent);opacity:0.75;}
 
 /* ── LOCK SCREEN ── */
 #lock-screen{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);align-items:center;justify-content:center;}
