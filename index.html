@@ -198,6 +198,10 @@ select option{background:var(--surface);color:var(--text)}
 #save-status.synced{color:var(--success);}
 #save-status.offline{color:var(--text3);}
 
+/* ── YN INPUT (Urgent/Important keyboard shortcut) ── */
+.yn-input{width:38px;text-align:center;font-size:13px;font-weight:600;padding:5px 4px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);cursor:pointer;caret-color:transparent;outline:none;user-select:none;}
+.yn-input:focus{border-color:var(--accent);background:var(--surface);}
+
 /* ── LOCK SCREEN ── */
 #lock-screen{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);align-items:center;justify-content:center;}
 #lock-screen.visible{display:flex;}
@@ -1598,7 +1602,7 @@ function nextDay(){const month=D.scheduleMonths[D.curMonth];if(month&&curDayIdx<
 
 function autoGrowTextarea(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
 
-function renderDaySchedule(){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const day=month.days[curDayIdx];if(!day)return;const actualDate=getActualDateForMonthDay(month.label,day.dayNum);document.getElementById('day-schedule-title').textContent=formatDayLabel(day.dayNum,actualDate);const tbody=document.getElementById('schedule-body');tbody.innerHTML=day.rows.map((r,ri)=>{const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const isDone=!!r.done;const taskStyle=isDone?'text-decoration:line-through;opacity:0.6;':'';return`<tr class="${cls}" id="sr-${ri}"><td style="white-space:nowrap;width:80px;font-size:12px;color:var(--text3);">${r.time}</td><td class="task-cell"><textarea class="task-input" rows="1" placeholder="Enter task…" oninput="updSchedTA(${ri},this)" style="${taskStyle}">${esc(r.task)}</textarea></td><td><select onchange="updSched(${ri},'urgent',this.value)"><option value="">-</option><option value="Y" ${r.urgent==='Y'?'selected':''}>Y</option><option value="N" ${r.urgent==='N'?'selected':''}>N</option></select></td><td><select onchange="updSched(${ri},'important',this.value)"><option value="">-</option><option value="Y" ${r.important==='Y'?'selected':''}>Y</option><option value="N" ${r.important==='N'?'selected':''}>N</option></select></td><td class="task-check-cell"><div class="task-check${isDone?' done':''}" onclick="toggleTaskDone(${ri})" title="${isDone?'Mark incomplete':'Mark complete'}">${isDone?'✓':''}</div></td></tr>`;}).join('');tbody.querySelectorAll('textarea.task-input').forEach(ta=>{autoGrowTextarea(ta);});const hy=document.getElementById('sched-happy-y');const hn=document.getElementById('sched-happy-n');hy.style.background=day.happy===true?'var(--success)':'';hy.style.color=day.happy===true?'#fff':'';hy.style.borderColor=day.happy===true?'var(--success)':'var(--border)';hn.style.background=day.happy===false?'var(--danger)':'';hn.style.color=day.happy===false?'#fff':'';hn.style.borderColor=day.happy===false?'var(--danger)':'var(--border)';document.getElementById('sched-why').value=day.why||'';}
+function renderDaySchedule(){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const day=month.days[curDayIdx];if(!day)return;const actualDate=getActualDateForMonthDay(month.label,day.dayNum);document.getElementById('day-schedule-title').textContent=formatDayLabel(day.dayNum,actualDate);const tbody=document.getElementById('schedule-body');tbody.innerHTML=day.rows.map((r,ri)=>{const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const isDone=!!r.done;const taskStyle=isDone?'text-decoration:line-through;opacity:0.6;':'';return`<tr class="${cls}" id="sr-${ri}"><td style="white-space:nowrap;width:80px;font-size:12px;color:var(--text3);">${r.time}</td><td class="task-cell"><textarea class="task-input" rows="1" placeholder="Enter task…" oninput="updSchedTA(${ri},this)" style="${taskStyle}">${esc(r.task)}</textarea></td><td><input type="text" class="yn-input" value="${r.urgent==='Y'?'Y':(r.urgent==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'urgent')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'urgent')"></td><td><input type="text" class="yn-input" value="${r.important==='Y'?'Y':(r.important==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'important')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'important')"></td><td class="task-check-cell"><div class="task-check${isDone?' done':''}" onclick="toggleTaskDone(${ri})" title="${isDone?'Mark incomplete':'Mark complete'}">${isDone?'✓':''}</div></td></tr>`;}).join('');tbody.querySelectorAll('textarea.task-input').forEach(ta=>{autoGrowTextarea(ta);});const hy=document.getElementById('sched-happy-y');const hn=document.getElementById('sched-happy-n');hy.style.background=day.happy===true?'var(--success)':'';hy.style.color=day.happy===true?'#fff':'';hy.style.borderColor=day.happy===true?'var(--success)':'var(--border)';hn.style.background=day.happy===false?'var(--danger)':'';hn.style.color=day.happy===false?'#fff':'';hn.style.borderColor=day.happy===false?'var(--danger)':'var(--border)';document.getElementById('sched-why').value=day.why||'';}
 
 function updSchedTA(ri,el){autoGrowTextarea(el);updSched(ri,'task',el.value);}
 
@@ -2464,6 +2468,28 @@ function runSearch(query){
       `).join('')}
     </div>
   `).join('');
+}
+
+// ── YN INPUT HELPERS (Urgent / Important keyboard shortcuts) ────
+function ynKey(e,ri,field){
+  const k=e.key.toLowerCase();
+  if(k==='y'||k==='n'||k==='-'||k==='enter'||k==='escape'||e.key==='Tab'){
+    e.preventDefault();
+    const inp=e.target;
+    if(k==='y'){inp.value='Y';updSched(ri,field,'Y');}
+    else if(k==='n'){inp.value='N';updSched(ri,field,'N');}
+    else if(k==='-'){inp.value='';updSched(ri,field,'');}
+    inp.setAttribute('readonly','');
+    if(k==='enter'||k==='tab'||k==='escape')inp.blur();
+  }
+}
+function ynBlur(inp,ri,field){
+  // Sanitise any freehand input: only Y/N allowed; anything else clears
+  const v=inp.value.toUpperCase().trim();
+  if(v==='Y'){inp.value='Y';updSched(ri,field,'Y');}
+  else if(v==='N'){inp.value='N';updSched(ri,field,'N');}
+  else{inp.value='';updSched(ri,field,'');}
+  inp.setAttribute('readonly','');
 }
 
 // ── LOCK SCREEN HELPERS ───────────────────────────────────────
