@@ -1019,7 +1019,7 @@ select option{background:var(--surface);color:var(--text)}
 
 <script>
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-06-15';
+const JOURNEY_START='2026-06-17';
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:''};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -1049,7 +1049,7 @@ function mkMonth(){const n=new Date();const label=n.toLocaleDateString('en-IN',{
 
 function load(){
   try{const s=localStorage.getItem(KEY);if(s)D=JSON.parse(s);}catch(e){}
-  // Day 1 = 15 June 2026 (fixed journey start)
+  // Day 1 = 17 June 2026 (fixed journey start)
   if(!D.startDate){D.startDate=JOURNEY_START;}
   // Always enforce the correct start date
   D.startDate=JOURNEY_START;
