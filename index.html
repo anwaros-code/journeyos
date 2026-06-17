@@ -1503,8 +1503,8 @@ function renderAdventure(){
   const subEl=document.getElementById('adventure-sub');
   if(subEl){const prettyToday=td+' '+MONTH_NAMES[tm]+' '+ty;subEl.textContent='Your 1825-day journey · Today is Day '+dayNum+' — '+prettyToday;}
   grid.innerHTML='';
-  for(let i=0;i<1825;i++){
-    const d=new Date(sy,sm-1,sd+i); // always local midnight
+  for(let i=0;i<=1825;i++){
+    const d=new Date(sy,sm-1,sd-1+i); // Day 0 = day before startDate (today), Day 1 = startDate
     const dy=d.getFullYear(),dmo=d.getMonth(),dd=d.getDate();
     const key=dy+'-'+String(dmo+1).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
     const log=D.adventureDays[key];
@@ -1513,9 +1513,9 @@ function renderAdventure(){
     const div=document.createElement('div');
     let cls='day-dot';if(status==='done')cls+=' done';else if(status==='missed')cls+=' missed';if(isToday)cls+=' today';
     div.className=cls;
-    div.innerHTML='<span class="dd-num">'+(i+1)+'</span><span class="dd-mark">'+(isToday?'⭐':status==='done'?'✓':status==='missed'?'✕':'')+'</span>';
-    div.title='Day '+(i+1)+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy;
-    div.onclick=()=>openDayModal(key,i+1,dd,dmo,dy);
+    div.innerHTML='<span class="dd-num">'+i+'</span><span class="dd-mark">'+(isToday?'⭐':status==='done'?'✓':status==='missed'?'✕':'')+'</span>';
+    div.title='Day '+i+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy;
+    div.onclick=()=>openDayModal(key,i,dd,dmo,dy);
     grid.appendChild(div);
   }
 }
