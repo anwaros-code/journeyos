@@ -182,6 +182,12 @@ select option{background:var(--surface);color:var(--text)}
 .re-canvas{display:block;width:100%;cursor:crosshair;background:#fff;touch-action:none;}
 .cdot{width:18px;height:18px;border-radius:50%;cursor:pointer;border:2px solid transparent;flex-shrink:0;}
 .cdot.sel{border-color:#333;}
+.re-color-bar{display:none;flex-wrap:wrap;gap:7px;padding:8px 10px;border-bottom:1px solid var(--border);background:#fff;align-items:center;}
+.re-color-bar.open{display:flex;}
+.re-color-bar .cdot{position:relative;}
+.re-color-bar input[type=color]{width:24px;height:24px;border:1px solid var(--border);border-radius:50%;padding:0;cursor:pointer;background:none;-webkit-appearance:none;}
+.re-color-bar input[type=color]::-webkit-color-swatch-wrapper{padding:0;border-radius:50%;}
+.re-color-bar input[type=color]::-webkit-color-swatch{border:none;border-radius:50%;}
 /* ── GOAL 1 DETAIL SUBS (keep existing) ── */
 .g1-sub{border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px;overflow:hidden;}
 .g1-sub-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);cursor:pointer;user-select:none;transition:background .15s;}
@@ -689,8 +695,12 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="reCmd('defed','insertUnorderedList')">&#8801;</button>
         <button class="re-btn" onclick="reCmd('defed','insertOrderedList')">&#9312;</button>
         <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReColorBar('defed','fore')" id="tcbtn-defed" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
+        <button class="re-btn" onclick="toggleReColorBar('defed','hilite')" id="hlbtn-defed" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+        <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('defed')" id="draw-btn-defed">&#9998; Draw</button>
       </div>
+      <div class="re-color-bar" id="cbar-defed"></div>
       <div class="re-draw" id="draw-defed">
         <div class="re-draw-bar" id="dbar-defed"></div>
         <canvas id="dc-defed" class="re-canvas" height="150"></canvas>
@@ -1751,6 +1761,40 @@ function reCmd(id,cmd){
   if(!ed)return;
   ed.focus();
   document.execCommand(cmd,false,null);
+}
+
+// ── TEXT COLOUR + HIGHLIGHTER ────────────────────────────────
+const TEXT_COLORS=['#1a1814','#b85a5a','#b8892a','#3a8a6e','#4a5a9e','#7a4ab8'];
+const HILITE_COLORS=['#fff3a0','#ffd9a0','#b9f6c4','#bcd9ff','#f3c4ff','transparent'];
+const reColorState={}; // remembers which mode (fore/hilite) each editor's bar is showing
+
+function toggleReColorBar(id,mode){
+  const bar=document.getElementById('cbar-'+id);
+  if(!bar)return;
+  if(bar.classList.contains('open')&&reColorState[id]===mode){
+    bar.classList.remove('open');
+    return;
+  }
+  reColorState[id]=mode;
+  const colors=mode==='fore'?TEXT_COLORS:HILITE_COLORS;
+  const cmd=mode==='fore'?'foreColor':'hiliteColor';
+  const label=mode==='fore'?'Text colour:':'Highlight:';
+  bar.innerHTML='<span style="font-size:11px;color:var(--text3);margin-right:2px;">'+label+'</span>'+
+    colors.map(c=>{
+      if(c==='transparent'){
+        return '<div class="cdot" style="background:#fff;border:1px dashed var(--text3);" title="Remove highlight" onclick="applyReColor(\''+id+'\',\''+cmd+'\',\''+c+'\')"></div>';
+      }
+      return '<div class="cdot" style="background:'+c+'" title="'+c+'" onclick="applyReColor(\''+id+'\',\''+cmd+'\',\''+c+'\')"></div>';
+    }).join('')+
+    '<input type="color" title="Custom colour" onchange="applyReColor(\''+id+'\',\''+cmd+'\',this.value)">';
+  bar.classList.add('open');
+}
+
+function applyReColor(id,cmd,color){
+  const ed=document.getElementById('ed-'+id);
+  if(!ed)return;
+  ed.focus();
+  document.execCommand(cmd,false,color);
 }
 
 // Save rich editor content to D
