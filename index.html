@@ -1767,6 +1767,24 @@ function reCmd(id,cmd){
 const TEXT_COLORS=['#1a1814','#b85a5a','#b8892a','#3a8a6e','#4a5a9e','#7a4ab8'];
 const HILITE_COLORS=['#fff3a0','#ffd9a0','#b9f6c4','#bcd9ff','#f3c4ff','transparent'];
 const reColorState={}; // remembers which mode (fore/hilite) each editor's bar is showing
+const reSavedRange={}; // remembers the last text selection made inside each editor
+
+// Tapping a toolbar button (especially on touchscreens) clears the visible text
+// selection before the click handler runs, so by the time the colour command
+// fires there's nothing left to colour. This keeps a live copy of the most
+// recent selection made inside any rich editor so it can be restored just
+// before applying a colour.
+document.addEventListener('selectionchange',()=>{
+  const sel=window.getSelection();
+  if(!sel||sel.rangeCount===0)return;
+  const range=sel.getRangeAt(0);
+  let node=range.commonAncestorContainer;
+  node=node.nodeType===1?node:node.parentElement;
+  while(node&&!(node.classList&&node.classList.contains('re-editor')))node=node.parentElement;
+  if(node&&node.id&&node.id.indexOf('ed-')===0){
+    reSavedRange[node.id.slice(3)]=range.cloneRange();
+  }
+});
 
 function toggleReColorBar(id,mode){
   const bar=document.getElementById('cbar-'+id);
@@ -1794,7 +1812,18 @@ function applyReColor(id,cmd,color){
   const ed=document.getElementById('ed-'+id);
   if(!ed)return;
   ed.focus();
+  const saved=reSavedRange[id];
+  if(saved){
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(saved);
+  }
+  // Chrome silently does nothing for hiliteColor unless styleWithCSS is on;
+  // toggle it on just for this command, then back off so Bold/Italic/Underline
+  // keep producing the same <b>/<i>/<u> markup as before.
+  document.execCommand('styleWithCSS',false,true);
   document.execCommand(cmd,false,color);
+  document.execCommand('styleWithCSS',false,false);
 }
 
 // Save rich editor content to D
