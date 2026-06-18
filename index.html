@@ -813,6 +813,25 @@ select option{background:var(--surface);color:var(--text)}
     </div>
   </div>
 
+  <!-- STORAGE STATUS CARD -->
+  <div class="card">
+    <div class="card-title"><span>📦</span> Storage Status</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">
+      Your data is stored in Firestore, which has a 1 GB free-tier limit. This shows how much of that you're currently using.
+    </p>
+    <div style="border:1px solid var(--border);border-radius:var(--rs);padding:18px 20px;background:var(--surface2);">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;">
+        <span style="font-size:13px;color:var(--text2);">Data Size</span>
+        <span id="storage-used-mb" style="font-size:20px;font-family:'DM Serif Display',serif;color:var(--accent);">0 MB</span>
+      </div>
+      <div class="progress-wrap"><div class="progress-fill" id="storage-bar" style="width:0%;"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:8px;font-size:12px;color:var(--text3);">
+        <span id="storage-pct-used">0% used</span>
+        <span id="storage-remaining">~1.00 GB remaining</span>
+      </div>
+    </div>
+  </div>
+
   <!-- SECURITY CARD -->
   <div class="card">
     <div class="card-title"><span>🔒</span> Security</div>
@@ -1312,6 +1331,8 @@ function save(){
   // Local status
   const el=document.getElementById('save-status');
   if(el){el.textContent='Saved ✓';el.className='saved';setTimeout(()=>{if(!window._fbCurrentUser)setSaveStatus('offline');},1500);}
+  // Keep Storage Status card live if Settings is open (no-op otherwise)
+  renderStorageStatus();
 }
 
 function setSaveStatus(state,txt){
@@ -1536,6 +1557,27 @@ function updateLastBackupDisplay(){
   el.textContent=day+' '+month+' '+year+', '+h12+':'+m+' '+ampm;
 }
 
+// Storage Status — size of D as stored/synced, vs Firestore's 1 GB free-tier limit.
+// Read-only display; never writes to D, never affects save/sync logic.
+const FIRESTORE_FREE_LIMIT_BYTES=1024*1024*1024; // 1 GB
+function renderStorageStatus(){
+  const mbEl=document.getElementById('storage-used-mb');
+  if(!mbEl)return; // Settings page not in DOM / not open — skip silently
+  let bytes=0;
+  try{ bytes=new Blob([JSON.stringify(D)]).size; }
+  catch(e){ bytes=JSON.stringify(D).length; } // fallback if Blob unavailable
+  const mb=bytes/(1024*1024);
+  const pctUsed=Math.min(100,(bytes/FIRESTORE_FREE_LIMIT_BYTES)*100);
+  const remainingGB=Math.max(0,(FIRESTORE_FREE_LIMIT_BYTES-bytes)/(1024*1024*1024));
+  mbEl.textContent=mb<0.01?'<0.01 MB':mb.toFixed(2)+' MB';
+  const barEl=document.getElementById('storage-bar');
+  if(barEl)barEl.style.width=Math.max(pctUsed,pctUsed>0?0.5:0)+'%'; // tiny visible sliver even at very low %
+  const pctEl=document.getElementById('storage-pct-used');
+  if(pctEl)pctEl.textContent=(pctUsed<0.01?'<0.01':pctUsed.toFixed(2))+'% used';
+  const remEl=document.getElementById('storage-remaining');
+  if(remEl)remEl.textContent='~'+remainingGB.toFixed(2)+' GB remaining';
+}
+
 // Holds the parsed JSON while waiting for confirmation
 let _pendingImportData=null;
 let _pendingImportName='';
@@ -1666,7 +1708,7 @@ function goto(pg){
   if(pg==='spiritual-progress')renderSpiritualProgressPage();
   if(pg==='reviews')renderReviews();
   if(pg==='search'){setTimeout(()=>{const si=document.getElementById('search-input');if(si)si.focus();},80);}
-  if(pg==='settings')updateLastBackupDisplay();
+  if(pg==='settings'){updateLastBackupDisplay();renderStorageStatus();}
 }
 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
