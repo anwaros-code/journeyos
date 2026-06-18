@@ -210,6 +210,20 @@ select option{background:var(--surface);color:var(--text)}
 .yn-input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 22%,transparent);}
 .yn-input:focus::placeholder{color:var(--accent);opacity:0.75;}
 
+/* ── SPIRITUAL GOALS ── */
+.sp-goal-block{border:1px solid var(--border);border-radius:var(--rs);margin-bottom:12px;overflow:hidden;}
+.sp-goal-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface2);cursor:pointer;user-select:none;transition:background .15s;}
+.sp-goal-header:hover{background:#e8e6df;}
+.sp-goal-toggle{font-size:12px;color:var(--text3);flex-shrink:0;transition:transform .2s;display:inline-block;}
+.sp-goal-toggle.open{transform:rotate(90deg);}
+.sp-goal-body{display:none;padding:16px;}
+.sp-goal-body.open{display:block;}
+/* ── SPIRITUAL HABITS ── */
+.sp-habit-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:16px;margin-bottom:12px;}
+.sp-habit-day-grid{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;}
+.sp-habit-dot{width:30px;height:30px;border-radius:5px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);cursor:pointer;user-select:none;transition:all .12s;background:var(--surface2);}
+.sp-habit-dot:hover{border-color:var(--accent);}
+.sp-habit-dot.done{background:rgba(58,138,110,.18);border-color:var(--success);color:var(--success);font-weight:700;}
 /* ── LOCK SCREEN ── */
 #lock-screen{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);align-items:center;justify-content:center;}
 #lock-screen.visible{display:flex;}
@@ -433,9 +447,17 @@ select option{background:var(--surface);color:var(--text)}
 <!-- SPIRITUAL -->
 <div id="page-spiritual" class="page">
   <div class="section-header">
-    <div><h1 class="page-title">Spiritual Goals</h1><p class="page-sub">Daily habits and inner growth tracking</p></div>
-    <button class="btn btn-primary" onclick="openHabitModal()">+ Add habit</button>
+    <div><h1 class="page-title">Spiritual Goals</h1><p class="page-sub">Inner growth, intentions, and daily habit tracking</p></div>
+    <button class="btn btn-primary" onclick="openSpiritualHabitModal()">+ Add habit</button>
   </div>
+
+  <!-- SPIRITUAL PROGRESS CARD -->
+  <div class="card" id="sp-progress-card">
+    <div class="card-title"><span>✦</span> Spiritual Progress</div>
+    <div id="sp-progress-content"></div>
+  </div>
+
+  <!-- INTENTION (unchanged) -->
   <div class="card">
     <div class="card-title"><span>✦</span> My spiritual intention</div>
     <div class="re-wrap" style="margin-top:6px;">
@@ -466,7 +488,110 @@ select option{background:var(--surface);color:var(--text)}
         style="min-height:90px;"></div>
     </div>
   </div>
-  <div id="habit-list"></div>
+
+  <!-- SPIRITUAL GOALS 1-3 -->
+  <div class="card">
+    <div class="card-title"><span>🌙</span> My 3 Spiritual Goals</div>
+    <div class="grid2" style="gap:12px;margin-bottom:12px;">
+      <div><div class="label">Spiritual Goal 1</div><input type="text" id="sp-g1" placeholder="e.g. Complete daily dhikr for 90 days" oninput="saveSpGoal()"></div>
+      <div><div class="label">Goal 1 Progress %</div><input type="number" id="sp-g1pct" min="0" max="100" placeholder="0–100" oninput="saveSpGoal()"></div>
+    </div>
+    <div class="grid2" style="gap:12px;margin-bottom:12px;">
+      <div><div class="label">Spiritual Goal 2</div><input type="text" id="sp-g2" placeholder="e.g. Read Quran daily" oninput="saveSpGoal()"></div>
+      <div><div class="label">Goal 2 Progress %</div><input type="number" id="sp-g2pct" min="0" max="100" placeholder="0–100" oninput="saveSpGoal()"></div>
+    </div>
+    <div class="grid2" style="gap:12px;">
+      <div><div class="label">Spiritual Goal 3</div><input type="text" id="sp-g3" placeholder="e.g. Night prayer 3x per week" oninput="saveSpGoal()"></div>
+      <div><div class="label">Goal 3 Progress %</div><input type="number" id="sp-g3pct" min="0" max="100" placeholder="0–100" oninput="saveSpGoal()"></div>
+    </div>
+    <div class="mt16" id="sp-goal-bars"></div>
+  </div>
+
+  <!-- SPIRITUAL GOAL DETAIL PLANS -->
+  <div class="card">
+    <div class="card-title"><span>📋</span> Spiritual Goal Plans</div>
+    <!-- Goal 1 Plan -->
+    <div class="sp-goal-block">
+      <div class="sp-goal-header" onclick="toggleSpGoalPlan(1)">
+        <span class="sp-goal-toggle" id="sp-tog-1">&#9658;</span>
+        <span style="font-size:14px;font-weight:500;color:var(--text);" id="sp-plan-label-1">Spiritual Goal 1 — Detailed Plan</span>
+      </div>
+      <div class="sp-goal-body" id="sp-plan-body-1">
+        <div class="re-wrap">
+          <div class="re-tools-toggle" onclick="toggleReTools('sp-plan-1')"><span class="arr" id="arr-sp-plan-1">&#9658;</span> TOOLS</div>
+          <div class="re-toolbar" id="tb-sp-plan-1">
+            <button class="re-btn" onclick="reCmd('sp-plan-1','bold')"><b>B</b></button>
+            <button class="re-btn" onclick="reCmd('sp-plan-1','italic')"><i>I</i></button>
+            <button class="re-btn" onclick="reCmd('sp-plan-1','underline')"><u>U</u></button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="reCmd('sp-plan-1','insertUnorderedList')">&#8801;</button>
+            <button class="re-btn" onclick="reCmd('sp-plan-1','insertOrderedList')">&#9312;</button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="toggleReColorBar('sp-plan-1','fore')" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
+            <button class="re-btn" onclick="toggleReColorBar('sp-plan-1','hilite')" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+          </div>
+          <div class="re-color-bar" id="cbar-sp-plan-1"></div>
+          <div class="re-editor" id="ed-sp-plan-1" contenteditable="true" data-ph="Write your detailed plan for Spiritual Goal 1..." oninput="saveReEditor('sp-plan-1')"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Goal 2 Plan -->
+    <div class="sp-goal-block">
+      <div class="sp-goal-header" onclick="toggleSpGoalPlan(2)">
+        <span class="sp-goal-toggle" id="sp-tog-2">&#9658;</span>
+        <span style="font-size:14px;font-weight:500;color:var(--text);" id="sp-plan-label-2">Spiritual Goal 2 — Detailed Plan</span>
+      </div>
+      <div class="sp-goal-body" id="sp-plan-body-2">
+        <div class="re-wrap">
+          <div class="re-tools-toggle" onclick="toggleReTools('sp-plan-2')"><span class="arr" id="arr-sp-plan-2">&#9658;</span> TOOLS</div>
+          <div class="re-toolbar" id="tb-sp-plan-2">
+            <button class="re-btn" onclick="reCmd('sp-plan-2','bold')"><b>B</b></button>
+            <button class="re-btn" onclick="reCmd('sp-plan-2','italic')"><i>I</i></button>
+            <button class="re-btn" onclick="reCmd('sp-plan-2','underline')"><u>U</u></button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="reCmd('sp-plan-2','insertUnorderedList')">&#8801;</button>
+            <button class="re-btn" onclick="reCmd('sp-plan-2','insertOrderedList')">&#9312;</button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="toggleReColorBar('sp-plan-2','fore')" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
+            <button class="re-btn" onclick="toggleReColorBar('sp-plan-2','hilite')" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+          </div>
+          <div class="re-color-bar" id="cbar-sp-plan-2"></div>
+          <div class="re-editor" id="ed-sp-plan-2" contenteditable="true" data-ph="Write your detailed plan for Spiritual Goal 2..." oninput="saveReEditor('sp-plan-2')"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Goal 3 Plan -->
+    <div class="sp-goal-block">
+      <div class="sp-goal-header" onclick="toggleSpGoalPlan(3)">
+        <span class="sp-goal-toggle" id="sp-tog-3">&#9658;</span>
+        <span style="font-size:14px;font-weight:500;color:var(--text);" id="sp-plan-label-3">Spiritual Goal 3 — Detailed Plan</span>
+      </div>
+      <div class="sp-goal-body" id="sp-plan-body-3">
+        <div class="re-wrap">
+          <div class="re-tools-toggle" onclick="toggleReTools('sp-plan-3')"><span class="arr" id="arr-sp-plan-3">&#9658;</span> TOOLS</div>
+          <div class="re-toolbar" id="tb-sp-plan-3">
+            <button class="re-btn" onclick="reCmd('sp-plan-3','bold')"><b>B</b></button>
+            <button class="re-btn" onclick="reCmd('sp-plan-3','italic')"><i>I</i></button>
+            <button class="re-btn" onclick="reCmd('sp-plan-3','underline')"><u>U</u></button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="reCmd('sp-plan-3','insertUnorderedList')">&#8801;</button>
+            <button class="re-btn" onclick="reCmd('sp-plan-3','insertOrderedList')">&#9312;</button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="toggleReColorBar('sp-plan-3','fore')" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
+            <button class="re-btn" onclick="toggleReColorBar('sp-plan-3','hilite')" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+          </div>
+          <div class="re-color-bar" id="cbar-sp-plan-3"></div>
+          <div class="re-editor" id="ed-sp-plan-3" contenteditable="true" data-ph="Write your detailed plan for Spiritual Goal 3..." oninput="saveReEditor('sp-plan-3')"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SPIRITUAL HABITS -->
+  <div class="card">
+    <div class="card-title"><span>📿</span> Spiritual Habits</div>
+    <div id="sp-habit-list"></div>
+  </div>
 </div>
 
 <!-- ADVENTURE LOG -->
@@ -776,9 +901,11 @@ select option{background:var(--surface);color:var(--text)}
 <div class="modal-overlay" id="modal-habit">
   <div class="modal">
     <div class="modal-title">Add spiritual habit</div>
-    <div class="label">Habit name</div><input type="text" id="habit-name" placeholder="e.g. Morning prayer, Gratitude journal">
-    <div class="label mt16">Daily goal</div><input type="text" id="habit-goal" placeholder="e.g. 5 minutes, 1 page, 2 rakats">
-    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-habit')">Cancel</button><button class="btn btn-primary" onclick="saveHabit()">Save</button></div>
+    <div class="label">Habit name</div><input type="text" id="habit-name" placeholder="e.g. Istighfar 70 times">
+    <div class="label mt16">Daily description (optional)</div><input type="text" id="habit-goal" placeholder="e.g. 70 times, 5 minutes, 2 rakats">
+    <div class="label mt16">Target days</div><input type="number" id="habit-days" min="1" max="3650" placeholder="e.g. 70" style="margin-bottom:4px;">
+    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">How many consecutive days is this habit for?</div>
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-habit')">Cancel</button><button class="btn btn-primary" onclick="saveSpiritualHabit()">Save</button></div>
   </div>
 </div>
 
@@ -1090,7 +1217,7 @@ select option{background:var(--surface);color:var(--text)}
 <script>
 const KEY='mylifeos_v3';
 const JOURNEY_START='2026-06-18';
-let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:''};
+let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:''};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
 // ── DATE HELPERS ─────────────────────────────────────────────
@@ -1412,7 +1539,7 @@ function handleImportFile(input){
       return;
     }
     // Must have at least one known top-level key
-    const knownKeys=['goals','definitions','spiritual','adventureDays','scheduleMonths','weeklyReviews','monthlyReviews','quarterlyReviews','annualReviews','milestones'];
+    const knownKeys=['goals','definitions','spiritual','spiritualGoals','adventureDays','scheduleMonths','weeklyReviews','monthlyReviews','quarterlyReviews','annualReviews','milestones'];
     const hasKey=knownKeys.some(k=>Object.prototype.hasOwnProperty.call(parsed,k));
     if(!hasKey){
       showImportError('Invalid backup file — this does not appear to be a JourneyOS backup.');
@@ -1567,24 +1694,183 @@ function toggleMs(i){D.milestones[i].done=!D.milestones[i].done;save();renderGoa
 function delMs(i){D.milestones.splice(i,1);save();renderGoals();}
 
 function renderSpiritual(){
-  // Load rich editor content for spiritual intention
+  // ── Intention editor ──
   setTimeout(()=>{
     const ed=document.getElementById('ed-spiritual-intention');
     if(ed){
       if(D.reContent&&D.reContent['spiritual-intention']){
         ed.innerHTML=D.reContent['spiritual-intention'];
       } else if(D.spiritual&&D.spiritual.intention){
-        // Migrate legacy plain text to rich editor on first load
         ed.textContent=D.spiritual.intention;
       }
     }
+    ['sp-plan-1','sp-plan-2','sp-plan-3'].forEach(pid=>{
+      const pe=document.getElementById('ed-'+pid);
+      if(pe&&D.reContent&&D.reContent[pid])pe.innerHTML=D.reContent[pid];
+    });
   },20);
-  const today=new Date();const week=[];for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);week.push(d.toISOString().split('T')[0]);}const dl=['M','T','W','T','F','S','S'];const el=document.getElementById('habit-list');if(!D.spiritual.habits.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:40px 0;">No habits yet.</div>';return;}el.innerHTML=D.spiritual.habits.map((h,hi)=>`<div class="card"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><div><div style="font-weight:500;font-size:14px;">${esc(h.name)}</div>${h.goal?`<div style="font-size:12px;color:var(--text3);margin-top:2px;">${esc(h.goal)}</div>`:''}</div><button class="btn btn-danger" onclick="delHabit(${hi})" style="font-size:11px;padding:4px 10px;">✕</button></div><div class="habit-week">${week.map((day,di)=>`<div class="habit-day${h.log&&h.log[day]?' done':''}" onclick="toggleHabit(${hi},'${day}')">${dl[di]}</div>`).join('')}</div></div>`).join('');
+  if(!D.spiritualGoals)D.spiritualGoals={g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0};
+  ['g1','g2','g3'].forEach(k=>{
+    const inp=document.getElementById('sp-'+k);
+    if(inp)inp.value=D.spiritualGoals[k]||'';
+    const pct=document.getElementById('sp-'+k+'pct');
+    if(pct)pct.value=D.spiritualGoals[k+'pct']||'';
+  });
+  for(let i=1;i<=3;i++){
+    const lbl=document.getElementById('sp-plan-label-'+i);
+    if(lbl){const g=D.spiritualGoals['g'+i];lbl.textContent=g?g+' — Detailed Plan':'Spiritual Goal '+i+' — Detailed Plan';}
+  }
+  const barsEl=document.getElementById('sp-goal-bars');
+  if(barsEl){
+    barsEl.innerHTML=['g1','g2','g3'].map((k,i)=>{
+      const title=D.spiritualGoals[k]||'Spiritual Goal '+(i+1);
+      const pct=Math.min(100,Math.max(0,parseInt(D.spiritualGoals[k+'pct'])||0));
+      return`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>${esc(title)}</span><span style="color:var(--accent);">${pct}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div></div>`;
+    }).join('');
+  }
+  renderSpiritualHabits();
+  renderSpiritualProgress();
 }
-function openHabitModal(){document.getElementById('habit-name').value='';document.getElementById('habit-goal').value='';document.getElementById('modal-habit').classList.add('open');}
-function saveHabit(){const n=document.getElementById('habit-name').value.trim();if(!n)return;D.spiritual.habits.push({name:n,goal:document.getElementById('habit-goal').value.trim(),log:{}});save();closeModal('modal-habit');renderSpiritual();}
-function toggleHabit(hi,day){if(!D.spiritual.habits[hi].log)D.spiritual.habits[hi].log={};D.spiritual.habits[hi].log[day]=!D.spiritual.habits[hi].log[day];save();renderSpiritual();}
-function delHabit(i){D.spiritual.habits.splice(i,1);save();renderSpiritual();}
+
+function renderSpiritualHabits(){
+  if(!D.spiritual)D.spiritual={intention:'',habits:[]};
+  const el=document.getElementById('sp-habit-list');
+  if(!el)return;
+  if(!D.spiritual.habits.length){
+    el.innerHTML='<div style="color:var(--text3);font-size:13px;text-align:center;padding:30px 0;">No habits yet. Click &quot;+ Add habit&quot; to begin.</div>';
+    return;
+  }
+  el.innerHTML=D.spiritual.habits.map((h,hi)=>{
+    const targetDays=parseInt(h.targetDays)||30;
+    const log=h.log||{};
+    const startDate=h.startDate?new Date(h.startDate):new Date();
+    const doneCount=Object.values(log).filter(Boolean).length;
+    const pct=Math.min(100,Math.round(doneCount/targetDays*100));
+    const dots=[];
+    for(let d=1;d<=targetDays;d++){
+      const dayDate=new Date(startDate);
+      dayDate.setDate(dayDate.getDate()+(d-1));
+      const key=dayDate.toISOString().split('T')[0];
+      const done=log[key];
+      dots.push(`<div class="sp-habit-dot${done?' done':''}" title="Day ${d} — ${key}" onclick="toggleSpiritualHabit(${hi},'${key}')">${done?'✓':d}</div>`);
+    }
+    return`<div class="sp-habit-card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
+        <div>
+          <div style="font-weight:500;font-size:14px;">${esc(h.name)}</div>
+          ${h.goal?`<div style="font-size:12px;color:var(--text3);margin-top:2px;">${esc(h.goal)}</div>`:''}
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">Duration: ${targetDays} days · Started: ${h.startDate||'today'}</div>
+        </div>
+        <button class="btn btn-danger" onclick="delSpiritualHabit(${hi})" style="font-size:11px;padding:4px 10px;">✕</button>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
+        <span style="color:var(--text2);">${doneCount} / ${targetDays} days completed</span>
+        <span style="color:var(--accent);font-weight:600;">${pct}%</span>
+      </div>
+      <div class="progress-wrap" style="margin-bottom:10px;"><div class="progress-fill green" style="width:${pct}%"></div></div>
+      <div class="sp-habit-day-grid">${dots.join('')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderSpiritualProgress(){
+  if(!D.spiritualGoals)D.spiritualGoals={g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0};
+  const goalPcts=[
+    parseInt(D.spiritualGoals.g1pct)||0,
+    parseInt(D.spiritualGoals.g2pct)||0,
+    parseInt(D.spiritualGoals.g3pct)||0
+  ];
+  const goalAvg=Math.round(goalPcts.reduce((a,b)=>a+b,0)/3);
+  const habits=D.spiritual&&D.spiritual.habits?D.spiritual.habits:[];
+  let habitAvg=0;
+  if(habits.length){
+    const pcts=habits.map(h=>{
+      const targetDays=parseInt(h.targetDays)||30;
+      const done=Object.values(h.log||{}).filter(Boolean).length;
+      return Math.min(100,Math.round(done/targetDays*100));
+    });
+    habitAvg=Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length);
+  }
+  const overallParts=habits.length>0?[goalAvg,habitAvg]:[goalAvg];
+  const overallPct=Math.round(overallParts.reduce((a,b)=>a+b,0)/overallParts.length);
+  const el=document.getElementById('sp-progress-content');
+  if(!el)return;
+  el.innerHTML=`
+    <div class="sched-stats-grid" style="margin-bottom:14px;">
+      <div class="sched-stat-row"><span class="sched-stat-label">Spiritual Goals Avg</span><span class="sched-stat-val accent">${goalAvg}%</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label">Habit Completion Avg</span><span class="sched-stat-val success">${habitAvg}%</span></div>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:5px;display:flex;justify-content:space-between;"><span>Overall Spiritual Progress</span><span style="font-weight:600;color:var(--accent);">${overallPct}%</span></div>
+    <div class="progress-wrap"><div class="progress-fill" style="width:${overallPct}%;background:var(--accent2);"></div></div>
+    ${goalPcts.map((p,i)=>{const g=D.spiritualGoals['g'+(i+1)];return g?`<div style="margin-top:10px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;"><span style="color:var(--text2);">${esc(g)}</span><span style="color:var(--accent);">${p}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${p}%"></div></div></div>`:''}).join('')}
+  `;
+}
+
+function saveSpGoal(){
+  if(!D.spiritualGoals)D.spiritualGoals={g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0};
+  ['g1','g2','g3'].forEach(k=>{
+    const v=document.getElementById('sp-'+k);if(v)D.spiritualGoals[k]=v.value.trim();
+    const p=document.getElementById('sp-'+k+'pct');if(p)D.spiritualGoals[k+'pct']=parseInt(p.value)||0;
+  });
+  save();
+  for(let i=1;i<=3;i++){
+    const lbl=document.getElementById('sp-plan-label-'+i);
+    if(lbl){const g=D.spiritualGoals['g'+i];lbl.textContent=g?g+' — Detailed Plan':'Spiritual Goal '+i+' — Detailed Plan';}
+  }
+  const barsEl=document.getElementById('sp-goal-bars');
+  if(barsEl){
+    barsEl.innerHTML=['g1','g2','g3'].map((k,i)=>{
+      const title=D.spiritualGoals[k]||'Spiritual Goal '+(i+1);
+      const pct=Math.min(100,Math.max(0,parseInt(D.spiritualGoals[k+'pct'])||0));
+      return`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>${esc(title)}</span><span style="color:var(--accent);">${pct}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${pct}%"></div></div></div>`;
+    }).join('');
+  }
+  renderSpiritualProgress();
+}
+
+function toggleSpGoalPlan(n){
+  const body=document.getElementById('sp-plan-body-'+n);
+  const tog=document.getElementById('sp-tog-'+n);
+  if(!body)return;
+  const open=body.classList.toggle('open');
+  if(tog)tog.classList.toggle('open',open);
+  if(open){
+    setTimeout(()=>{
+      const pid='sp-plan-'+n;
+      const pe=document.getElementById('ed-'+pid);
+      if(pe&&D.reContent&&D.reContent[pid])pe.innerHTML=D.reContent[pid];
+    },30);
+  }
+}
+
+function openSpiritualHabitModal(){
+  document.getElementById('habit-name').value='';
+  document.getElementById('habit-goal').value='';
+  document.getElementById('habit-days').value='';
+  document.getElementById('modal-habit').classList.add('open');
+}
+function openHabitModal(){openSpiritualHabitModal();}
+
+function saveSpiritualHabit(){
+  const n=document.getElementById('habit-name').value.trim();
+  if(!n)return;
+  const targetDays=parseInt(document.getElementById('habit-days').value)||30;
+  const today=new Date().toISOString().split('T')[0];
+  if(!D.spiritual)D.spiritual={intention:'',habits:[]};
+  D.spiritual.habits.push({name:n,goal:document.getElementById('habit-goal').value.trim(),targetDays,startDate:today,log:{}});
+  save();closeModal('modal-habit');renderSpiritual();
+}
+function saveHabit(){saveSpiritualHabit();}
+
+function toggleSpiritualHabit(hi,day){
+  if(!D.spiritual.habits[hi].log)D.spiritual.habits[hi].log={};
+  D.spiritual.habits[hi].log[day]=!D.spiritual.habits[hi].log[day];
+  save();renderSpiritualHabits();renderSpiritualProgress();
+}
+function toggleHabit(hi,day){toggleSpiritualHabit(hi,day);}
+
+function delSpiritualHabit(i){D.spiritual.habits.splice(i,1);save();renderSpiritual();}
+function delHabit(i){delSpiritualHabit(i);}
 
 let selDay=null,dayStatus=null,dayHappy=null;
 function renderAdventure(){
@@ -1921,54 +2207,34 @@ function resetReColor(id,mode){
   const ed=document.getElementById('ed-'+id);
   if(!ed)return;
   ed.focus();
-  const saved=reSavedRange[id];
-  if(saved){
-    const sel=window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(saved);
-  }
-  document.execCommand('styleWithCSS',false,true);
   if(mode==='fore'){
-    // Remove foreColor by applying the default body text colour
-    document.execCommand('foreColor',false,'#1a1814');
-    // Also strip any inline color spans for a truly clean reset
-    const range=window.getSelection().getRangeAt(0);
-    const fragment=range.cloneContents();
-    const walker=document.createTreeWalker(fragment,NodeFilter.SHOW_ELEMENT);
-    while(walker.nextNode()){
-      const n=walker.currentNode;
-      if(n.style){n.style.color='';}
-      if(n.tagName==='FONT')n.removeAttribute('color');
+    // Text colour default: restore saved selection and apply default colour
+    const saved=reSavedRange[id];
+    if(saved){
+      const sel=window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(saved);
     }
+    document.execCommand('styleWithCSS',false,true);
+    document.execCommand('foreColor',false,'#1a1814');
+    document.execCommand('styleWithCSS',false,false);
+    saveReEditor(id);
   } else {
-    // Remove highlight from selected text only.
-    // Walk every text-node in the selection, find parent spans with background-color, and clear it.
+    // "No Highlight" = ONLY affect future typing.
+    // Collapse the cursor to end of current selection (don't remove existing highlights).
     const sel=window.getSelection();
     if(sel&&sel.rangeCount>0){
       const range=sel.getRangeAt(0);
-      // Collect all nodes within the range
-      const treeWalker=document.createTreeWalker(
-        range.commonAncestorContainer.nodeType===1
-          ? range.commonAncestorContainer
-          : range.commonAncestorContainer.parentElement,
-        NodeFilter.SHOW_ELEMENT,
-        null
-      );
-      const els=[];
-      let n=treeWalker.currentNode;
-      if(n&&n.nodeType===1)els.push(n);
-      while(treeWalker.nextNode()){els.push(treeWalker.currentNode);}
-      els.forEach(el=>{
-        if(range.intersectsNode(el)){
-          if(el.style){el.style.backgroundColor='';el.style.background='';}
-        }
-      });
-      // Fallback execCommand attempt
-      try{document.execCommand('styleWithCSS',false,true);document.execCommand('hiliteColor',false,'inherit');document.execCommand('styleWithCSS',false,false);}catch(e){}
+      range.collapse(false); // collapse to end
+      sel.removeAllRanges();
+      sel.addRange(range);
     }
+    // Apply transparent hiliteColor at cursor so next typed chars have no highlight.
+    document.execCommand('styleWithCSS',false,true);
+    document.execCommand('hiliteColor',false,'transparent');
+    document.execCommand('styleWithCSS',false,false);
+    // Do NOT call saveReEditor — no content changed, existing highlights untouched.
   }
-  document.execCommand('styleWithCSS',false,false);
-  saveReEditor(id);
 }
 
 // Save rich editor content to D
