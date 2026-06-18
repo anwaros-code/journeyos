@@ -254,10 +254,10 @@ select option{background:var(--surface);color:var(--text)}
     <div class="lock-title" id="pin-title">Enter PIN</div>
     <div class="lock-msg" id="pin-msg">Enter your 4-digit PIN to open JourneyOS.</div>
     <div class="pin-boxes">
-      <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-0" autocomplete="off" oninput="pinDigitInput(0)" onkeydown="pinKeyDown(event,0)" onpaste="pinPaste(event)">
-      <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-1" autocomplete="off" oninput="pinDigitInput(1)" onkeydown="pinKeyDown(event,1)">
-      <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-2" autocomplete="off" oninput="pinDigitInput(2)" onkeydown="pinKeyDown(event,2)">
-      <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-3" autocomplete="off" oninput="pinDigitInput(3)" onkeydown="pinKeyDown(event,3)">
+      <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-0" autocomplete="off" oninput="pinDigitInput(0)" onkeydown="pinKeyDown(event,0)" onpaste="pinPaste(event)">
+      <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-1" autocomplete="off" oninput="pinDigitInput(1)" onkeydown="pinKeyDown(event,1)">
+      <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-2" autocomplete="off" oninput="pinDigitInput(2)" onkeydown="pinKeyDown(event,2)">
+      <input type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-3" autocomplete="off" oninput="pinDigitInput(3)" onkeydown="pinKeyDown(event,3)">
     </div>
     <div id="pin-error" style="font-size:12px;color:var(--danger);display:none;text-align:center;"></div>
     <div id="pin-cancel" style="display:none;font-size:12px;color:var(--text3);text-align:center;cursor:pointer;text-decoration:underline;" onclick="cancelChangePin()">Cancel</div>
@@ -351,8 +351,12 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="reCmd('purpose','insertUnorderedList')" title="Bullet list">&#8801;</button>
         <button class="re-btn" onclick="reCmd('purpose','insertOrderedList')" title="Numbered list">&#9312;</button>
         <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReColorBar('purpose','fore')" id="tcbtn-purpose" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
+        <button class="re-btn" onclick="toggleReColorBar('purpose','hilite')" id="hlbtn-purpose" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+        <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('purpose')" id="draw-btn-purpose" title="Draw">&#9998; Draw</button>
       </div>
+      <div class="re-color-bar" id="cbar-purpose"></div>
       <div class="re-draw" id="draw-purpose">
         <div class="re-draw-bar" id="dbar-purpose"></div>
         <canvas id="dc-purpose" class="re-canvas" height="180"></canvas>
@@ -446,8 +450,12 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="reCmd('spiritual-intention','insertUnorderedList')">&#8801;</button>
         <button class="re-btn" onclick="reCmd('spiritual-intention','insertOrderedList')">&#9312;</button>
         <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReColorBar('spiritual-intention','fore')" id="tcbtn-spiritual-intention" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
+        <button class="re-btn" onclick="toggleReColorBar('spiritual-intention','hilite')" id="hlbtn-spiritual-intention" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+        <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('spiritual-intention')" id="draw-btn-spiritual-intention">&#9998; Draw</button>
       </div>
+      <div class="re-color-bar" id="cbar-spiritual-intention"></div>
       <div class="re-draw" id="draw-spiritual-intention">
         <div class="re-draw-bar" id="dbar-spiritual-intention"></div>
         <canvas id="dc-spiritual-intention" class="re-canvas" height="150"></canvas>
@@ -792,8 +800,12 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="reCmd('adv','insertUnorderedList')" title="Bullet">&#8801;</button>
         <button class="re-btn" onclick="reCmd('adv','insertOrderedList')" title="Numbered">&#9312;</button>
         <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReColorBar('adv','fore')" id="tcbtn-adv" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
+        <button class="re-btn" onclick="toggleReColorBar('adv','hilite')" id="hlbtn-adv" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+        <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('adv')" id="draw-btn-adv">&#9998; Draw</button>
       </div>
+      <div class="re-color-bar" id="cbar-adv"></div>
       <div class="re-draw" id="draw-adv">
         <div class="re-draw-bar" id="dbar-adv"></div>
         <canvas id="dc-adv" class="re-canvas" height="150"></canvas>
@@ -835,7 +847,11 @@ select option{background:var(--surface);color:var(--text)}
         <div class="re-sep"></div>
         <button class="re-btn" onclick="reCmd('notes','insertUnorderedList')">&#8801;</button>
         <button class="re-btn" onclick="reCmd('notes','insertOrderedList')">&#9312;</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReColorBar('notes','fore')" id="tcbtn-notes" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
+        <button class="re-btn" onclick="toggleReColorBar('notes','hilite')" id="hlbtn-notes" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
       </div>
+      <div class="re-color-bar" id="cbar-notes"></div>
       <div class="re-editor" id="ed-notes" contenteditable="true" data-ph="Reflections, anything else about this day..." style="min-height:70px;"></div>
     </div>
     <div class="modal-footer"><button class="btn btn-danger" onclick="clearDayLog()" style="margin-right:auto;">✕ Clear day</button><button class="btn btn-ghost" onclick="closeModal('modal-day')">Cancel</button><button class="btn btn-primary" onclick="saveDayLog()">Save day</button></div>
@@ -2381,10 +2397,14 @@ function buildGSubHTML(n,sub,i){
           <button class="re-btn" onclick="reCmd('gs${n}${i}','insertUnorderedList')">&#8801;</button>
           <button class="re-btn" onclick="reCmd('gs${n}${i}','insertOrderedList')">&#9312;</button>
           <div class="re-sep"></div>
+          <button class="re-btn" onclick="toggleReColorBar('gs${n}${i}','fore')" id="tcbtn-gs${n}${i}" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
+          <button class="re-btn" onclick="toggleReColorBar('gs${n}${i}','hilite')" id="hlbtn-gs${n}${i}" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+          <div class="re-sep"></div>
           <button class="re-btn" onclick="toggleReDraw('gs${n}${i}')" id="draw-btn-gs${n}${i}">&#9998; Draw</button>
           <div class="re-sep"></div>
           <button class="re-btn" onclick="clearGSub(${n},${i})" style="color:var(--danger);width:auto;padding:0 8px;font-size:11px;">Clear</button>
         </div>
+        <div class="re-color-bar" id="cbar-gs${n}${i}"></div>
         <div class="re-draw" id="draw-gs${n}${i}">
           <div class="re-draw-bar" id="dbar-gs${n}${i}"></div>
           <canvas id="dc-gs${n}${i}" class="re-canvas" height="180"></canvas>
