@@ -248,18 +248,19 @@ select option{background:var(--surface);color:var(--text)}
   </div>
 </div>
 
-<!-- ── PIN SCREEN ── second layer, shown after a successful Gmail sign-in, before the app is revealed ── -->
+<!-- ── PIN SCREEN ── second layer, shown after a successful Gmail sign-in, before the app is revealed. Also reused for first-time PIN setup and for Change PIN from Settings. ── -->
 <div id="pin-screen">
   <div class="lock-box">
-    <div class="lock-title">Enter PIN</div>
-    <div class="lock-msg">Enter your 4-digit PIN to open JourneyOS.</div>
+    <div class="lock-title" id="pin-title">Enter PIN</div>
+    <div class="lock-msg" id="pin-msg">Enter your 4-digit PIN to open JourneyOS.</div>
     <div class="pin-boxes">
       <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-0" autocomplete="off" oninput="pinDigitInput(0)" onkeydown="pinKeyDown(event,0)" onpaste="pinPaste(event)">
       <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-1" autocomplete="off" oninput="pinDigitInput(1)" onkeydown="pinKeyDown(event,1)">
       <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-2" autocomplete="off" oninput="pinDigitInput(2)" onkeydown="pinKeyDown(event,2)">
       <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-3" autocomplete="off" oninput="pinDigitInput(3)" onkeydown="pinKeyDown(event,3)">
     </div>
-    <div id="pin-error" style="font-size:12px;color:var(--danger);display:none;text-align:center;">Incorrect PIN</div>
+    <div id="pin-error" style="font-size:12px;color:var(--danger);display:none;text-align:center;"></div>
+    <div id="pin-cancel" style="display:none;font-size:12px;color:var(--text3);text-align:center;cursor:pointer;text-decoration:underline;" onclick="cancelChangePin()">Cancel</div>
   </div>
 </div>
 
@@ -652,6 +653,27 @@ select option{background:var(--surface);color:var(--text)}
         ✓ Backup restored successfully.
       </div>
       <div id="import-msg-error" style="display:none;margin-top:12px;padding:10px 14px;border-radius:var(--rs);background:rgba(184,90,90,0.1);border:1px solid rgba(184,90,90,0.25);color:var(--danger);font-size:13px;"></div>
+    </div>
+  </div>
+
+  <!-- SECURITY CARD -->
+  <div class="card">
+    <div class="card-title"><span>🔒</span> Security</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">
+      Your 4-digit PIN is the second lock on JourneyOS, after Google Sign-In. It's stored only on this device.
+    </p>
+    <div style="border:1px solid var(--border);border-radius:var(--rs);padding:18px 20px;background:var(--surface2);">
+      <div style="display:flex;align-items:flex-start;gap:14px;">
+        <div style="font-size:28px;line-height:1;">🔑</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;">Change PIN</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Update the 4-digit PIN used to unlock JourneyOS on this device.</div>
+          <button class="btn btn-ghost" onclick="startChangePin()" id="btn-change-pin">Change PIN</button>
+        </div>
+      </div>
+      <div id="pin-changed-msg" style="display:none;margin-top:12px;padding:10px 14px;border-radius:var(--rs);background:rgba(58,138,110,0.1);border:1px solid rgba(58,138,110,0.25);color:var(--success);font-size:13px;">
+        ✓ PIN updated successfully.
+      </div>
     </div>
   </div>
 
@@ -1172,9 +1194,15 @@ async function cloudLoad(uid){
 const ALLOWED_EMAIL = 'anwarbeg292@gmail.com';
 
 // ── PIN LOCK (second security layer, shown after Gmail sign-in) ──
-// Change this to set your own PIN. Must be exactly 4 digits.
-const APP_PIN = '2580';
+// The PIN is stored only in this browser's localStorage, under its own key —
+// it is NEVER added to D, so it never syncs to Firestore and never appears
+// in Export/Import Backup (those only ever read/write D).
+const PIN_KEY='journeyos_pin_local';
+function getSavedPin(){ try{return localStorage.getItem(PIN_KEY);}catch(e){return null;} }
+function setSavedPin(pin){ try{localStorage.setItem(PIN_KEY,pin);}catch(e){} }
 let pinVerified=false; // resets to false on sign-out and on every fresh page load
+let pinScreenMode='unlock'; // 'unlock' | 'create' | 'confirm' | 'change-current' | 'change-new' | 'change-confirm'
+let pinTempValue=null; // holds the first-entered PIN while it awaits confirmation
 
 // ── FIREBASE AUTH HANDLERS ────────────────────────────────────
 window._fbCurrentUser=null;
@@ -2689,13 +2717,36 @@ function ynBlur(inp,ri,field){
 }
 
 // ── PIN SCREEN HELPERS (second security layer) ────────────────
+function setPinScreenText(title,msg){
+  const t=document.getElementById('pin-title');
+  const m=document.getElementById('pin-msg');
+  if(t)t.textContent=title;
+  if(m)m.textContent=msg;
+}
+function pinShowError(msg){
+  const err=document.getElementById('pin-error');
+  if(err){err.textContent=msg;err.style.display='block';}
+}
+function pinFocusFirst(){
+  const first=document.getElementById('pin-box-0');
+  if(first)first.focus();
+}
 function showPinScreen(){
   const ps=document.getElementById('pin-screen');
   const app=document.querySelector('.app');
   if(ps)ps.classList.add('visible');
   if(app)app.style.display='none';
+  pinTempValue=null;
+  if(getSavedPin()){
+    pinScreenMode='unlock';
+    setPinScreenText('Enter PIN','Enter your 4-digit PIN to open JourneyOS.');
+  }else{
+    // First time the feature runs — no PIN saved yet, so set one up first.
+    pinScreenMode='create';
+    setPinScreenText('Create a PIN','Choose a 4-digit PIN to protect JourneyOS.');
+  }
   clearPinBoxes();
-  setTimeout(()=>{const b=document.getElementById('pin-box-0');if(b)b.focus();},50);
+  setTimeout(pinFocusFirst,50);
 }
 function hidePinScreen(){
   const ps=document.getElementById('pin-screen');
@@ -2743,17 +2794,99 @@ function pinPaste(e){
   if(text.length===4)validatePin(text);
   else{const next=document.getElementById('pin-box-'+text.length);if(next)next.focus();}
 }
+
+// Entry point for the "Change PIN" button in Settings.
+function startChangePin(){
+  if(!getSavedPin()){alert('No PIN has been set yet.');return;}
+  pinScreenMode='change-current';
+  pinTempValue=null;
+  setPinScreenText('Change PIN','Enter your current PIN.');
+  const ps=document.getElementById('pin-screen');
+  const cancel=document.getElementById('pin-cancel');
+  if(ps)ps.classList.add('visible');
+  if(cancel)cancel.style.display='block';
+  clearPinBoxes();
+  setTimeout(pinFocusFirst,50);
+}
+function cancelChangePin(){
+  const ps=document.getElementById('pin-screen');
+  const cancel=document.getElementById('pin-cancel');
+  if(ps)ps.classList.remove('visible');
+  if(cancel)cancel.style.display='none';
+  pinScreenMode='unlock';
+  pinTempValue=null;
+  clearPinBoxes();
+}
+
+// Drives every PIN-box flow: first-time setup (create→confirm), normal
+// unlock, and Change PIN from Settings (current→new→confirm).
 function validatePin(pin){
-  if(pin===APP_PIN){
+  if(pinScreenMode==='create'){
+    pinTempValue=pin;
+    pinScreenMode='confirm';
+    setPinScreenText('Confirm PIN','Re-enter the same 4 digits to confirm.');
+    clearPinBoxes();pinFocusFirst();
+    return;
+  }
+  if(pinScreenMode==='confirm'){
+    if(pin===pinTempValue){
+      setSavedPin(pin);
+      pinTempValue=null;
+      pinVerified=true;
+      hidePinScreen();
+      if(window._fbCurrentUser)completeSignIn(window._fbCurrentUser);
+    }else{
+      pinTempValue=null;
+      pinScreenMode='create';
+      clearPinBoxes(false);pinShowError("PINs didn't match — try again.");
+      setPinScreenText('Create a PIN','Choose a 4-digit PIN to protect JourneyOS.');
+      pinFocusFirst();
+    }
+    return;
+  }
+  if(pinScreenMode==='change-current'){
+    if(pin===getSavedPin()){
+      pinScreenMode='change-new';
+      setPinScreenText('Change PIN','Enter your new 4-digit PIN.');
+      clearPinBoxes();
+    }else{
+      clearPinBoxes(false);pinShowError('Incorrect current PIN');
+    }
+    pinFocusFirst();
+    return;
+  }
+  if(pinScreenMode==='change-new'){
+    pinTempValue=pin;
+    pinScreenMode='change-confirm';
+    setPinScreenText('Change PIN','Re-enter the new PIN to confirm.');
+    clearPinBoxes();pinFocusFirst();
+    return;
+  }
+  if(pinScreenMode==='change-confirm'){
+    if(pin===pinTempValue){
+      setSavedPin(pin);
+      pinTempValue=null;
+      pinScreenMode='unlock';
+      cancelChangePin(); // closes the overlay without re-locking the app
+      const msg=document.getElementById('pin-changed-msg');
+      if(msg){msg.style.display='block';setTimeout(()=>{msg.style.display='none';},4000);}
+    }else{
+      pinTempValue=null;
+      pinScreenMode='change-new';
+      clearPinBoxes(false);pinShowError("PINs didn't match — try again.");
+      setPinScreenText('Change PIN','Enter your new 4-digit PIN.');
+      pinFocusFirst();
+    }
+    return;
+  }
+  // pinScreenMode === 'unlock'
+  if(pin===getSavedPin()){
     pinVerified=true;
     hidePinScreen();
     if(window._fbCurrentUser)completeSignIn(window._fbCurrentUser);
   }else{
-    clearPinBoxes(false); // clear boxes but show the error
-    const err=document.getElementById('pin-error');
-    if(err){err.textContent='Incorrect PIN';err.style.display='block';}
-    const first=document.getElementById('pin-box-0');
-    if(first)first.focus();
+    clearPinBoxes(false);pinShowError('Incorrect PIN');
+    pinFocusFirst();
   }
 }
 
