@@ -224,6 +224,8 @@ select option{background:var(--surface);color:var(--text)}
 .sp-habit-dot{width:30px;height:30px;border-radius:5px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);cursor:pointer;user-select:none;transition:all .12s;background:var(--surface2);}
 .sp-habit-dot:hover{border-color:var(--accent);}
 .sp-habit-dot.done{background:rgba(58,138,110,.18);border-color:var(--success);color:var(--success);font-weight:700;}
+.sp-habit-dot.today-dot{border:2px solid var(--accent);color:var(--accent);font-weight:700;}
+.sp-habit-dot.done.today-dot{border:2px solid var(--accent);}
 /* ── LOCK SCREEN ── */
 #lock-screen{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);align-items:center;justify-content:center;}
 #lock-screen.visible{display:flex;}
@@ -669,8 +671,20 @@ select option{background:var(--surface);color:var(--text)}
   <h1 class="page-title">Progress</h1>
   <p class="page-sub">Your journey at a glance</p>
   <div class="grid3" id="progress-stats" style="margin-bottom:20px;"></div>
+
+  <!-- LIFE PROGRESS — based only on Goal 1/2/3 -->
+  <div class="card">
+    <div class="card-title"><span>🎯</span> Life Progress</div>
+    <div id="progress-life"></div>
+  </div>
+
+  <!-- SPIRITUAL PROGRESS — based only on Spiritual Goals + Habits -->
+  <div class="card">
+    <div class="card-title"><span>✦</span> Spiritual Progress</div>
+    <div id="progress-spiritual"></div>
+  </div>
+
   <div class="card"><div class="card-title"><span>📊</span> Adventure log — last 30 days</div><div class="chart-box"><canvas id="chart-adventure"></canvas></div></div>
-  <div class="card"><div class="card-title"><span>✦</span> Spiritual habits — this week</div><div id="progress-spiritual-week"></div></div>
   <div class="card">
     <div class="card-title"><span>🎯</span> Milestones</div>
     <div id="progress-milestones"></div>
@@ -900,11 +914,13 @@ select option{background:var(--surface);color:var(--text)}
 
 <div class="modal-overlay" id="modal-habit">
   <div class="modal">
-    <div class="modal-title">Add spiritual habit</div>
+    <div class="modal-title" id="habit-modal-title">Add spiritual habit</div>
+    <input type="hidden" id="habit-edit-idx" value="">
     <div class="label">Habit name</div><input type="text" id="habit-name" placeholder="e.g. Istighfar 70 times">
     <div class="label mt16">Daily description (optional)</div><input type="text" id="habit-goal" placeholder="e.g. 70 times, 5 minutes, 2 rakats">
-    <div class="label mt16">Target days</div><input type="number" id="habit-days" min="1" max="3650" placeholder="e.g. 70" style="margin-bottom:4px;">
-    <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">How many consecutive days is this habit for?</div>
+    <div class="label mt16">Target days</div><input type="number" id="habit-days" min="1" max="3650" placeholder="e.g. 70">
+    <div class="label mt16">Start date</div><input type="date" id="habit-startdate">
+    <div style="font-size:11px;color:var(--text3);margin-top:3px;margin-bottom:4px;">Leave blank to use today. Set an earlier date if you already started.</div>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-habit')">Cancel</button><button class="btn btn-primary" onclick="saveSpiritualHabit()">Save</button></div>
   </div>
 </div>
@@ -1743,25 +1759,37 @@ function renderSpiritualHabits(){
   el.innerHTML=D.spiritual.habits.map((h,hi)=>{
     const targetDays=parseInt(h.targetDays)||30;
     const log=h.log||{};
-    const startDate=h.startDate?new Date(h.startDate):new Date();
+    // Parse start date in local time to avoid UTC shift
+    let startDate;
+    if(h.startDate){const[y,m,d]=h.startDate.split('-').map(Number);startDate=new Date(y,m-1,d);}
+    else{startDate=new Date();}
     const doneCount=Object.values(log).filter(Boolean).length;
     const pct=Math.min(100,Math.round(doneCount/targetDays*100));
+    // Calculate current day number from start date
+    const todayDate=new Date();const ty=todayDate.getFullYear(),tm=todayDate.getMonth(),td=todayDate.getDate();
+    const todayLocal=new Date(ty,tm,td);
+    const daysSinceStart=Math.floor((todayLocal-startDate)/86400000);
+    const currentDayNum=Math.min(targetDays,Math.max(1,daysSinceStart+1));
     const dots=[];
     for(let d=1;d<=targetDays;d++){
       const dayDate=new Date(startDate);
       dayDate.setDate(dayDate.getDate()+(d-1));
-      const key=dayDate.toISOString().split('T')[0];
+      const key=dayDate.getFullYear()+'-'+String(dayDate.getMonth()+1).padStart(2,'0')+'-'+String(dayDate.getDate()).padStart(2,'0');
       const done=log[key];
-      dots.push(`<div class="sp-habit-dot${done?' done':''}" title="Day ${d} — ${key}" onclick="toggleSpiritualHabit(${hi},'${key}')">${done?'✓':d}</div>`);
+      const isToday=d===currentDayNum;
+      dots.push(`<div class="sp-habit-dot${done?' done':''}${isToday?' today-dot':''}" title="Day ${d} — ${key}" onclick="toggleSpiritualHabit(${hi},'${key}')">${done?'✓':d}</div>`);
     }
     return`<div class="sp-habit-card">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
         <div>
           <div style="font-weight:500;font-size:14px;">${esc(h.name)}</div>
           ${h.goal?`<div style="font-size:12px;color:var(--text3);margin-top:2px;">${esc(h.goal)}</div>`:''}
-          <div style="font-size:11px;color:var(--text3);margin-top:2px;">Duration: ${targetDays} days · Started: ${h.startDate||'today'}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">Day <b style="color:var(--accent);">${currentDayNum}</b> of ${targetDays} · Started: ${h.startDate||'today'}</div>
         </div>
-        <button class="btn btn-danger" onclick="delSpiritualHabit(${hi})" style="font-size:11px;padding:4px 10px;">✕</button>
+        <div style="display:flex;gap:6px;flex-shrink:0;">
+          <button class="btn btn-ghost" onclick="editSpiritualHabit(${hi})" style="font-size:11px;padding:4px 10px;">✎ Edit</button>
+          <button class="btn btn-danger" onclick="delSpiritualHabit(${hi})" style="font-size:11px;padding:4px 10px;">✕</button>
+        </div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
         <span style="color:var(--text2);">${doneCount} / ${targetDays} days completed</span>
@@ -1844,20 +1872,47 @@ function toggleSpGoalPlan(n){
 }
 
 function openSpiritualHabitModal(){
+  document.getElementById('habit-modal-title').textContent='Add spiritual habit';
+  document.getElementById('habit-edit-idx').value='';
   document.getElementById('habit-name').value='';
   document.getElementById('habit-goal').value='';
   document.getElementById('habit-days').value='';
+  document.getElementById('habit-startdate').value='';
   document.getElementById('modal-habit').classList.add('open');
 }
 function openHabitModal(){openSpiritualHabitModal();}
+
+function editSpiritualHabit(hi){
+  const h=D.spiritual.habits[hi];
+  if(!h)return;
+  document.getElementById('habit-modal-title').textContent='Edit spiritual habit';
+  document.getElementById('habit-edit-idx').value=hi;
+  document.getElementById('habit-name').value=h.name||'';
+  document.getElementById('habit-goal').value=h.goal||'';
+  document.getElementById('habit-days').value=h.targetDays||30;
+  document.getElementById('habit-startdate').value=h.startDate||'';
+  document.getElementById('modal-habit').classList.add('open');
+}
 
 function saveSpiritualHabit(){
   const n=document.getElementById('habit-name').value.trim();
   if(!n)return;
   const targetDays=parseInt(document.getElementById('habit-days').value)||30;
   const today=new Date().toISOString().split('T')[0];
+  const startDate=document.getElementById('habit-startdate').value||today;
   if(!D.spiritual)D.spiritual={intention:'',habits:[]};
-  D.spiritual.habits.push({name:n,goal:document.getElementById('habit-goal').value.trim(),targetDays,startDate:today,log:{}});
+  const editIdx=document.getElementById('habit-edit-idx').value;
+  if(editIdx!==''){
+    // EDIT: preserve existing log, only update metadata
+    const existing=D.spiritual.habits[parseInt(editIdx)];
+    existing.name=n;
+    existing.goal=document.getElementById('habit-goal').value.trim();
+    existing.targetDays=targetDays;
+    existing.startDate=startDate;
+  } else {
+    // ADD new
+    D.spiritual.habits.push({name:n,goal:document.getElementById('habit-goal').value.trim(),targetDays,startDate,log:{}});
+  }
   save();closeModal('modal-habit');renderSpiritual();
 }
 function saveHabit(){saveSpiritualHabit();}
@@ -2082,7 +2137,49 @@ function renderHome(){document.getElementById('home-date').textContent=new Date(
 }
 
 let advChart=null;
-function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>d.status==='done').length;const logged=Object.values(D.adventureDays).filter(d=>d.status).length;const start=new Date(D.startDate);const dayNum=Math.max(0,Math.floor((new Date()-start)/86400000))+1;document.getElementById('progress-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days done</div></div><div class="stat-card"><div class="stat-num">${Math.round(logged>0?done/logged*100:0)}%</div><div class="stat-label">Success rate</div></div><div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Current day</div></div>`;const labels=[],doneD=[],missD=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];const l=D.adventureDays[k];labels.push(d.toLocaleDateString('en-IN',{month:'short',day:'numeric'}));doneD.push(l&&l.status==='done'?1:0);missD.push(l&&l.status==='missed'?1:0);}const ctx=document.getElementById('chart-adventure');if(advChart)advChart.destroy();advChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Done',data:doneD,backgroundColor:'rgba(58,138,110,0.7)',borderRadius:4},{label:'Missed',data:missD,backgroundColor:'rgba(184,90,90,0.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#5a5448',font:{size:11}}}},scales:{x:{stacked:true,ticks:{color:'#9a9488',font:{size:9},maxTicksLimit:10},grid:{color:'#e0ddd6'}},y:{stacked:true,ticks:{color:'#9a9488',stepSize:1},grid:{color:'#e0ddd6'},max:1}}}});const today=new Date();const week=[];for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);week.push(d.toISOString().split('T')[0]);}const spEl=document.getElementById('progress-spiritual-week');spEl.innerHTML=D.spiritual.habits.length===0?'<div style="color:var(--text3);font-size:13px;">No habits tracked yet.</div>':D.spiritual.habits.map(h=>{const t=week.filter(d=>h.log&&h.log[d]).length;return`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;"><span>${esc(h.name)}</span><span style="color:var(--accent);">${t}/7</span></div><div class="progress-wrap"><div class="progress-fill green" style="width:${Math.round(t/7*100)}%"></div></div></div>`;}).join('');const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;document.getElementById('progress-milestones').textContent=msTotal===0?'No milestones added.':`${msDone} of ${msTotal} milestones completed`;document.getElementById('milestone-bar').style.width=msTotal>0?Math.round(msDone/msTotal*100)+'%':'0%';document.getElementById('milestone-pct').textContent=msTotal>0?Math.round(msDone/msTotal*100)+'% complete':'';
+function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>d.status==='done').length;const logged=Object.values(D.adventureDays).filter(d=>d.status).length;const start=new Date(D.startDate);const dayNum=Math.max(0,Math.floor((new Date()-start)/86400000))+1;document.getElementById('progress-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days done</div></div><div class="stat-card"><div class="stat-num">${Math.round(logged>0?done/logged*100:0)}%</div><div class="stat-label">Success rate</div></div><div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Current day</div></div>`;
+  // ── Life Progress (Goals 1/2/3 only — completely separate from Spiritual) ──
+  const lifeEl=document.getElementById('progress-life');
+  if(lifeEl){
+    const g1p=D.goals?parseInt(D.goals.g1pct)||0:0;
+    const g2p=D.goals?parseInt(D.goals.g2pct)||0:0;
+    const g3p=D.goals?parseInt(D.goals.g3pct)||0:0;
+    const lifeAvg=Math.round((g1p+g2p+g3p)/3);
+    const goalRows=[
+      {title:D.goals&&D.goals.g1?D.goals.g1:'Goal 1',pct:g1p},
+      {title:D.goals&&D.goals.g2?D.goals.g2:'Goal 2',pct:g2p},
+      {title:D.goals&&D.goals.g3?D.goals.g3:'Goal 3',pct:g3p}
+    ].filter((_,i)=>D.goals&&D.goals['g'+(i+1)]);
+    lifeEl.innerHTML=(goalRows.length===0?'<div style="color:var(--text3);font-size:13px;">No life goals set yet.</div>':
+      goalRows.map(r=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>${esc(r.title)}</span><span style="color:var(--accent);font-weight:600;">${r.pct}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${r.pct}%"></div></div></div>`).join(''))+
+      `<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:500;color:var(--text2);">Life Progress</span><span style="font-size:20px;font-family:'DM Serif Display',serif;color:var(--accent);">${lifeAvg}%</span></div><div class="progress-wrap mt8"><div class="progress-fill" style="width:${lifeAvg}%;background:var(--accent);"></div></div>`;
+  }
+  // ── Spiritual Progress (Spiritual Goals + Habits only — completely separate from Life) ──
+  const spProgressEl=document.getElementById('progress-spiritual');
+  if(spProgressEl){
+    if(!D.spiritualGoals)D.spiritualGoals={g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0};
+    const sg1p=parseInt(D.spiritualGoals.g1pct)||0;
+    const sg2p=parseInt(D.spiritualGoals.g2pct)||0;
+    const sg3p=parseInt(D.spiritualGoals.g3pct)||0;
+    const spGoalAvg=Math.round((sg1p+sg2p+sg3p)/3);
+    const habits=D.spiritual&&D.spiritual.habits?D.spiritual.habits:[];
+    let habitAvg=0;
+    if(habits.length){
+      const pcts=habits.map(h=>{const td=parseInt(h.targetDays)||30;const dc=Object.values(h.log||{}).filter(Boolean).length;return Math.min(100,Math.round(dc/td*100));});
+      habitAvg=Math.round(pcts.reduce((a,b)=>a+b,0)/pcts.length);
+    }
+    const spGoalRows=[
+      {title:D.spiritualGoals.g1||'Spiritual Goal 1',pct:sg1p},
+      {title:D.spiritualGoals.g2||'Spiritual Goal 2',pct:sg2p},
+      {title:D.spiritualGoals.g3||'Spiritual Goal 3',pct:sg3p}
+    ].filter((_,i)=>D.spiritualGoals&&D.spiritualGoals['g'+(i+1)]);
+    const spOverall=habits.length>0?Math.round((spGoalAvg+habitAvg)/2):spGoalAvg;
+    spProgressEl.innerHTML=(spGoalRows.length===0?'<div style="color:var(--text3);font-size:13px;">No spiritual goals set yet.</div>':
+      spGoalRows.map(r=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span>${esc(r.title)}</span><span style="color:var(--accent2);font-weight:600;">${r.pct}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${r.pct}%;background:var(--accent2);"></div></div></div>`).join(''))+
+      (habits.length?`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);">Spiritual Habits avg</span><span style="color:var(--success);font-weight:600;">${habitAvg}%</span></div><div class="progress-wrap"><div class="progress-fill green" style="width:${habitAvg}%"></div></div></div>`:'<div style="font-size:12px;color:var(--text3);margin-bottom:8px;">No spiritual habits yet.</div>')+
+      `<div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;"><span style="font-size:13px;font-weight:500;color:var(--text2);">Spiritual Progress</span><span style="font-size:20px;font-family:'DM Serif Display',serif;color:var(--accent2);">${spOverall}%</span></div><div class="progress-wrap mt8"><div class="progress-fill" style="width:${spOverall}%;background:var(--accent2);"></div></div>`;
+  }
+  const labels=[],doneD=[],missD=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];const l=D.adventureDays[k];labels.push(d.toLocaleDateString('en-IN',{month:'short',day:'numeric'}));doneD.push(l&&l.status==='done'?1:0);missD.push(l&&l.status==='missed'?1:0);}const ctx=document.getElementById('chart-adventure');if(advChart)advChart.destroy();advChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Done',data:doneD,backgroundColor:'rgba(58,138,110,0.7)',borderRadius:4},{label:'Missed',data:missD,backgroundColor:'rgba(184,90,90,0.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#5a5448',font:{size:11}}}},scales:{x:{stacked:true,ticks:{color:'#9a9488',font:{size:9},maxTicksLimit:10},grid:{color:'#e0ddd6'}},y:{stacked:true,ticks:{color:'#9a9488',stepSize:1},grid:{color:'#e0ddd6'},max:1}}}});const today=new Date();const week=[];for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);week.push(d.toISOString().split('T')[0]);}const spEl=document.getElementById('progress-spiritual-week');spEl.innerHTML=D.spiritual.habits.length===0?'<div style="color:var(--text3);font-size:13px;">No habits tracked yet.</div>':D.spiritual.habits.map(h=>{const t=week.filter(d=>h.log&&h.log[d]).length;return`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;"><span>${esc(h.name)}</span><span style="color:var(--accent);">${t}/7</span></div><div class="progress-wrap"><div class="progress-fill green" style="width:${Math.round(t/7*100)}%"></div></div></div>`;}).join('');const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;document.getElementById('progress-milestones').textContent=msTotal===0?'No milestones added.':`${msDone} of ${msTotal} milestones completed`;document.getElementById('milestone-bar').style.width=msTotal>0?Math.round(msDone/msTotal*100)+'%':'0%';document.getElementById('milestone-pct').textContent=msTotal>0?Math.round(msDone/msTotal*100)+'% complete':'';
   // Reviews section
   const wrs=D.weeklyReviews||[],mrs=D.monthlyReviews||[],qrs=D.quarterlyReviews||[],ars=D.annualReviews||[];
   const latestW=wrs.length?wrs[wrs.length-1]:'';const latestM=mrs.length?mrs[mrs.length-1]:'';const latestQ=qrs.length?qrs[qrs.length-1]:'';const latestA=ars.length?ars[ars.length-1]:'';
@@ -2202,13 +2299,13 @@ function applyReColor(id,cmd,color){
   document.execCommand('styleWithCSS',false,false);
 }
 
-// Reset text colour or highlight back to default on selected text
+// Reset text colour or highlight — Word/Google Docs behaviour
 function resetReColor(id,mode){
   const ed=document.getElementById('ed-'+id);
   if(!ed)return;
   ed.focus();
   if(mode==='fore'){
-    // Text colour default: restore saved selection and apply default colour
+    // TEXT COLOUR DEFAULT: restore selection and apply default colour to it
     const saved=reSavedRange[id];
     if(saved){
       const sel=window.getSelection();
@@ -2220,20 +2317,42 @@ function resetReColor(id,mode){
     document.execCommand('styleWithCSS',false,false);
     saveReEditor(id);
   } else {
-    // "No Highlight" = ONLY affect future typing.
-    // Collapse the cursor to end of current selection (don't remove existing highlights).
+    // NO HIGHLIGHT: collapse cursor to end of selection (preserves existing highlights),
+    // then inject a zero-width sentinel <span> with no background so the browser
+    // "resets" the inherited highlight format for subsequent keystrokes.
     const sel=window.getSelection();
+    let insertAfterNode=null;
     if(sel&&sel.rangeCount>0){
       const range=sel.getRangeAt(0);
-      range.collapse(false); // collapse to end
+      range.collapse(false); // move cursor to end of selection — do NOT remove highlighted text
       sel.removeAllRanges();
       sel.addRange(range);
     }
-    // Apply transparent hiliteColor at cursor so next typed chars have no highlight.
-    document.execCommand('styleWithCSS',false,true);
-    document.execCommand('hiliteColor',false,'transparent');
-    document.execCommand('styleWithCSS',false,false);
-    // Do NOT call saveReEditor — no content changed, existing highlights untouched.
+    // Insert a sentinel span: background:none, no color, zero-width space.
+    // This breaks the "inherited" highlight context so the next real character
+    // is typed without a background — identical to how Word/Docs work.
+    const sentinel=document.createElement('span');
+    sentinel.style.backgroundColor='transparent';
+    sentinel.style.background='none';
+    sentinel.setAttribute('data-nohl','1');
+    sentinel.textContent='​'; // zero-width space (invisible)
+    document.execCommand('insertHTML',false,sentinel.outerHTML);
+    // Move cursor after the sentinel
+    const newSel=window.getSelection();
+    if(newSel&&newSel.rangeCount>0){
+      const r=newSel.getRangeAt(0);
+      // Find the sentinel we just inserted and place cursor after it
+      const sentinels=ed.querySelectorAll('span[data-nohl="1"]');
+      if(sentinels.length){
+        const last=sentinels[sentinels.length-1];
+        r.setStartAfter(last);
+        r.setEndAfter(last);
+        newSel.removeAllRanges();
+        newSel.addRange(r);
+      }
+    }
+    // Save so the sentinel persists; it's invisible (zero-width) so content looks unchanged
+    saveReEditor(id);
   }
 }
 
