@@ -1883,6 +1883,9 @@ function toggleReColorBar(id,mode){
   const colors=mode==='fore'?TEXT_COLORS:HILITE_COLORS;
   const cmd=mode==='fore'?'foreColor':'hiliteColor';
   const label=mode==='fore'?'Text colour:':'Highlight:';
+  const resetBtn=mode==='fore'
+    ? '<button title="Reset to default text colour" onclick="resetReColor(\''+id+'\',\'fore\')" style="height:22px;padding:0 8px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:var(--surface2);color:var(--text2);cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;margin-left:4px;font-family:\'DM Sans\',sans-serif;">↩ Default</button>'
+    : '<button title="Remove all highlight" onclick="resetReColor(\''+id+'\',\'hilite\')" style="height:22px;padding:0 8px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:var(--surface2);color:var(--text2);cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;margin-left:4px;font-family:\'DM Sans\',sans-serif;">↩ No highlight</button>';
   bar.innerHTML='<span style="font-size:11px;color:var(--text3);margin-right:2px;">'+label+'</span>'+
     colors.map(c=>{
       if(c==='transparent'){
@@ -1890,7 +1893,8 @@ function toggleReColorBar(id,mode){
       }
       return '<div class="cdot" style="background:'+c+'" title="'+c+'" onclick="applyReColor(\''+id+'\',\''+cmd+'\',\''+c+'\')"></div>';
     }).join('')+
-    '<input type="color" title="Custom colour" onchange="applyReColor(\''+id+'\',\''+cmd+'\',this.value)">';
+    '<input type="color" title="Custom colour" onchange="applyReColor(\''+id+'\',\''+cmd+'\',this.value)">'+
+    resetBtn;
   bar.classList.add('open');
 }
 
@@ -1910,6 +1914,38 @@ function applyReColor(id,cmd,color){
   document.execCommand('styleWithCSS',false,true);
   document.execCommand(cmd,false,color);
   document.execCommand('styleWithCSS',false,false);
+}
+
+// Reset text colour or highlight back to default on selected text
+function resetReColor(id,mode){
+  const ed=document.getElementById('ed-'+id);
+  if(!ed)return;
+  ed.focus();
+  const saved=reSavedRange[id];
+  if(saved){
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(saved);
+  }
+  document.execCommand('styleWithCSS',false,true);
+  if(mode==='fore'){
+    // Remove foreColor by applying the default body text colour
+    document.execCommand('foreColor',false,'#1a1814');
+    // Also strip any inline color spans for a truly clean reset
+    const range=window.getSelection().getRangeAt(0);
+    const fragment=range.cloneContents();
+    const walker=document.createTreeWalker(fragment,NodeFilter.SHOW_ELEMENT);
+    while(walker.nextNode()){
+      const n=walker.currentNode;
+      if(n.style){n.style.color='';}
+      if(n.tagName==='FONT')n.removeAttribute('color');
+    }
+  } else {
+    // Remove highlight
+    document.execCommand('hiliteColor',false,'transparent');
+  }
+  document.execCommand('styleWithCSS',false,false);
+  saveReEditor(id);
 }
 
 // Save rich editor content to D
