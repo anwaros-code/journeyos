@@ -1941,8 +1941,31 @@ function resetReColor(id,mode){
       if(n.tagName==='FONT')n.removeAttribute('color');
     }
   } else {
-    // Remove highlight
-    document.execCommand('hiliteColor',false,'transparent');
+    // Remove highlight from selected text only.
+    // Walk every text-node in the selection, find parent spans with background-color, and clear it.
+    const sel=window.getSelection();
+    if(sel&&sel.rangeCount>0){
+      const range=sel.getRangeAt(0);
+      // Collect all nodes within the range
+      const treeWalker=document.createTreeWalker(
+        range.commonAncestorContainer.nodeType===1
+          ? range.commonAncestorContainer
+          : range.commonAncestorContainer.parentElement,
+        NodeFilter.SHOW_ELEMENT,
+        null
+      );
+      const els=[];
+      let n=treeWalker.currentNode;
+      if(n&&n.nodeType===1)els.push(n);
+      while(treeWalker.nextNode()){els.push(treeWalker.currentNode);}
+      els.forEach(el=>{
+        if(range.intersectsNode(el)){
+          if(el.style){el.style.backgroundColor='';el.style.background='';}
+        }
+      });
+      // Fallback execCommand attempt
+      try{document.execCommand('styleWithCSS',false,true);document.execCommand('hiliteColor',false,'inherit');document.execCommand('styleWithCSS',false,false);}catch(e){}
+    }
   }
   document.execCommand('styleWithCSS',false,false);
   saveReEditor(id);
