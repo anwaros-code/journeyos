@@ -218,6 +218,13 @@ select option{background:var(--surface);color:var(--text)}
 .lock-msg{font-size:13px;color:var(--text3);text-align:center;line-height:1.6;margin-bottom:4px;}
 .lock-divider{text-align:center;font-size:11px;color:var(--text3);}
 
+/* ── PIN SCREEN (second layer, shown after Gmail sign-in) ── */
+#pin-screen{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);align-items:center;justify-content:center;}
+#pin-screen.visible{display:flex;}
+.pin-boxes{display:flex;gap:12px;justify-content:center;margin:6px 0 4px;}
+.pin-box{width:52px;height:60px;text-align:center;font-size:28px;font-weight:600;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);color:var(--text);outline:none;}
+.pin-box:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 22%,transparent);}
+
 </style>
 </head>
 <body>
@@ -238,6 +245,21 @@ select option{background:var(--surface);color:var(--text)}
       Sign in with Google
     </button>
     <div id="lock-google-loading" style="display:none;font-size:11px;color:var(--text3);text-align:center;padding:2px 0;">Completing Google sign-in…</div>
+  </div>
+</div>
+
+<!-- ── PIN SCREEN ── second layer, shown after a successful Gmail sign-in, before the app is revealed ── -->
+<div id="pin-screen">
+  <div class="lock-box">
+    <div class="lock-title">Enter PIN</div>
+    <div class="lock-msg">Enter your 4-digit PIN to open JourneyOS.</div>
+    <div class="pin-boxes">
+      <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-0" autocomplete="off" oninput="pinDigitInput(0)" onkeydown="pinKeyDown(event,0)" onpaste="pinPaste(event)">
+      <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-1" autocomplete="off" oninput="pinDigitInput(1)" onkeydown="pinKeyDown(event,1)">
+      <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-2" autocomplete="off" oninput="pinDigitInput(2)" onkeydown="pinKeyDown(event,2)">
+      <input type="tel" inputmode="numeric" pattern="[0-9]*" maxlength="1" class="pin-box" id="pin-box-3" autocomplete="off" oninput="pinDigitInput(3)" onkeydown="pinKeyDown(event,3)">
+    </div>
+    <div id="pin-error" style="font-size:12px;color:var(--danger);display:none;text-align:center;">Incorrect PIN</div>
   </div>
 </div>
 
@@ -1149,6 +1171,11 @@ async function cloudLoad(uid){
 // ── ACCESS CONTROL ───────────────────────────────────────────
 const ALLOWED_EMAIL = 'anwarbeg292@gmail.com';
 
+// ── PIN LOCK (second security layer, shown after Gmail sign-in) ──
+// Change this to set your own PIN. Must be exactly 4 digits.
+const APP_PIN = '2580';
+let pinVerified=false; // resets to false on sign-out and on every fresh page load
+
 // ── FIREBASE AUTH HANDLERS ────────────────────────────────────
 window._fbCurrentUser=null;
 
@@ -1229,34 +1256,49 @@ window._onAuthChange=async function(user){
     if(errEl)errEl.style.display='none';
     if(nameEl)nameEl.textContent=user.displayName||user.email||'Signed in';
     hideLockScreen();
-    // Load cloud data, then re-render current page
-    const loaded=await cloudLoad(user.uid);
-    if(loaded){
-      D.startDate=JOURNEY_START; // re-enforce after cloud overwrite
-      // Re-init defaults
-      if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
-      if(!D.reContent)D.reContent={};
-      if(!D.definitions)D.definitions=[];
-      if(!D.milestones)D.milestones=[];
-      if(!D.annualReviews)D.annualReviews=[];
-      if(D.goals&&D.goals.g1pct===undefined)D.goals.g1pct=0;
-      if(D.goals&&D.goals.g2pct===undefined)D.goals.g2pct=0;
-      if(D.goals&&D.goals.g3pct===undefined)D.goals.g3pct=0;
-      // Re-render whichever page is active
-      const activePage=document.querySelector('.page.active');
-      if(activePage){
-        const pg=activePage.id.replace('page-','');
-        goto(pg);
-      }
+    // ── PIN GATE ───────────────────────────────────────────────
+    // App stays hidden behind the PIN screen until the correct PIN is
+    // entered. pinVerified resets to false on sign-out and on every fresh
+    // page load, so the PIN is required again each time per spec.
+    if(!pinVerified){
+      showPinScreen();
+      return; // completeSignIn() runs once the PIN is verified, see validatePin()
     }
+    await completeSignIn(user);
   } else {
     if(signedIn)signedIn.style.display='none';
     if(signedOut){signedOut.style.display='flex';signedOut.style.flexDirection='column';}
     window._fbCurrentUser=null;
     setSaveStatus('offline');
+    pinVerified=false; // require the PIN again on the next sign-in
+    hidePinScreen();
     showLockScreen();
   }
 };
+
+// Load cloud data and render the app — runs immediately if the PIN was
+// already verified this session, or right after a correct PIN entry.
+async function completeSignIn(user){
+  const loaded=await cloudLoad(user.uid);
+  if(loaded){
+    D.startDate=JOURNEY_START; // re-enforce after cloud overwrite
+    // Re-init defaults
+    if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
+    if(!D.reContent)D.reContent={};
+    if(!D.definitions)D.definitions=[];
+    if(!D.milestones)D.milestones=[];
+    if(!D.annualReviews)D.annualReviews=[];
+    if(D.goals&&D.goals.g1pct===undefined)D.goals.g1pct=0;
+    if(D.goals&&D.goals.g2pct===undefined)D.goals.g2pct=0;
+    if(D.goals&&D.goals.g3pct===undefined)D.goals.g3pct=0;
+    // Re-render whichever page is active
+    const activePage=document.querySelector('.page.active');
+    if(activePage){
+      const pg=activePage.id.replace('page-','');
+      goto(pg);
+    }
+  }
+}
 
 function exportData(){exportBackup();}
 
@@ -2644,6 +2686,75 @@ function ynBlur(inp,ri,field){
   else if(v==='N'){inp.value='N';updSched(ri,field,'N');}
   else{inp.value='';updSched(ri,field,'');}
   inp.setAttribute('readonly','');
+}
+
+// ── PIN SCREEN HELPERS (second security layer) ────────────────
+function showPinScreen(){
+  const ps=document.getElementById('pin-screen');
+  const app=document.querySelector('.app');
+  if(ps)ps.classList.add('visible');
+  if(app)app.style.display='none';
+  clearPinBoxes();
+  setTimeout(()=>{const b=document.getElementById('pin-box-0');if(b)b.focus();},50);
+}
+function hidePinScreen(){
+  const ps=document.getElementById('pin-screen');
+  const app=document.querySelector('.app');
+  if(ps)ps.classList.remove('visible');
+  if(app)app.style.display='';
+}
+function clearPinBoxes(keepError){
+  for(let i=0;i<4;i++){const b=document.getElementById('pin-box-'+i);if(b)b.value='';}
+  if(!keepError){
+    const err=document.getElementById('pin-error');
+    if(err)err.style.display='none';
+  }
+}
+function pinDigitInput(idx){
+  const cur=document.getElementById('pin-box-'+idx);
+  if(!cur)return;
+  cur.value=cur.value.replace(/[^0-9]/g,'').slice(-1); // digits only, one character
+  if(cur.value&&idx<3){
+    const next=document.getElementById('pin-box-'+(idx+1));
+    if(next)next.focus();
+  }
+  const vals=[0,1,2,3].map(i=>document.getElementById('pin-box-'+i).value);
+  if(vals.every(v=>v!=='')){
+    validatePin(vals.join('')); // auto-validate as soon as the 4th digit is entered
+  }
+}
+function pinKeyDown(e,idx){
+  if(e.key==='Backspace'){
+    const cur=document.getElementById('pin-box-'+idx);
+    if(cur&&cur.value===''&&idx>0){
+      const prev=document.getElementById('pin-box-'+(idx-1));
+      if(prev){prev.value='';prev.focus();}
+      e.preventDefault();
+    }
+  }
+}
+function pinPaste(e){
+  e.preventDefault();
+  const text=((e.clipboardData||window.clipboardData).getData('text')||'').replace(/[^0-9]/g,'').slice(0,4);
+  for(let i=0;i<4;i++){
+    const b=document.getElementById('pin-box-'+i);
+    if(b)b.value=text[i]||'';
+  }
+  if(text.length===4)validatePin(text);
+  else{const next=document.getElementById('pin-box-'+text.length);if(next)next.focus();}
+}
+function validatePin(pin){
+  if(pin===APP_PIN){
+    pinVerified=true;
+    hidePinScreen();
+    if(window._fbCurrentUser)completeSignIn(window._fbCurrentUser);
+  }else{
+    clearPinBoxes(false); // clear boxes but show the error
+    const err=document.getElementById('pin-error');
+    if(err){err.textContent='Incorrect PIN';err.style.display='block';}
+    const first=document.getElementById('pin-box-0');
+    if(first)first.focus();
+  }
 }
 
 // ── LOCK SCREEN HELPERS ───────────────────────────────────────
