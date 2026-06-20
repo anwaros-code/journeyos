@@ -394,15 +394,15 @@ select option{background:var(--surface);color:var(--text)}
     <div class="card-title"><span>🎯</span> My 3 main goals — next 5 years</div>
     <div class="grid2" style="gap:12px;">
       <div><div class="label mt8">Goal 1</div><input type="text" id="goals-g1" placeholder="e.g. Get a HR job in a top company"></div>
-      <div><div class="label mt8">Goal 1 Progress %</div><input type="number" id="goals-g1pct" min="0" max="100" placeholder="0–100" oninput="saveGoalPct(1,this.value)"></div>
+      <div><div class="label mt8">Goal 1 Progress % (auto, from milestones)</div><div id="goals-g1pct" style="font-size:14px;font-weight:600;color:var(--accent);padding:8px 0;">0%</div></div>
     </div>
     <div class="grid2" style="gap:12px;" style="margin-top:8px;">
       <div><div class="label mt8">Goal 2</div><input type="text" id="goals-g2" placeholder="e.g. Complete all HR certifications"></div>
-      <div><div class="label mt8">Goal 2 Progress %</div><input type="number" id="goals-g2pct" min="0" max="100" placeholder="0–100" oninput="saveGoalPct(2,this.value)"></div>
+      <div><div class="label mt8">Goal 2 Progress % (auto, from milestones)</div><div id="goals-g2pct" style="font-size:14px;font-weight:600;color:var(--accent);padding:8px 0;">0%</div></div>
     </div>
     <div class="grid2" style="gap:12px;">
       <div><div class="label mt8">Goal 3</div><input type="text" id="goals-g3" placeholder="e.g. Build financial independence"></div>
-      <div><div class="label mt8">Goal 3 Progress %</div><input type="number" id="goals-g3pct" min="0" max="100" placeholder="0–100" oninput="saveGoalPct(3,this.value)"></div>
+      <div><div class="label mt8">Goal 3 Progress % (auto, from milestones)</div><div id="goals-g3pct" style="font-size:14px;font-weight:600;color:var(--accent);padding:8px 0;">0%</div></div>
     </div>
     <div class="mt16" id="goals-progress-bars"></div>
   </div>
@@ -947,6 +947,12 @@ select option{background:var(--surface);color:var(--text)}
     <div class="label">Milestone title</div><input type="text" id="ms-title" placeholder="e.g. Complete Excel course on Coursera">
     <div class="label mt16">Category</div><input type="text" id="ms-cat" placeholder="e.g. HR Career, Education, Finance">
     <div class="label mt16">Target date</div><input type="date" id="ms-date">
+    <div class="label mt16">Linked Goal</div>
+    <select id="ms-goal">
+      <option value="1">Goal 1</option>
+      <option value="2">Goal 2</option>
+      <option value="3">Goal 3</option>
+    </select>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-milestone')">Cancel</button><button class="btn btn-primary" onclick="saveMilestone()">Save</button></div>
   </div>
 </div>
@@ -1271,7 +1277,7 @@ select option{background:var(--surface);color:var(--text)}
 
 <script>
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-06-22';
+const JOURNEY_START='2026-06-21';
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:''};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -1318,6 +1324,7 @@ function load(){
   if(!D.reContent)D.reContent={};
   if(!D.definitions)D.definitions=[];
   if(!D.milestones)D.milestones=[];
+  D.milestones.forEach(m=>{if(m.goalNum===undefined)m.goalNum=1;});
   if(!D.weeklyReviews)D.weeklyReviews=[];
   if(!D.monthlyReviews)D.monthlyReviews=[];
   if(!D.quarterlyReviews)D.quarterlyReviews=[];
@@ -1515,6 +1522,7 @@ async function completeSignIn(user){
     if(!D.reContent)D.reContent={};
     if(!D.definitions)D.definitions=[];
     if(!D.milestones)D.milestones=[];
+    D.milestones.forEach(m=>{if(m.goalNum===undefined)m.goalNum=1;});
     if(!D.annualReviews)D.annualReviews=[];
     if(D.goals&&D.goals.g1pct===undefined)D.goals.g1pct=0;
     if(D.goals&&D.goals.g2pct===undefined)D.goals.g2pct=0;
@@ -1659,6 +1667,7 @@ async function confirmImport(){
   if(!D.reContent)D.reContent={};
   if(!D.definitions)D.definitions=[];
   if(!D.milestones)D.milestones=[];
+  D.milestones.forEach(m=>{if(m.goalNum===undefined)m.goalNum=1;});
   if(!D.weeklyReviews)D.weeklyReviews=[];
   if(!D.monthlyReviews)D.monthlyReviews=[];
   if(!D.quarterlyReviews)D.quarterlyReviews=[];
@@ -1767,10 +1776,10 @@ function renderDefs(){
 function delDef(i){if(confirm('Delete this definition?')){D.definitions.splice(i,1);save();renderDefs();}}
 
 function renderGoals(){['purpose','g1','g2','g3'].forEach(k=>{const el=document.getElementById('goals-'+k);el.value=D.goals[k]||'';el.oninput=()=>{D.goals[k]=el.value;save();};});const el=document.getElementById('milestone-list');if(!D.milestones.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No milestones yet. Add your first step.</div>';return;}el.innerHTML=D.milestones.map((m,i)=>`<div class="item-row"><div class="check ${m.done?'checked':''}" onclick="toggleMs(${i})">${m.done?'✓':''}</div><div class="item-body"><div class="item-title" style="${m.done?'text-decoration:line-through;color:var(--text3)':''}">${esc(m.title)}</div><div class="item-meta">${m.cat?esc(m.cat)+' · ':''} ${m.date||'No target date'}</div></div><span class="badge ${m.done?'badge-done':'badge-pending'}">${m.done?'Done':'Pending'}</span><button class="btn btn-danger" onclick="delMs(${i})" style="font-size:11px;padding:4px 10px;">✕</button></div>`).join('');}
-function openMilestoneModal(){document.getElementById('ms-title').value='';document.getElementById('ms-cat').value='';document.getElementById('ms-date').value='';document.getElementById('modal-milestone').classList.add('open');}
-function saveMilestone(){const t=document.getElementById('ms-title').value.trim();if(!t)return;D.milestones.push({title:t,cat:document.getElementById('ms-cat').value.trim(),date:document.getElementById('ms-date').value,done:false});save();closeModal('modal-milestone');renderGoals();}
-function toggleMs(i){D.milestones[i].done=!D.milestones[i].done;save();renderGoals();}
-function delMs(i){D.milestones.splice(i,1);save();renderGoals();}
+function openMilestoneModal(){document.getElementById('ms-title').value='';document.getElementById('ms-cat').value='';document.getElementById('ms-date').value='';const mg=document.getElementById('ms-goal');if(mg)mg.value='1';document.getElementById('modal-milestone').classList.add('open');}
+function saveMilestone(){const t=document.getElementById('ms-title').value.trim();if(!t)return;const mg=document.getElementById('ms-goal');const goalNum=mg?parseInt(mg.value)||1:1;D.milestones.push({title:t,cat:document.getElementById('ms-cat').value.trim(),date:document.getElementById('ms-date').value,done:false,goalNum});save();closeModal('modal-milestone');renderGoalsExtended();}
+function toggleMs(i){D.milestones[i].done=!D.milestones[i].done;save();renderGoalsExtended();}
+function delMs(i){D.milestones.splice(i,1);save();renderGoalsExtended();}
 
 function renderSpiritual(){
   // ── Intention editor ──
@@ -2245,7 +2254,7 @@ function renderSchedSummary(){
 function renderHome(){document.getElementById('home-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const start=new Date(D.startDate),today=new Date();const dayNum=Math.max(0,Math.floor((today-start)/86400000))+1;const pct=Math.min(100,Math.round(dayNum/1825*100));const done=Object.values(D.adventureDays).filter(d=>d.status==='done').length;const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;const wrc=(D.weeklyReviews||[]).length,mrc=(D.monthlyReviews||[]).length,qrc=(D.quarterlyReviews||[]).length,arc=(D.annualReviews||[]).length;document.getElementById('home-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Day of journey</div></div><div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days completed</div></div><div class="stat-card"><div class="stat-num">${msDone}/${msTotal}</div><div class="stat-label">Milestones done</div></div>`;document.getElementById('home-biggoal').textContent=D.goals.g1||'No main goal set yet — go to My Goals to add one';document.getElementById('home-day-num').textContent='Day '+dayNum;document.getElementById('home-progress').style.width=pct+'%';const todayKey=new Date().toISOString().split('T')[0];document.getElementById('home-spiritual').innerHTML=D.spiritual.habits.length===0?'No spiritual habits added yet.':D.spiritual.habits.map(h=>{const d=h.log&&h.log[todayKey];return`<span style="margin-right:14px;color:${d?'var(--success)':'var(--text3)'}">${d?'✓':'○'} ${esc(h.name)}</span>`;}).join('');
   // Review stats card
   const homeReviewEl=document.getElementById('home-review-stats');
-  const g1p=D.goals.g1pct||0,g2p=D.goals.g2pct||0,g3p=D.goals.g3pct||0;
+  const g1p=computeGoalPct(1),g2p=computeGoalPct(2),g3p=computeGoalPct(3);
   const totalReviews=wrc+mrc+qrc+arc;
   if(homeReviewEl){homeReviewEl.innerHTML=`<div style="display:flex;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--text2);margin-bottom:12px;"><span>📅 <b>${wrc}</b> weekly</span><span>🗓 <b>${mrc}</b> monthly</span><span>📊 <b>${qrc}</b> quarterly</span><span>📅 <b>${arc}</b> annual</span><span style="color:var(--accent);font-weight:600;">Total: ${totalReviews}</span></div>
   ${D.goals.g1?`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text2);">${esc(D.goals.g1)}</span><span style="color:var(--accent);font-weight:600;">${g1p}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${g1p}%"></div></div></div>`:''}
@@ -2260,7 +2269,7 @@ function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>d.
   const wrs=D.weeklyReviews||[],mrs=D.monthlyReviews||[],qrs=D.quarterlyReviews||[],ars=D.annualReviews||[];
   const latestW=wrs.length?wrs[wrs.length-1]:'';const latestM=mrs.length?mrs[mrs.length-1]:'';const latestQ=qrs.length?qrs[qrs.length-1]:'';const latestA=ars.length?ars[ars.length-1]:'';
   const prEl=document.getElementById('progress-reviews');
-  const g1p=D.goals.g1pct||0,g2p=D.goals.g2pct||0,g3p=D.goals.g3pct||0;
+  const g1p=computeGoalPct(1),g2p=computeGoalPct(2),g3p=computeGoalPct(3);
   if(prEl){prEl.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px;">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);">
       <div><div style="font-size:13px;font-weight:500;color:var(--text);">📅 Weekly Reviews</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">${latestW?'Latest: '+(latestW.week||'')+' '+(latestW.year||''):'No reviews yet'}</div></div>
@@ -2975,24 +2984,36 @@ function updateGoalTabHeadings(){
 // ── ADVENTURE DAY MODAL — rich editor connect ─────────────────
 // definitions, adventure modals handled above directly
 
-// ── GOAL PROGRESS % ──────────────────────────────────────────
-function saveGoalPct(n,v){
-  if(!D.goals)D.goals={};
-  D.goals['g'+n+'pct']=parseInt(v)||0;
-  save();
-  renderGoalProgressBars();
+// ── GOAL PROGRESS % — AUTOMATIC, derived from milestones only ──
+// Goal Progress = (Completed Milestones linked to that goal ÷ Total Milestones linked to that goal) × 100
+// If a goal has zero linked milestones, Progress = 0%. Never NaN/Infinity.
+function computeGoalPct(n){
+  const list=(D.milestones||[]).filter(m=>(m.goalNum||1)===n);
+  if(list.length===0)return 0;
+  const doneCount=list.filter(m=>m.done).length;
+  const pct=Math.round((doneCount/list.length)*100);
+  return Number.isFinite(pct)?pct:0;
 }
 
 function renderGoalProgressBars(){
   const el=document.getElementById('goals-progress-bars');
   if(!el)return;
   const g1=D.goals.g1||'Goal 1',g2=D.goals.g2||'Goal 2',g3=D.goals.g3||'Goal 3';
-  const p1=D.goals.g1pct||0,p2=D.goals.g2pct||0,p3=D.goals.g3pct||0;
+  const p1=computeGoalPct(1),p2=computeGoalPct(2),p3=computeGoalPct(3);
+  // Keep D.goals pct fields in sync (read-only display elsewhere may still reference them)
+  D.goals.g1pct=p1;D.goals.g2pct=p2;D.goals.g3pct=p3;
+  // Overall Life Progress = (Goal1 + Goal2 + Goal3) / 3, rounded to nearest whole number
+  const overall=Math.round((p1+p2+p3)/3);
+  ['g1pct','g2pct','g3pct'].forEach((id,i)=>{
+    const dEl=document.getElementById('goals-'+id);
+    if(dEl)dEl.textContent=[p1,p2,p3][i]+'%';
+  });
   el.innerHTML=`
     <div class="card-title" style="margin-bottom:10px;"><span>📊</span> Goal Progress</div>
     ${D.goals.g1?`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);">${esc(g1)}</span><span style="color:var(--accent);font-weight:600;">${p1}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${p1}%"></div></div></div>`:''}
     ${D.goals.g2?`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);">${esc(g2)}</span><span style="color:var(--accent);font-weight:600;">${p2}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${p2}%"></div></div></div>`:''}
     ${D.goals.g3?`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);">${esc(g3)}</span><span style="color:var(--accent);font-weight:600;">${p3}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${p3}%"></div></div></div>`:''}
+    <div style="margin-top:14px;padding-top:12px;border-top:1px solid var(--border,#e0ddd6);"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);font-weight:600;">Overall Life Progress</span><span style="color:var(--accent);font-weight:700;">${overall}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${overall}%"></div></div></div>
   `;
 }
 
@@ -3005,17 +3026,13 @@ function renderGoalsExtended(){
     el.value=D.goals[k]||'';
     el.oninput=()=>{D.goals[k]=el.value;save();updateGoalTabHeadings();};
   });
-  // Load progress % inputs
-  [1,2,3].forEach(n=>{
-    const el=document.getElementById('goals-g'+n+'pct');
-    if(el){el.value=D.goals['g'+n+'pct']||0;}
-  });
+  // Progress % is now fully automatic (computed from milestones) — handled by renderGoalProgressBars()
   renderGoalProgressBars();
   // Milestones
   const mel=document.getElementById('milestone-list');
   if(mel){
     if(!D.milestones.length){mel.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No milestones yet.</div>';}
-    else{mel.innerHTML=D.milestones.map((m,i)=>`<div class="item-row"><div class="check ${m.done?'checked':''}" onclick="toggleMs(${i})">${m.done?'✓':''}</div><div class="item-body"><div class="item-title" style="${m.done?'text-decoration:line-through;color:var(--text3)':''}">${esc(m.title)}</div><div class="item-meta">${m.cat?esc(m.cat)+' · ':''} ${m.date||'No target date'}</div></div><span class="badge ${m.done?'badge-done':'badge-pending'}">${m.done?'Done':'Pending'}</span><button class="btn btn-danger" onclick="delMs(${i})" style="font-size:11px;padding:4px 10px;">&#10005;</button></div>`).join('');}
+    else{mel.innerHTML=D.milestones.map((m,i)=>`<div class="item-row"><div class="check ${m.done?'checked':''}" onclick="toggleMs(${i})">${m.done?'✓':''}</div><div class="item-body"><div class="item-title" style="${m.done?'text-decoration:line-through;color:var(--text3)':''}">${esc(m.title)}</div><div class="item-meta">Goal ${m.goalNum||1} · ${m.cat?esc(m.cat)+' · ':''} ${m.date||'No target date'}</div></div><span class="badge ${m.done?'badge-done':'badge-pending'}">${m.done?'Done':'Pending'}</span><button class="btn btn-danger" onclick="delMs(${i})" style="font-size:11px;padding:4px 10px;">&#10005;</button></div>`).join('');}
   }
   // Goal subs
   if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
