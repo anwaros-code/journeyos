@@ -62,15 +62,21 @@ select option{background:var(--surface);color:var(--text)}
 #save-status{font-size:11px;color:var(--text3);padding:2px 0;transition:color .3s}
 #save-status.saved{color:var(--success)}
 .day-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:5px;margin-bottom:16px}
-.day-dot{width:100%;aspect-ratio:1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:400;cursor:pointer;border:1px solid var(--border);color:var(--text3);background:var(--surface2);transition:border-color .12s,color .12s;position:relative;gap:1px}
+.day-dot{width:100%;aspect-ratio:1;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:11px;font-weight:400;cursor:pointer;border:1px solid var(--border);color:var(--text3);background:var(--surface2);transition:border-color .12s,color .12s,background .12s;position:relative;gap:1px}
 .day-dot:hover{border-color:var(--accent);color:var(--text2)}
 .day-dot .dd-num{line-height:1;font-size:11px}
-.day-dot .dd-mark{line-height:1;font-size:8px;opacity:0}
-.day-dot.done .dd-mark{opacity:1;color:var(--accent)}
-.day-dot.missed .dd-mark{opacity:1;color:var(--accent)}
+.day-dot .dd-mark{line-height:1;font-size:9px;opacity:0}
+.day-dot.done{background:var(--success);border-color:var(--success)}
+.day-dot.done .dd-num{color:#fff;font-weight:600}
+.day-dot.done .dd-mark{opacity:1;color:#fff}
+.day-dot.missed{background:var(--danger);border-color:var(--danger)}
+.day-dot.missed .dd-num{color:#fff;font-weight:600}
+.day-dot.missed .dd-mark{opacity:1;color:#fff}
 .day-dot.today{border:2px solid var(--accent);font-weight:600}
 .day-dot.today .dd-num{color:var(--accent)}
 .day-dot.today .dd-mark{opacity:1;color:var(--accent)}
+.day-dot.done.today,.day-dot.missed.today{border:2px solid var(--text)}
+.day-dot.done.today .dd-num,.day-dot.missed.today .dd-num{color:#fff}
 .time-table{width:100%;border-collapse:collapse;font-size:13px}
 .time-table th{background:var(--surface2);color:var(--text3);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.07em;padding:8px 10px;border:1px solid var(--border);text-align:left}
 .time-table td{padding:7px 10px;border:1px solid var(--border);vertical-align:top}
@@ -1261,7 +1267,7 @@ select option{background:var(--surface);color:var(--text)}
 
 <script>
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-06-18';
+const JOURNEY_START='2026-06-21';
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:''};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
