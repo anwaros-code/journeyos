@@ -93,11 +93,11 @@ select option{background:var(--surface);color:var(--text)}
 .time-table tr.un td{background:rgba(184,137,42,0.07)}
 .time-table tr.nu td{background:rgba(58,138,110,0.07)}
 .time-table tr.nn td{background:var(--surface2)}
-/* â”€â”€ TASK COMPLETION CHECKBOX â”€â”€ */
+/* ── TASK COMPLETION CHECKBOX ── */
 .task-check{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .15s;user-select:none;background:var(--surface);margin-top:2px;}
 .task-check.done{border-color:var(--success);background:rgba(58,138,110,0.15);color:var(--success);}
 .task-check-cell{width:28px;text-align:center;}
-/* â”€â”€ STATS SUMMARY GRID â”€â”€ */
+/* ── STATS SUMMARY GRID ── */
 .sched-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
 .sched-stat-row{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);font-size:13px;}
 .sched-stat-row.divider{border-top:2px solid var(--border);margin-top:4px;}
@@ -160,14 +160,14 @@ select option{background:var(--surface);color:var(--text)}
 .hide-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(184,137,42,.12);color:var(--warning);border:1px solid rgba(184,137,42,.25);flex-shrink:0}
 .show-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(58,138,110,.1);color:var(--success);border:1px solid rgba(58,138,110,.25);flex-shrink:0}
 
-/* â”€â”€ TABS â”€â”€ */
+/* ── TABS ── */
 .tabs{display:flex;gap:0;border-bottom:2px solid var(--border);margin-bottom:18px;}
 .tab-btn{padding:9px 20px;font-size:13.5px;font-weight:500;color:var(--text3);background:none;border:none;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-2px;font-family:'DM Sans',sans-serif;transition:all .15s;}
 .tab-btn:hover{color:var(--text2);}
 .tab-btn.active{color:var(--accent);border-bottom-color:var(--accent);}
 .tab-panel{display:none;}
 .tab-panel.active{display:block;}
-/* â”€â”€ RICH EDITOR â”€â”€ */
+/* ── RICH EDITOR ── */
 .re-wrap{border:1px solid var(--border);border-radius:var(--rs);overflow:hidden;background:#fff;}
 .re-tools-toggle{display:flex;align-items:center;gap:6px;padding:7px 12px;font-size:11px;font-weight:600;color:var(--text3);cursor:pointer;user-select:none;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid transparent;transition:all .15s;}
 .re-tools-toggle:hover{color:var(--text2);}
@@ -195,7 +195,7 @@ select option{background:var(--surface);color:var(--text)}
 .re-color-bar input[type=color]{width:24px;height:24px;border:1px solid var(--border);border-radius:50%;padding:0;cursor:pointer;background:none;-webkit-appearance:none;}
 .re-color-bar input[type=color]::-webkit-color-swatch-wrapper{padding:0;border-radius:50%;}
 .re-color-bar input[type=color]::-webkit-color-swatch{border:none;border-radius:50%;}
-/* â”€â”€ GOAL 1 DETAIL SUBS (keep existing) â”€â”€ */
+/* ── GOAL 1 DETAIL SUBS (keep existing) ── */
 .g1-sub{border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px;overflow:hidden;}
 .g1-sub-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);cursor:pointer;user-select:none;transition:background .15s;}
 .g1-sub-header:hover{background:#e8e6df;}
@@ -206,18 +206,18 @@ select option{background:var(--surface);color:var(--text)}
 .g1-sub-body.open{display:block;}
 .hide-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(184,137,42,.12);color:var(--warning);border:1px solid rgba(184,137,42,.25);flex-shrink:0;cursor:pointer;}
 .show-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(58,138,110,.1);color:var(--success);border:1px solid rgba(58,138,110,.25);flex-shrink:0;cursor:pointer;}
-/* â”€â”€ CLOUD STATUS â”€â”€ */
+/* ── CLOUD STATUS ── */
 #save-status.syncing{color:var(--warning);}
 #save-status.synced{color:var(--success);}
 #save-status.offline{color:var(--text3);}
 
-/* â”€â”€ YN INPUT (Urgent/Important keyboard shortcut) â”€â”€ */
+/* ── YN INPUT (Urgent/Important keyboard shortcut) ── */
 .yn-input{width:38px;text-align:center;font-size:13px;font-weight:600;padding:5px 4px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);color:var(--text);cursor:pointer;caret-color:transparent;outline:none;user-select:none;}
 .yn-input::placeholder{color:var(--text3);opacity:1;font-weight:400;}
 .yn-input:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 22%,transparent);}
 .yn-input:focus::placeholder{color:var(--accent);opacity:0.75;}
 
-/* â”€â”€ SPIRITUAL GOALS â”€â”€ */
+/* ── SPIRITUAL GOALS ── */
 .sp-goal-block{border:1px solid var(--border);border-radius:var(--rs);margin-bottom:12px;overflow:hidden;}
 .sp-goal-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--surface2);cursor:pointer;user-select:none;transition:background .15s;}
 .sp-goal-header:hover{background:#e8e6df;}
@@ -225,7 +225,7 @@ select option{background:var(--surface);color:var(--text)}
 .sp-goal-toggle.open{transform:rotate(90deg);}
 .sp-goal-body{display:none;padding:16px;}
 .sp-goal-body.open{display:block;}
-/* â”€â”€ SPIRITUAL HABITS â”€â”€ */
+/* ── SPIRITUAL HABITS ── */
 .sp-habit-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:16px;margin-bottom:12px;}
 .sp-habit-day-grid{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;}
 .sp-habit-dot{width:30px;height:30px;border-radius:5px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);cursor:pointer;user-select:none;transition:all .12s;background:var(--surface2);}
@@ -233,7 +233,7 @@ select option{background:var(--surface);color:var(--text)}
 .sp-habit-dot.done{background:var(--success);border-color:var(--success);color:#fff;font-weight:700;}
 .sp-habit-dot.today-dot{border:2px solid var(--accent);color:var(--accent);font-weight:700;}
 .sp-habit-dot.done.today-dot{border:2px solid var(--text);color:#fff;}
-/* â”€â”€ LOCK SCREEN â”€â”€ */
+/* ── LOCK SCREEN ── */
 #lock-screen{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);align-items:center;justify-content:center;}
 #lock-screen.visible{display:flex;}
 .lock-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:40px 36px;width:360px;max-width:94vw;display:flex;flex-direction:column;gap:14px;}
@@ -241,7 +241,7 @@ select option{background:var(--surface);color:var(--text)}
 .lock-msg{font-size:13px;color:var(--text3);text-align:center;line-height:1.6;margin-bottom:4px;}
 .lock-divider{text-align:center;font-size:11px;color:var(--text3);}
 
-/* â”€â”€ PIN SCREEN (second layer, shown after Gmail sign-in) â”€â”€ */
+/* ── PIN SCREEN (second layer, shown after Gmail sign-in) ── */
 #pin-screen{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);align-items:center;justify-content:center;}
 #pin-screen.visible{display:flex;}
 .pin-boxes{display:flex;gap:12px;justify-content:center;margin:6px 0 4px;}
@@ -251,7 +251,7 @@ select option{background:var(--surface);color:var(--text)}
 </style>
 </head>
 <body>
-<!-- â”€â”€ LOCK SCREEN â”€â”€ shown when no authenticated user â”€â”€ -->
+<!-- ── LOCK SCREEN ── shown when no authenticated user ── -->
 <div id="lock-screen" class="visible">
   <div class="lock-box">
     <div class="lock-title">JourneyOS</div>
@@ -261,17 +261,17 @@ select option{background:var(--surface);color:var(--text)}
     <input type="password" id="lock-password" placeholder="Password" style="font-size:13px;padding:9px 12px;">
     <div id="lock-error" style="font-size:12px;color:var(--danger);display:none;text-align:center;"></div>
     <button class="btn btn-primary" onclick="lockSignInEmail()" style="width:100%;justify-content:center;">Sign in</button>
-    <div class="lock-divider">â€” or â€”</div>
+    <div class="lock-divider">— or —</div>
     <!-- Google sign-in -->
     <button class="btn btn-ghost" onclick="fbSignIn()" style="width:100%;justify-content:center;">
       <svg width="14" height="14" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#4285F4" d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z"/></svg>
       Sign in with Google
     </button>
-    <div id="lock-google-loading" style="display:none;font-size:11px;color:var(--text3);text-align:center;padding:2px 0;">Completing Google sign-inâ€¦</div>
+    <div id="lock-google-loading" style="display:none;font-size:11px;color:var(--text3);text-align:center;padding:2px 0;">Completing Google sign-in…</div>
   </div>
 </div>
 
-<!-- â”€â”€ PIN SCREEN â”€â”€ second layer, shown after a successful Gmail sign-in, before the app is revealed. Also reused for first-time PIN setup and for Change PIN from Settings. â”€â”€ -->
+<!-- ── PIN SCREEN ── second layer, shown after a successful Gmail sign-in, before the app is revealed. Also reused for first-time PIN setup and for Change PIN from Settings. ── -->
 <div id="pin-screen">
   <div class="lock-box">
     <div class="lock-title" id="pin-title">Enter PIN</div>
@@ -289,19 +289,19 @@ select option{background:var(--surface);color:var(--text)}
 
 <div class="app" style="display:none">
 <nav class="sidebar">
-  <div class="logo"><h1>My Life OS</h1><p>5-year journey Â· 1825 days</p></div>
+  <div class="logo"><h1>My Life OS</h1><p>5-year journey · 1825 days</p></div>
   <div class="nav">
-    <div class="nav-item active" onclick="goto('home')"><span class="nav-icon">â¬¡</span> Dashboard</div>
-    <div class="nav-item" onclick="goto('definitions')"><span class="nav-icon">ðŸ“–</span> Definitions</div>
-    <div class="nav-item" onclick="goto('goals')"><span class="nav-icon">ðŸŽ¯</span> My Goals</div>
-    <div class="nav-item" onclick="goto('spiritual')"><span class="nav-icon">âœ¦</span> Spiritual</div>
-    <div class="nav-item" onclick="goto('adventure')"><span class="nav-icon">âš”</span> Adventure Log</div>
-    <div class="nav-item" onclick="goto('schedule')"><span class="nav-icon">ðŸ—“</span> Time Schedule</div>
-    <div class="nav-item" onclick="goto('progress')"><span class="nav-icon">ðŸ“Š</span> Progress</div>
-    <div class="nav-item" onclick="goto('spiritual-progress')"><span class="nav-icon">âœ¦</span> Spiritual Progress</div>
-    <div class="nav-item" onclick="goto('reviews')"><span class="nav-icon">ðŸ“ˆ</span> Reviews</div>
-    <div class="nav-item" onclick="goto('search')"><span class="nav-icon">ðŸ”</span> Search</div>
-    <div class="nav-item" onclick="goto('settings')"><span class="nav-icon">âš™</span> Settings</div>
+    <div class="nav-item active" onclick="goto('home')"><span class="nav-icon">⬡</span> Dashboard</div>
+    <div class="nav-item" onclick="goto('definitions')"><span class="nav-icon">📖</span> Definitions</div>
+    <div class="nav-item" onclick="goto('goals')"><span class="nav-icon">🎯</span> My Goals</div>
+    <div class="nav-item" onclick="goto('spiritual')"><span class="nav-icon">✦</span> Spiritual</div>
+    <div class="nav-item" onclick="goto('adventure')"><span class="nav-icon">⚔</span> Adventure Log</div>
+    <div class="nav-item" onclick="goto('schedule')"><span class="nav-icon">🗓</span> Time Schedule</div>
+    <div class="nav-item" onclick="goto('progress')"><span class="nav-icon">📊</span> Progress</div>
+    <div class="nav-item" onclick="goto('spiritual-progress')"><span class="nav-icon">✦</span> Spiritual Progress</div>
+    <div class="nav-item" onclick="goto('reviews')"><span class="nav-icon">📈</span> Reviews</div>
+    <div class="nav-item" onclick="goto('search')"><span class="nav-icon">🔍</span> Search</div>
+    <div class="nav-item" onclick="goto('settings')"><span class="nav-icon">⚙</span> Settings</div>
   </div>
   <div class="export-bar">
     <!-- Auth panel -->
@@ -312,12 +312,12 @@ select option{background:var(--surface);color:var(--text)}
         <input type="password" id="auth-password" placeholder="Password" style="font-size:12px;padding:7px 10px;margin-bottom:0;">
         <div id="auth-error" style="font-size:11px;color:var(--danger);display:none;"></div>
         <button class="btn btn-primary" onclick="fbSignInEmail()" style="width:100%;font-size:12px;justify-content:center;">Sign in</button>
-        <div style="font-size:11px;color:var(--text3);text-align:center;">â€” or â€”</div>
+        <div style="font-size:11px;color:var(--text3);text-align:center;">— or —</div>
         <button class="btn btn-ghost" onclick="fbSignIn()" style="width:100%;font-size:12px;justify-content:center;">
           <svg width="14" height="14" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#4285F4" d="M44.5 20H24v8.5h11.8C34.7 33.9 30.1 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.1 29.6 2 24 2 11.8 2 2 11.8 2 24s9.8 22 22 22c11 0 21-8 21-22 0-1.3-.2-2.7-.5-4z"/></svg>
           Sign in with Google
         </button>
-        <div id="google-signin-loading" style="display:none;font-size:11px;color:var(--text3);text-align:center;padding:4px 0;">Completing Google sign-inâ€¦</div>
+        <div id="google-signin-loading" style="display:none;font-size:11px;color:var(--text3);text-align:center;padding:4px 0;">Completing Google sign-in…</div>
       </div>
       <div id="auth-signed-in" style="display:none;font-size:12px;color:var(--text2);">
         <div id="auth-user-name" style="font-weight:500;margin-bottom:4px;font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></div>
@@ -326,7 +326,7 @@ select option{background:var(--surface);color:var(--text)}
     </div>
     <!-- Cloud status -->
     <div id="save-status" style="margin-bottom:8px;">All changes saved</div>
-    <button class="btn btn-ghost" onclick="exportData()" style="width:100%;font-size:12px;justify-content:center;">â¬‡ Download backup</button>
+    <button class="btn btn-ghost" onclick="exportData()" style="width:100%;font-size:12px;justify-content:center;">⬇ Download backup</button>
   </div>
 </nav>
 
@@ -334,16 +334,15 @@ select option{background:var(--surface);color:var(--text)}
 
 <!-- DASHBOARD -->
 <div id="page-home" class="page active">
-  <h1 class="page-title">Good day âœ¦</h1>
+  <h1 class="page-title">Good day ✦</h1>
   <p class="page-sub" id="home-date"></p>
   <div class="grid3" id="home-stats" style="margin-bottom:20px;"></div>
   <div class="grid2">
-    <div class="card"><div class="card-title"><span>ðŸŽ¯</span> Main goal</div><div id="home-biggoal" style="font-size:16px;color:var(--accent);font-family:'DM Serif Display',serif;line-height:1.5;"></div></div>
-    <div class="card"><div class="card-title"><span>âš”</span> Journey progress</div><div id="home-day-num" style="font-size:28px;font-family:'DM Serif Display',serif;color:var(--accent);"></div><div style="font-size:12px;color:var(--text3);margin-bottom:10px;">of 1825 days</div><div class="progress-wrap"><div class="progress-fill" id="home-progress"></div></div></div>
+    <div class="card"><div class="card-title"><span>🎯</span> Main goal</div><div id="home-biggoal" style="font-size:16px;color:var(--accent);font-family:'DM Serif Display',serif;line-height:1.5;"></div></div>
+    <div class="card"><div class="card-title"><span>⚔</span> Journey progress</div><div id="home-day-num" style="font-size:28px;font-family:'DM Serif Display',serif;color:var(--accent);"></div><div style="font-size:12px;color:var(--text3);margin-bottom:10px;">of 1825 days</div><div class="progress-wrap"><div class="progress-fill" id="home-progress"></div></div></div>
   </div>
-  <div class="card mt8"><div class="card-title"><span>ðŸ“…</span> This Month</div><div id="home-month-success"></div></div>
-  <div class="card mt8"><div class="card-title"><span>âœ¦</span> Today's spiritual habits</div><div id="home-spiritual" style="color:var(--text2);font-size:13px;"></div></div>
-  <div class="card mt8"><div class="card-title"><span>ðŸ“ˆ</span> Reviews completed</div><div id="home-review-stats" style="color:var(--text2);font-size:13px;"></div></div>
+  <div class="card mt8"><div class="card-title"><span>✦</span> Today's spiritual habits</div><div id="home-spiritual" style="color:var(--text2);font-size:13px;"></div></div>
+  <div class="card mt8"><div class="card-title"><span>📈</span> Reviews completed</div><div id="home-review-stats" style="color:var(--text2);font-size:13px;"></div></div>
 </div>
 
 <!-- DEFINITIONS -->
@@ -363,7 +362,7 @@ select option{background:var(--surface);color:var(--text)}
 
   <!-- PURPOSE with rich editor -->
   <div class="card">
-    <div class="card-title"><span>ðŸŒŸ</span> My purpose statement</div>
+    <div class="card-title"><span>🌟</span> My purpose statement</div>
     <div class="re-wrap" id="re-purpose-wrap">
       <div class="re-tools-toggle" onclick="toggleReTools('purpose')">
         <span class="arr" id="arr-purpose">&#9658;</span> TOOLS
@@ -392,25 +391,25 @@ select option{background:var(--surface);color:var(--text)}
 
   <!-- 3 MAIN GOALS -->
   <div class="card">
-    <div class="card-title"><span>ðŸŽ¯</span> My 3 main goals â€” next 5 years</div>
+    <div class="card-title"><span>🎯</span> My 3 main goals — next 5 years</div>
     <div class="grid2" style="gap:12px;">
       <div><div class="label mt8">Goal 1</div><input type="text" id="goals-g1" placeholder="e.g. Get a HR job in a top company"></div>
-      <div><div class="label mt8">Next Action</div><input type="text" id="goals-g1next" placeholder="e.g. Apply to 5 companies today."></div>
+      <div><div class="label mt8">Goal 1 Progress %</div><input type="number" id="goals-g1pct" min="0" max="100" placeholder="0–100" oninput="saveGoalPct(1,this.value)"></div>
     </div>
     <div class="grid2" style="gap:12px;" style="margin-top:8px;">
       <div><div class="label mt8">Goal 2</div><input type="text" id="goals-g2" placeholder="e.g. Complete all HR certifications"></div>
-      <div><div class="label mt8">Next Action</div><input type="text" id="goals-g2next" placeholder="e.g. Complete HR interview preparation."></div>
+      <div><div class="label mt8">Goal 2 Progress %</div><input type="number" id="goals-g2pct" min="0" max="100" placeholder="0–100" oninput="saveGoalPct(2,this.value)"></div>
     </div>
     <div class="grid2" style="gap:12px;">
       <div><div class="label mt8">Goal 3</div><input type="text" id="goals-g3" placeholder="e.g. Build financial independence"></div>
-      <div><div class="label mt8">Next Action</div><input type="text" id="goals-g3next" placeholder="e.g. Review this week's money plan."></div>
+      <div><div class="label mt8">Goal 3 Progress %</div><input type="number" id="goals-g3pct" min="0" max="100" placeholder="0–100" oninput="saveGoalPct(3,this.value)"></div>
     </div>
     <div class="mt16" id="goals-progress-bars"></div>
   </div>
 
-  <!-- GOAL DETAILS â€” tabbed Goal 1 / Goal 2 / Goal 3 -->
+  <!-- GOAL DETAILS — tabbed Goal 1 / Goal 2 / Goal 3 -->
   <div class="card">
-    <div class="card-title"><span>ðŸ“‹</span> Goal Details &amp; Tasks</div>
+    <div class="card-title"><span>📋</span> Goal Details &amp; Tasks</div>
     <div class="tabs">
       <button class="tab-btn active" onclick="switchGoalTab(1,this)">Goal 1</button>
       <button class="tab-btn" onclick="switchGoalTab(2,this)">Goal 2</button>
@@ -423,8 +422,6 @@ select option{background:var(--surface);color:var(--text)}
         <div style="font-size:13px;color:var(--text3);font-style:italic;" id="gtab1-heading">Set Goal 1 above to title this section.</div>
         <button class="btn btn-ghost" onclick="addGoalSub(1)" style="font-size:12px;padding:5px 12px;">+ Add sub-section</button>
       </div>
-      <div id="goal-next-1"></div>
-      <div id="goal-ms-1"></div>
       <div id="gsubs-1"></div>
     </div>
 
@@ -434,8 +431,6 @@ select option{background:var(--surface);color:var(--text)}
         <div style="font-size:13px;color:var(--text3);font-style:italic;" id="gtab2-heading">Set Goal 2 above to title this section.</div>
         <button class="btn btn-ghost" onclick="addGoalSub(2)" style="font-size:12px;padding:5px 12px;">+ Add sub-section</button>
       </div>
-      <div id="goal-next-2"></div>
-      <div id="goal-ms-2"></div>
       <div id="gsubs-2"></div>
     </div>
 
@@ -445,8 +440,6 @@ select option{background:var(--surface);color:var(--text)}
         <div style="font-size:13px;color:var(--text3);font-style:italic;" id="gtab3-heading">Set Goal 3 above to title this section.</div>
         <button class="btn btn-ghost" onclick="addGoalSub(3)" style="font-size:12px;padding:5px 12px;">+ Add sub-section</button>
       </div>
-      <div id="goal-next-3"></div>
-      <div id="goal-ms-3"></div>
       <div id="gsubs-3"></div>
     </div>
   </div>
@@ -454,7 +447,7 @@ select option{background:var(--surface);color:var(--text)}
   <!-- MILESTONES -->
   <div class="card">
     <div class="section-header" style="margin-bottom:12px;">
-      <div class="card-title" style="margin:0;"><span>ðŸ“Œ</span> Step-by-step milestones</div>
+      <div class="card-title" style="margin:0;"><span>📌</span> Step-by-step milestones</div>
       <button class="btn btn-ghost" onclick="openMilestoneModal()" style="font-size:12px;padding:6px 14px;">+ Add milestone</button>
     </div>
     <div id="milestone-list"></div>
@@ -470,13 +463,13 @@ select option{background:var(--surface);color:var(--text)}
 
   <!-- SPIRITUAL PROGRESS CARD -->
   <div class="card" id="sp-progress-card">
-    <div class="card-title"><span>âœ¦</span> Spiritual Progress</div>
+    <div class="card-title"><span>✦</span> Spiritual Progress</div>
     <div id="sp-progress-content"></div>
   </div>
 
   <!-- INTENTION (unchanged) -->
   <div class="card">
-    <div class="card-title"><span>âœ¦</span> My spiritual intention</div>
+    <div class="card-title"><span>✦</span> My spiritual intention</div>
     <div class="re-wrap" style="margin-top:6px;">
       <div class="re-tools-toggle" onclick="toggleReTools('spiritual-intention')">
         <span class="arr" id="arr-spiritual-intention">&#9658;</span> TOOLS
@@ -508,30 +501,30 @@ select option{background:var(--surface);color:var(--text)}
 
   <!-- SPIRITUAL GOALS 1-3 -->
   <div class="card">
-    <div class="card-title"><span>ðŸŒ™</span> My 3 Spiritual Goals</div>
+    <div class="card-title"><span>🌙</span> My 3 Spiritual Goals</div>
     <div class="grid2" style="gap:12px;margin-bottom:12px;">
       <div><div class="label">Spiritual Goal 1</div><input type="text" id="sp-g1" placeholder="e.g. Complete daily dhikr for 90 days" oninput="saveSpGoal()"></div>
-      <div><div class="label">Goal 1 Progress %</div><input type="number" id="sp-g1pct" min="0" max="100" placeholder="0â€“100" oninput="saveSpGoal()"></div>
+      <div><div class="label">Goal 1 Progress %</div><input type="number" id="sp-g1pct" min="0" max="100" placeholder="0–100" oninput="saveSpGoal()"></div>
     </div>
     <div class="grid2" style="gap:12px;margin-bottom:12px;">
       <div><div class="label">Spiritual Goal 2</div><input type="text" id="sp-g2" placeholder="e.g. Read Quran daily" oninput="saveSpGoal()"></div>
-      <div><div class="label">Goal 2 Progress %</div><input type="number" id="sp-g2pct" min="0" max="100" placeholder="0â€“100" oninput="saveSpGoal()"></div>
+      <div><div class="label">Goal 2 Progress %</div><input type="number" id="sp-g2pct" min="0" max="100" placeholder="0–100" oninput="saveSpGoal()"></div>
     </div>
     <div class="grid2" style="gap:12px;">
       <div><div class="label">Spiritual Goal 3</div><input type="text" id="sp-g3" placeholder="e.g. Night prayer 3x per week" oninput="saveSpGoal()"></div>
-      <div><div class="label">Goal 3 Progress %</div><input type="number" id="sp-g3pct" min="0" max="100" placeholder="0â€“100" oninput="saveSpGoal()"></div>
+      <div><div class="label">Goal 3 Progress %</div><input type="number" id="sp-g3pct" min="0" max="100" placeholder="0–100" oninput="saveSpGoal()"></div>
     </div>
     <div class="mt16" id="sp-goal-bars"></div>
   </div>
 
   <!-- SPIRITUAL GOAL DETAIL PLANS -->
   <div class="card">
-    <div class="card-title"><span>ðŸ“‹</span> Spiritual Goal Plans</div>
+    <div class="card-title"><span>📋</span> Spiritual Goal Plans</div>
     <!-- Goal 1 Plan -->
     <div class="sp-goal-block">
       <div class="sp-goal-header" onclick="toggleSpGoalPlan(1)">
         <span class="sp-goal-toggle" id="sp-tog-1">&#9658;</span>
-        <span style="font-size:14px;font-weight:500;color:var(--text);" id="sp-plan-label-1">Spiritual Goal 1 â€” Detailed Plan</span>
+        <span style="font-size:14px;font-weight:500;color:var(--text);" id="sp-plan-label-1">Spiritual Goal 1 — Detailed Plan</span>
       </div>
       <div class="sp-goal-body" id="sp-plan-body-1">
         <div class="re-wrap">
@@ -556,7 +549,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="sp-goal-block">
       <div class="sp-goal-header" onclick="toggleSpGoalPlan(2)">
         <span class="sp-goal-toggle" id="sp-tog-2">&#9658;</span>
-        <span style="font-size:14px;font-weight:500;color:var(--text);" id="sp-plan-label-2">Spiritual Goal 2 â€” Detailed Plan</span>
+        <span style="font-size:14px;font-weight:500;color:var(--text);" id="sp-plan-label-2">Spiritual Goal 2 — Detailed Plan</span>
       </div>
       <div class="sp-goal-body" id="sp-plan-body-2">
         <div class="re-wrap">
@@ -581,7 +574,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="sp-goal-block">
       <div class="sp-goal-header" onclick="toggleSpGoalPlan(3)">
         <span class="sp-goal-toggle" id="sp-tog-3">&#9658;</span>
-        <span style="font-size:14px;font-weight:500;color:var(--text);" id="sp-plan-label-3">Spiritual Goal 3 â€” Detailed Plan</span>
+        <span style="font-size:14px;font-weight:500;color:var(--text);" id="sp-plan-label-3">Spiritual Goal 3 — Detailed Plan</span>
       </div>
       <div class="sp-goal-body" id="sp-plan-body-3">
         <div class="re-wrap">
@@ -606,7 +599,7 @@ select option{background:var(--surface);color:var(--text)}
 
   <!-- SPIRITUAL HABITS -->
   <div class="card">
-    <div class="card-title"><span>ðŸ“¿</span> Spiritual Habits</div>
+    <div class="card-title"><span>📿</span> Spiritual Habits</div>
     <div id="sp-habit-list"></div>
   </div>
 </div>
@@ -614,16 +607,16 @@ select option{background:var(--surface);color:var(--text)}
 <!-- ADVENTURE LOG -->
 <div id="page-adventure" class="page">
   <h1 class="page-title">Adventure Log</h1>
-  <p class="page-sub" id="adventure-sub">Your 1825-day journey â€” click any day dot to log it</p>
+  <p class="page-sub" id="adventure-sub">Your 1825-day journey — click any day dot to log it</p>
   <div class="card">
-    <div class="card-title"><span>âš”</span> Day map</div>
+    <div class="card-title"><span>⚔</span> Day map</div>
     <div class="day-grid" id="day-grid"></div>
     <div style="display:flex;gap:14px;font-size:12px;color:var(--text3);margin-top:4px;flex-wrap:wrap;">
-      <span style="color:var(--success);">â–  Done</span>
-      <span style="color:var(--danger);">â–  Missed</span>
-      <span style="color:var(--accent);">â–  Today</span>
-      <span style="border:1.5px solid var(--accent);border-radius:2px;padding:0 2px;color:var(--text2);">â–  Past (empty)</span>
-      <span style="color:var(--text3);">â–  Not logged</span>
+      <span style="color:var(--success);">■ Done</span>
+      <span style="color:var(--danger);">■ Missed</span>
+      <span style="color:var(--accent);">■ Today</span>
+      <span style="border:1.5px solid var(--accent);border-radius:2px;padding:0 2px;color:var(--text2);">■ Past (empty)</span>
+      <span style="color:var(--text3);">■ Not logged</span>
     </div>
   </div>
 </div>
@@ -631,7 +624,7 @@ select option{background:var(--surface);color:var(--text)}
 <!-- SCHEDULE -->
 <div id="page-schedule" class="page">
   <div class="section-header">
-    <div><h1 class="page-title">Time Schedule</h1><p class="page-sub" id="schedule-sub">Every day of every month â€” block your hours, track urgent vs important.</p></div>
+    <div><h1 class="page-title">Time Schedule</h1><p class="page-sub" id="schedule-sub">Every day of every month — block your hours, track urgent vs important.</p></div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
       <select id="schedule-month" onchange="switchScheduleMonth()" style="width:auto;padding:8px 12px;font-size:13px;"></select>
       <button class="btn btn-ghost" onclick="addScheduleMonth()" style="font-size:12px;padding:7px 14px;">+ New month</button>
@@ -639,14 +632,14 @@ select option{background:var(--surface);color:var(--text)}
   </div>
 
   <div class="card" id="month-day-nav">
-    <div class="card-title"><span>ðŸ“…</span> Days in this month â€” click a day to fill its schedule</div>
+    <div class="card-title"><span>📅</span> Days in this month — click a day to fill its schedule</div>
     <div id="month-day-pills" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
     <div style="display:flex;gap:14px;margin-top:10px;flex-wrap:wrap;font-size:11px;">
-      <span style="color:var(--success);">â–  Filled</span>
-      <span style="border:1.5px solid var(--accent);border-radius:2px;padding:0 2px;color:var(--text2);">â–  Past (empty)</span>
-      <span style="color:var(--text3);">â–  Empty</span>
-      <span style="color:var(--accent);">â–  Selected</span>
-      <span style="color:var(--accent);">â­ Today</span>
+      <span style="color:var(--success);">■ Filled</span>
+      <span style="border:1.5px solid var(--accent);border-radius:2px;padding:0 2px;color:var(--text2);">■ Past (empty)</span>
+      <span style="color:var(--text3);">■ Empty</span>
+      <span style="color:var(--accent);">■ Selected</span>
+      <span style="color:var(--accent);">⭐ Today</span>
     </div>
   </div>
 
@@ -654,15 +647,15 @@ select option{background:var(--surface);color:var(--text)}
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
       <div id="day-schedule-title" style="font-size:15px;font-weight:500;color:var(--text);"></div>
       <div style="display:flex;gap:8px;">
-        <button class="btn btn-ghost" onclick="prevDay()" style="font-size:12px;padding:5px 12px;">â† Prev</button>
-        <button class="btn btn-ghost" onclick="nextDay()" style="font-size:12px;padding:5px 12px;">Next â†’</button>
+        <button class="btn btn-ghost" onclick="prevDay()" style="font-size:12px;padding:5px 12px;">← Prev</button>
+        <button class="btn btn-ghost" onclick="nextDay()" style="font-size:12px;padding:5px 12px;">Next →</button>
       </div>
     </div>
     <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap;">
-      <span style="font-size:12px;color:var(--danger);">â–  Urgent + Important</span>
-      <span style="font-size:12px;color:var(--warning);">â–  Urgent only</span>
-      <span style="font-size:12px;color:var(--success);">â–  Important only</span>
-      <span style="font-size:12px;color:var(--text3);">â–  Neither</span>
+      <span style="font-size:12px;color:var(--danger);">■ Urgent + Important</span>
+      <span style="font-size:12px;color:var(--warning);">■ Urgent only</span>
+      <span style="font-size:12px;color:var(--success);">■ Important only</span>
+      <span style="font-size:12px;color:var(--text3);">■ Neither</span>
     </div>
     <table class="time-table"><thead><tr><th>Time slot</th><th>Task</th><th>Urgent?</th><th>Important?</th><th style="width:36px;text-align:center;">Done?</th></tr></thead><tbody id="schedule-body"></tbody></table>
     <div style="margin-top:16px;" id="schedule-summary"></div>
@@ -670,8 +663,8 @@ select option{background:var(--surface);color:var(--text)}
     <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
       <div class="label">Happy with today?</div>
       <div style="display:flex;gap:8px;margin-top:8px;">
-        <button class="btn btn-ghost" id="sched-happy-y" onclick="setSchedHappy(true)" style="font-size:13px;padding:7px 18px;">ðŸ˜Š Yes</button>
-        <button class="btn btn-ghost" id="sched-happy-n" onclick="setSchedHappy(false)" style="font-size:13px;padding:7px 18px;">ðŸ˜” No</button>
+        <button class="btn btn-ghost" id="sched-happy-y" onclick="setSchedHappy(true)" style="font-size:13px;padding:7px 18px;">😊 Yes</button>
+        <button class="btn btn-ghost" id="sched-happy-n" onclick="setSchedHappy(false)" style="font-size:13px;padding:7px 18px;">😔 No</button>
       </div>
       <div class="label mt8">Why? (optional)</div>
       <textarea id="sched-why" rows="2" placeholder="Because..." style="margin-top:5px;" oninput="saveSchedWhy()"></textarea>
@@ -679,7 +672,7 @@ select option{background:var(--surface);color:var(--text)}
   </div>
 
   <div class="card">
-    <div class="card-title"><span>ðŸ“Š</span> Month summary</div>
+    <div class="card-title"><span>📊</span> Month summary</div>
     <div id="schedule-happy-summary" style="font-size:13px;color:var(--text2);"></div>
   </div>
 </div>
@@ -689,23 +682,15 @@ select option{background:var(--surface);color:var(--text)}
   <h1 class="page-title">Progress</h1>
   <p class="page-sub">Your journey at a glance</p>
   <div class="grid3" id="progress-stats" style="margin-bottom:20px;"></div>
-  <div class="grid2" style="margin-bottom:20px;">
-    <div class="card"><div class="card-title"><span>ðŸŒ±</span> Overall Life Progress</div><div id="overall-life-progress"></div></div>
-    <div class="card"><div class="card-title"><span>ðŸ“…</span> Monthly Success Rate</div><div id="monthly-success-rate"></div></div>
-  </div>
+  <div class="card"><div class="card-title"><span>📊</span> Adventure log — last 30 days</div><div class="chart-box"><canvas id="chart-adventure"></canvas></div></div>
   <div class="card">
-    <div class="card-title"><span>ðŸ“‹</span> Weekly Review</div>
-    <div id="weekly-review-summary"></div>
-  </div>
-  <div class="card"><div class="card-title"><span>ðŸ“Š</span> Adventure log â€” last 30 days</div><div class="chart-box"><canvas id="chart-adventure"></canvas></div></div>
-  <div class="card">
-    <div class="card-title"><span>ðŸŽ¯</span> Milestones</div>
+    <div class="card-title"><span>🎯</span> Milestones</div>
     <div id="progress-milestones"></div>
     <div class="progress-wrap mt8"><div class="progress-fill green" id="milestone-bar"></div></div>
     <div id="milestone-pct" style="font-size:12px;color:var(--text3);margin-top:6px;"></div>
   </div>
   <div class="card">
-    <div class="card-title"><span>ðŸ“ˆ</span> Reviews</div>
+    <div class="card-title"><span>📈</span> Reviews</div>
     <div id="progress-reviews"></div>
   </div>
 </div>
@@ -715,19 +700,19 @@ select option{background:var(--surface);color:var(--text)}
   <h1 class="page-title">Spiritual Progress</h1>
   <p class="page-sub">Your inner journey at a glance</p>
   <div class="card">
-    <div class="card-title"><span>âœ¦</span> Spiritual Goal Progress</div>
+    <div class="card-title"><span>✦</span> Spiritual Goal Progress</div>
     <div id="spprog-goals"></div>
   </div>
   <div class="card">
-    <div class="card-title"><span>ðŸ“¿</span> Spiritual habits â€” this week</div>
+    <div class="card-title"><span>📿</span> Spiritual habits — this week</div>
     <div id="spprog-week"></div>
   </div>
   <div class="card">
-    <div class="card-title"><span>ðŸŒ™</span> Spiritual Habit Progress</div>
+    <div class="card-title"><span>🌙</span> Spiritual Habit Progress</div>
     <div id="spprog-habits"></div>
   </div>
   <div class="card">
-    <div class="card-title"><span>ðŸ“Š</span> Overall Spiritual Completion</div>
+    <div class="card-title"><span>📊</span> Overall Spiritual Completion</div>
     <div id="spprog-overall"></div>
   </div>
 </div>
@@ -739,10 +724,10 @@ select option{background:var(--surface);color:var(--text)}
 
   <!-- Review type tabs -->
   <div class="tabs" id="review-tabs">
-    <button class="tab-btn active" onclick="switchReviewTab('weekly',this)">ðŸ“… Weekly</button>
-    <button class="tab-btn" onclick="switchReviewTab('monthly',this)">ðŸ—“ Monthly</button>
-    <button class="tab-btn" onclick="switchReviewTab('quarterly',this)">ðŸ“Š Quarterly</button>
-    <button class="tab-btn" onclick="switchReviewTab('annual',this)">ðŸ“… Annual</button>
+    <button class="tab-btn active" onclick="switchReviewTab('weekly',this)">📅 Weekly</button>
+    <button class="tab-btn" onclick="switchReviewTab('monthly',this)">🗓 Monthly</button>
+    <button class="tab-btn" onclick="switchReviewTab('quarterly',this)">📊 Quarterly</button>
+    <button class="tab-btn" onclick="switchReviewTab('annual',this)">📅 Annual</button>
   </div>
 
   <!-- WEEKLY REVIEWS -->
@@ -785,9 +770,9 @@ select option{background:var(--surface);color:var(--text)}
 <!-- SEARCH PAGE -->
 <div id="page-search" class="page">
   <h1 class="page-title">Search</h1>
-  <p class="page-sub">Search across all your data â€” definitions, goals, reviews, logs, and more</p>
+  <p class="page-sub">Search across all your data — definitions, goals, reviews, logs, and more</p>
   <div class="card">
-    <input type="text" id="search-input" placeholder="ðŸ”  Type to search everything..." oninput="runSearch(this.value)" style="font-size:15px;padding:12px 16px;">
+    <input type="text" id="search-input" placeholder="🔍  Type to search everything..." oninput="runSearch(this.value)" style="font-size:15px;padding:12px 16px;">
   </div>
   <div id="search-results"></div>
 </div>
@@ -799,7 +784,7 @@ select option{background:var(--surface);color:var(--text)}
 
   <!-- BACKUP & RESTORE CARD -->
   <div class="card">
-    <div class="card-title"><span>ðŸ’¾</span> Backup &amp; Restore</div>
+    <div class="card-title"><span>💾</span> Backup &amp; Restore</div>
     <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">
       Keep your data safe by downloading a backup file. You can restore it anytime if you switch devices or browsers.
     </p>
@@ -807,15 +792,15 @@ select option{background:var(--surface);color:var(--text)}
     <!-- Export -->
     <div style="border:1px solid var(--border);border-radius:var(--rs);padding:18px 20px;margin-bottom:14px;background:var(--surface2);">
       <div style="display:flex;align-items:flex-start;gap:14px;">
-        <div style="font-size:28px;line-height:1;">â¬‡</div>
+        <div style="font-size:28px;line-height:1;">⬇</div>
         <div style="flex:1;">
           <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;">Export Backup</div>
-          <div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Downloads a complete JSON backup of all your data â€” goals, logs, reviews, habits, and more.</div>
-          <button class="btn btn-primary" onclick="exportBackup()" id="btn-export-backup">â¬‡ Download Backup</button>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Downloads a complete JSON backup of all your data — goals, logs, reviews, habits, and more.</div>
+          <button class="btn btn-primary" onclick="exportBackup()" id="btn-export-backup">⬇ Download Backup</button>
         </div>
       </div>
       <div id="export-msg" style="display:none;margin-top:12px;padding:10px 14px;border-radius:var(--rs);background:rgba(58,138,110,0.1);border:1px solid rgba(58,138,110,0.25);color:var(--success);font-size:13px;">
-        âœ“ Backup downloaded successfully.
+        ✓ Backup downloaded successfully.
       </div>
       <div style="margin-top:12px;font-size:12px;color:var(--text3);">Last Backup: <span id="last-backup-display">Never</span></div>
     </div>
@@ -823,16 +808,16 @@ select option{background:var(--surface);color:var(--text)}
     <!-- Import -->
     <div style="border:1px solid var(--border);border-radius:var(--rs);padding:18px 20px;background:var(--surface2);">
       <div style="display:flex;align-items:flex-start;gap:14px;">
-        <div style="font-size:28px;line-height:1;">â¬†</div>
+        <div style="font-size:28px;line-height:1;">⬆</div>
         <div style="flex:1;">
           <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;">Import Backup</div>
           <div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Select a previously downloaded <code style="font-size:11px;background:var(--border);padding:1px 5px;border-radius:3px;">JourneyOS-Backup-*.json</code> file to restore your data.</div>
           <input type="file" id="import-file-input" accept=".json" style="display:none;" onchange="handleImportFile(this)">
-          <button class="btn btn-ghost" onclick="document.getElementById('import-file-input').click()" id="btn-import-backup">â¬† Select Backup File</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('import-file-input').click()" id="btn-import-backup">⬆ Select Backup File</button>
         </div>
       </div>
       <div id="import-msg-success" style="display:none;margin-top:12px;padding:10px 14px;border-radius:var(--rs);background:rgba(58,138,110,0.1);border:1px solid rgba(58,138,110,0.25);color:var(--success);font-size:13px;">
-        âœ“ Backup restored successfully.
+        ✓ Backup restored successfully.
       </div>
       <div id="import-msg-error" style="display:none;margin-top:12px;padding:10px 14px;border-radius:var(--rs);background:rgba(184,90,90,0.1);border:1px solid rgba(184,90,90,0.25);color:var(--danger);font-size:13px;"></div>
     </div>
@@ -840,7 +825,7 @@ select option{background:var(--surface);color:var(--text)}
 
   <!-- STORAGE STATUS CARD -->
   <div class="card">
-    <div class="card-title"><span>ðŸ“¦</span> Storage Status</div>
+    <div class="card-title"><span>📦</span> Storage Status</div>
     <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">
       Your data is stored in Firestore, which has a 1 GB free-tier limit. This shows how much of that you're currently using.
     </p>
@@ -859,13 +844,13 @@ select option{background:var(--surface);color:var(--text)}
 
   <!-- SECURITY CARD -->
   <div class="card">
-    <div class="card-title"><span>ðŸ”’</span> Security</div>
+    <div class="card-title"><span>🔒</span> Security</div>
     <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">
       Your 4-digit PIN is the second lock on JourneyOS, after Google Sign-In. It's stored only on this device.
     </p>
     <div style="border:1px solid var(--border);border-radius:var(--rs);padding:18px 20px;background:var(--surface2);">
       <div style="display:flex;align-items:flex-start;gap:14px;">
-        <div style="font-size:28px;line-height:1;">ðŸ”‘</div>
+        <div style="font-size:28px;line-height:1;">🔑</div>
         <div style="flex:1;">
           <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;">Change PIN</div>
           <div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Update the 4-digit PIN used to unlock JourneyOS on this device.</div>
@@ -873,18 +858,18 @@ select option{background:var(--surface);color:var(--text)}
         </div>
       </div>
       <div id="pin-changed-msg" style="display:none;margin-top:12px;padding:10px 14px;border-radius:var(--rs);background:rgba(58,138,110,0.1);border:1px solid rgba(58,138,110,0.25);color:var(--success);font-size:13px;">
-        âœ“ PIN updated successfully.
+        ✓ PIN updated successfully.
       </div>
     </div>
   </div>
 
   <!-- ABOUT CARD -->
   <div class="card">
-    <div class="card-title"><span>â„¹</span> About</div>
+    <div class="card-title"><span>ℹ</span> About</div>
     <div style="font-size:13px;color:var(--text2);line-height:1.8;">
-      <div><span style="color:var(--text3);">App:</span> My Life OS Â· JourneyOS</div>
-      <div><span style="color:var(--text3);">Journey Start:</span> 21 June 2026</div>
-      <div><span style="color:var(--text3);">Duration:</span> 5 Years Â· 1825 Days</div>
+      <div><span style="color:var(--text3);">App:</span> My Life OS · JourneyOS</div>
+      <div><span style="color:var(--text3);">Journey Start:</span> 15 June 2026</div>
+      <div><span style="color:var(--text3);">Duration:</span> 5 Years · 1825 Days</div>
       <div><span style="color:var(--text3);">Storage:</span> localStorage + Firestore sync</div>
     </div>
   </div>
@@ -893,7 +878,7 @@ select option{background:var(--surface);color:var(--text)}
 <!-- BACKUP CONFIRM MODAL -->
 <div class="modal-overlay" id="modal-import-confirm">
   <div class="modal" style="width:460px;">
-    <div class="modal-title" style="color:var(--warning);">âš  Confirm Restore</div>
+    <div class="modal-title" style="color:var(--warning);">⚠ Confirm Restore</div>
     <p style="font-size:14px;color:var(--text2);margin-bottom:6px;line-height:1.7;">
       Importing a backup will <strong>replace your current data</strong>. This cannot be undone.
     </p>
@@ -913,12 +898,12 @@ select option{background:var(--surface);color:var(--text)}
 
 <!-- MOBILE NAV -->
 <div class="mobile-nav">
-  <div class="mobile-nav-item active" onclick="goto('home')"><span class="ico">â¬¡</span>Home</div>
-  <div class="mobile-nav-item" onclick="goto('goals')"><span class="ico">ðŸŽ¯</span>Goals</div>
-  <div class="mobile-nav-item" onclick="goto('adventure')"><span class="ico">âš”</span>Log</div>
-  <div class="mobile-nav-item" onclick="goto('schedule')"><span class="ico">ðŸ—“</span>Schedule</div>
-  <div class="mobile-nav-item" onclick="goto('progress')"><span class="ico">ðŸ“Š</span>Progress</div>
-  <div class="mobile-nav-item" onclick="goto('reviews')"><span class="ico">ðŸ“ˆ</span>Reviews</div>
+  <div class="mobile-nav-item active" onclick="goto('home')"><span class="ico">⬡</span>Home</div>
+  <div class="mobile-nav-item" onclick="goto('goals')"><span class="ico">🎯</span>Goals</div>
+  <div class="mobile-nav-item" onclick="goto('adventure')"><span class="ico">⚔</span>Log</div>
+  <div class="mobile-nav-item" onclick="goto('schedule')"><span class="ico">🗓</span>Schedule</div>
+  <div class="mobile-nav-item" onclick="goto('progress')"><span class="ico">📊</span>Progress</div>
+  <div class="mobile-nav-item" onclick="goto('reviews')"><span class="ico">📈</span>Reviews</div>
 </div>
 
 <!-- MODALS -->
@@ -958,9 +943,7 @@ select option{background:var(--surface);color:var(--text)}
 
 <div class="modal-overlay" id="modal-milestone">
   <div class="modal">
-    <div class="modal-title" id="milestone-modal-title">Add milestone</div>
-    <input type="hidden" id="ms-edit-idx" value="">
-    <input type="hidden" id="ms-goal-num" value="">
+    <div class="modal-title">Add milestone</div>
     <div class="label">Milestone title</div><input type="text" id="ms-title" placeholder="e.g. Complete Excel course on Coursera">
     <div class="label mt16">Category</div><input type="text" id="ms-cat" placeholder="e.g. HR Career, Education, Finance">
     <div class="label mt16">Target date</div><input type="date" id="ms-date">
@@ -1009,19 +992,19 @@ select option{background:var(--surface);color:var(--text)}
         <div class="re-draw-bar" id="dbar-adv"></div>
         <canvas id="dc-adv" class="re-canvas" height="150"></canvas>
       </div>
-      <div class="re-editor" id="ed-adv" contenteditable="true" data-ph="Write your adventure for today â€” goals, intentions, plans..." style="min-height:80px;"></div>
+      <div class="re-editor" id="ed-adv" contenteditable="true" data-ph="Write your adventure for today — goals, intentions, plans..." style="min-height:80px;"></div>
     </div>
 
     <div class="label mt16">Did you complete your plan?</div>
     <div style="display:flex;gap:10px;margin-top:6px;">
-      <button class="btn btn-ghost" id="btn-complete" onclick="setDayStatus('done')" style="flex:1;">âœ“ Yes, completed</button>
-      <button class="btn btn-ghost" id="btn-missed" onclick="setDayStatus('missed')" style="flex:1;">âœ— No, missed</button>
+      <button class="btn btn-ghost" id="btn-complete" onclick="setDayStatus('done')" style="flex:1;">✓ Yes, completed</button>
+      <button class="btn btn-ghost" id="btn-missed" onclick="setDayStatus('missed')" style="flex:1;">✗ No, missed</button>
     </div>
     <div id="day-happy-row" style="margin-top:14px;display:none;">
       <div class="label">Are you happy with the day?</div>
       <div style="display:flex;gap:8px;margin-top:6px;">
-        <button class="btn btn-ghost" id="btn-happy-y" onclick="setDayHappy(true)" style="flex:1;">ðŸ˜Š Yes</button>
-        <button class="btn btn-ghost" id="btn-happy-n" onclick="setDayHappy(false)" style="flex:1;">ðŸ˜” Not really</button>
+        <button class="btn btn-ghost" id="btn-happy-y" onclick="setDayHappy(true)" style="flex:1;">😊 Yes</button>
+        <button class="btn btn-ghost" id="btn-happy-n" onclick="setDayHappy(false)" style="flex:1;">😔 Not really</button>
       </div>
     </div>
     <div id="day-missed-row" style="display:none;">
@@ -1053,7 +1036,7 @@ select option{background:var(--surface);color:var(--text)}
       <div class="re-color-bar" id="cbar-notes"></div>
       <div class="re-editor" id="ed-notes" contenteditable="true" data-ph="Reflections, anything else about this day..." style="min-height:70px;"></div>
     </div>
-    <div class="modal-footer"><button class="btn btn-danger" onclick="clearDayLog()" style="margin-right:auto;">âœ• Clear day</button><button class="btn btn-ghost" onclick="closeModal('modal-day')">Cancel</button><button class="btn btn-primary" onclick="saveDayLog()">Save day</button></div>
+    <div class="modal-footer"><button class="btn btn-danger" onclick="clearDayLog()" style="margin-right:auto;">✕ Clear day</button><button class="btn btn-ghost" onclick="closeModal('modal-day')">Cancel</button><button class="btn btn-primary" onclick="saveDayLog()">Save day</button></div>
   </div>
 </div>
 
@@ -1081,12 +1064,12 @@ select option{background:var(--surface);color:var(--text)}
     <div class="label">5. What Did Not Work?</div>
     <textarea id="wr-notwork" rows="2" placeholder="What failed or fell short?" style="margin-bottom:10px;"></textarea>
     <div class="grid2" style="gap:12px;margin-bottom:10px;">
-      <div><div class="label">6. Spiritual Growth (0â€“10)</div><input type="number" id="wr-r-spiritual" min="0" max="10" placeholder="0â€“10" style="width:100%;"></div>
-      <div><div class="label">7. Goal Progress (0â€“10)</div><input type="number" id="wr-r-goal" min="0" max="10" placeholder="0â€“10" style="width:100%;"></div>
+      <div><div class="label">6. Spiritual Growth (0–10)</div><input type="number" id="wr-r-spiritual" min="0" max="10" placeholder="0–10" style="width:100%;"></div>
+      <div><div class="label">7. Goal Progress (0–10)</div><input type="number" id="wr-r-goal" min="0" max="10" placeholder="0–10" style="width:100%;"></div>
     </div>
     <div class="grid2" style="gap:12px;margin-bottom:10px;">
-      <div><div class="label">8. Communication (0â€“10)</div><input type="number" id="wr-r-comm" min="0" max="10" placeholder="0â€“10" style="width:100%;"></div>
-      <div><div class="label">9. Health (0â€“10)</div><input type="number" id="wr-r-health" min="0" max="10" placeholder="0â€“10" style="width:100%;"></div>
+      <div><div class="label">8. Communication (0–10)</div><input type="number" id="wr-r-comm" min="0" max="10" placeholder="0–10" style="width:100%;"></div>
+      <div><div class="label">9. Health (0–10)</div><input type="number" id="wr-r-health" min="0" max="10" placeholder="0–10" style="width:100%;"></div>
     </div>
     <div class="label">10. Plan For Next Week</div>
     <textarea id="wr-plan" rows="3" placeholder="What will you focus on next week?" style="margin-bottom:4px;"></textarea>
@@ -1129,8 +1112,8 @@ select option{background:var(--surface);color:var(--text)}
     <textarea id="mr-health" rows="2" placeholder="Fitness, diet, sleep, energy..." style="margin-bottom:10px;"></textarea>
     <div class="label">8. Spiritual Progress</div>
     <textarea id="mr-spiritual" rows="2" placeholder="Faith, prayer, growth..." style="margin-bottom:10px;"></textarea>
-    <div class="label">9. Overall Month Rating (0â€“10)</div>
-    <input type="number" id="mr-rating" min="0" max="10" placeholder="0â€“10" style="width:100%;margin-bottom:10px;">
+    <div class="label">9. Overall Month Rating (0–10)</div>
+    <input type="number" id="mr-rating" min="0" max="10" placeholder="0–10" style="width:100%;margin-bottom:10px;">
     <div class="label">10. Goals For Next Month</div>
     <textarea id="mr-nextgoals" rows="3" placeholder="What will you aim for next month?" style="margin-bottom:4px;"></textarea>
     <div class="modal-footer">
@@ -1155,9 +1138,9 @@ select option{background:var(--surface);color:var(--text)}
       <div><div class="label">Year</div><input type="text" id="qr-year" placeholder="e.g. 2026"></div>
     </div>
     <div class="grid3" style="gap:10px;margin-bottom:10px;">
-      <div><div class="label">1. Goal 1 Progress %</div><input type="number" id="qr-g1pct" min="0" max="100" placeholder="0â€“100" style="width:100%;"></div>
-      <div><div class="label">2. Goal 2 Progress %</div><input type="number" id="qr-g2pct" min="0" max="100" placeholder="0â€“100" style="width:100%;"></div>
-      <div><div class="label">3. Goal 3 Progress %</div><input type="number" id="qr-g3pct" min="0" max="100" placeholder="0â€“100" style="width:100%;"></div>
+      <div><div class="label">1. Goal 1 Progress %</div><input type="number" id="qr-g1pct" min="0" max="100" placeholder="0–100" style="width:100%;"></div>
+      <div><div class="label">2. Goal 2 Progress %</div><input type="number" id="qr-g2pct" min="0" max="100" placeholder="0–100" style="width:100%;"></div>
+      <div><div class="label">3. Goal 3 Progress %</div><input type="number" id="qr-g3pct" min="0" max="100" placeholder="0–100" style="width:100%;"></div>
     </div>
     <div class="label">4. Biggest Success</div>
     <textarea id="qr-success" rows="2" placeholder="The biggest win of the quarter..." style="margin-bottom:10px;"></textarea>
@@ -1222,8 +1205,8 @@ select option{background:var(--surface);color:var(--text)}
     <textarea id="ar-memories" rows="3" placeholder="The 5 best moments or memories of the year..." style="margin-bottom:10px;"></textarea>
     <div class="label">14. Goals For Next Year</div>
     <textarea id="ar-nextgoals" rows="3" placeholder="What will you aim for next year?" style="margin-bottom:10px;"></textarea>
-    <div class="label">15. Overall Year Rating (0â€“10)</div>
-    <input type="number" id="ar-rating" min="0" max="10" placeholder="0â€“10" style="width:100%;margin-bottom:4px;">
+    <div class="label">15. Overall Year Rating (0–10)</div>
+    <input type="number" id="ar-rating" min="0" max="10" placeholder="0–10" style="width:100%;margin-bottom:4px;">
     <div class="modal-footer">
       <button class="btn btn-ghost" onclick="closeModal('modal-review-annual')">Cancel</button>
       <button class="btn btn-primary" onclick="saveAnnualReview()">Save Review</button>
@@ -1276,7 +1259,7 @@ select option{background:var(--surface);color:var(--text)}
     if (typeof window._onAuthChange === 'function') {
       window._onAuthChange(user);
     } else {
-      // Retry in 50ms â€” handles the rare case where module fires before non-module script runs
+      // Retry in 50ms — handles the rare case where module fires before non-module script runs
       setTimeout(() => {
         if (typeof window._onAuthChange === 'function') window._onAuthChange(user);
       }, 50);
@@ -1288,11 +1271,11 @@ select option{background:var(--surface);color:var(--text)}
 
 <script>
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-06-21';
-let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1next:'',g2next:'',g3next:''},goalMilestones:{1:[],2:[],3:[]},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:''};
+const JOURNEY_START='2026-06-22';
+let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:''};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
-// â”€â”€ DATE HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── DATE HELPERS ─────────────────────────────────────────────
 const MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const MONTH_NAMES_SHORT=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 
@@ -1306,10 +1289,10 @@ function getActualDateForMonthDay(monthLabel, dayNum){
   return new Date(yr, mIdx, dayNum);
 }
 
-// Format: "Day 5 â€” 5 June 2026"
+// Format: "Day 5 — 5 June 2026"
 function formatDayLabel(dayNum, dateObj){
   if(!dateObj||isNaN(dateObj))return 'Day '+dayNum;
-  return 'Day '+dayNum+' â€” '+dateObj.getDate()+' '+MONTH_NAMES[dateObj.getMonth()]+' '+dateObj.getFullYear();
+  return 'Day '+dayNum+' — '+dateObj.getDate()+' '+MONTH_NAMES[dateObj.getMonth()]+' '+dateObj.getFullYear();
 }
 
 function getDaysInMonth(label){const months=['January','February','March','April','May','June','July','August','September','October','November','December'];if(!label)return 31;const parts=label.split(' ');const mIdx=months.findIndex(m=>label.includes(m));const yr=parseInt(parts[parts.length-1])||new Date().getFullYear();if(mIdx===-1)return 31;return new Date(yr,mIdx+1,0).getDate();}
@@ -1322,7 +1305,7 @@ function load(){
   if(!D.startDate){D.startDate=JOURNEY_START;}
   // Always enforce the correct start date
   D.startDate=JOURNEY_START;
-  // Init schedule months â€” use the month containing Day 1 (15 June 2026)
+  // Init schedule months — use the month containing Day 1 (15 June 2026)
   if(!D.scheduleMonths||D.scheduleMonths.length===0){
     const day1=new Date(D.startDate);
     const initLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
@@ -1332,8 +1315,6 @@ function load(){
   }
   // Init goal subs
   if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
-  if(!D.goalMilestones)D.goalMilestones={1:[],2:[],3:[]};
-  [1,2,3].forEach(n=>{if(!D.goalMilestones[n])D.goalMilestones[n]=[];});
   if(!D.reContent)D.reContent={};
   if(!D.definitions)D.definitions=[];
   if(!D.milestones)D.milestones=[];
@@ -1341,12 +1322,15 @@ function load(){
   if(!D.monthlyReviews)D.monthlyReviews=[];
   if(!D.quarterlyReviews)D.quarterlyReviews=[];
   if(!D.annualReviews)D.annualReviews=[];
-  if(!D.goals)D.goals={purpose:'',g1:'',g2:'',g3:'',g1next:'',g2next:'',g3next:''};
+  if(!D.goals)D.goals={purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0};
+  if(D.goals.g1pct===undefined)D.goals.g1pct=0;
+  if(D.goals.g2pct===undefined)D.goals.g2pct=0;
+  if(D.goals.g3pct===undefined)D.goals.g3pct=0;
   // Show offline status until auth resolves
   setSaveStatus('offline');
 }
 
-// â”€â”€ SAVE (localStorage + Firestore) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── SAVE (localStorage + Firestore) ───────────────────────────
 let _saveTimer=null;
 function save(){
   // Always save to localStorage as offline backup
@@ -1356,7 +1340,7 @@ function save(){
   _saveTimer=setTimeout(()=>cloudSave(),800);
   // Local status
   const el=document.getElementById('save-status');
-  if(el){el.textContent='Saved âœ“';el.className='saved';setTimeout(()=>{if(!window._fbCurrentUser)setSaveStatus('offline');},1500);}
+  if(el){el.textContent='Saved ✓';el.className='saved';setTimeout(()=>{if(!window._fbCurrentUser)setSaveStatus('offline');},1500);}
   // Keep Storage Status card live if Settings is open (no-op otherwise)
   renderStorageStatus();
 }
@@ -1365,7 +1349,7 @@ function setSaveStatus(state,txt){
   const el=document.getElementById('save-status');
   if(!el)return;
   if(state==='syncing'){el.textContent='Syncing...';el.className='syncing';}
-  else if(state==='synced'){el.textContent='Synced âœ“';el.className='synced';setTimeout(()=>{el.textContent='All changes saved';el.className='';},2000);}
+  else if(state==='synced'){el.textContent='Synced ✓';el.className='synced';setTimeout(()=>{el.textContent='All changes saved';el.className='';},2000);}
   else if(state==='offline'){el.textContent='Offline Mode';el.className='offline';}
   else{el.textContent=txt||'All changes saved';el.className='';}
 }
@@ -1406,11 +1390,11 @@ async function cloudLoad(uid){
   }
 }
 
-// â”€â”€ ACCESS CONTROL â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── ACCESS CONTROL ───────────────────────────────────────────
 const ALLOWED_EMAIL = 'anwarbeg292@gmail.com';
 
-// â”€â”€ PIN LOCK (second security layer, shown after Gmail sign-in) â”€â”€
-// The PIN is stored only in this browser's localStorage, under its own key â€”
+// ── PIN LOCK (second security layer, shown after Gmail sign-in) ──
+// The PIN is stored only in this browser's localStorage, under its own key —
 // it is NEVER added to D, so it never syncs to Firestore and never appears
 // in Export/Import Backup (those only ever read/write D).
 const PIN_KEY='journeyos_pin_local';
@@ -1420,7 +1404,7 @@ let pinVerified=false; // resets to false on sign-out and on every fresh page lo
 let pinScreenMode='unlock'; // 'unlock' | 'create' | 'confirm' | 'change-current' | 'change-new' | 'change-confirm'
 let pinTempValue=null; // holds the first-entered PIN while it awaits confirmation
 
-// â”€â”€ FIREBASE AUTH HANDLERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── FIREBASE AUTH HANDLERS ────────────────────────────────────
 window._fbCurrentUser=null;
 
 async function fbSignInEmail(){
@@ -1444,7 +1428,7 @@ async function fbSignIn(){
   const errEl=document.getElementById('auth-error');
   const loadingEl=document.getElementById('google-signin-loading');
   if(errEl)errEl.style.display='none';
-  if(loadingEl){loadingEl.textContent='Opening Google sign-inâ€¦';loadingEl.style.display='block';}
+  if(loadingEl){loadingEl.textContent='Opening Google sign-in…';loadingEl.style.display='block';}
   try{
     await window._fbSignInWithPopup(window._fbAuth,window._fbProvider);
     // onAuthStateChanged fires automatically after success
@@ -1477,7 +1461,7 @@ window._onAuthChange=async function(user){
   const errEl=document.getElementById('auth-error');
 
   if(user){
-    // â”€â”€ EMAIL ALLOWLIST CHECK â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── EMAIL ALLOWLIST CHECK ─────────────────────────────────
     if(user.email !== ALLOWED_EMAIL){
       // Immediately sign out the unauthorised user
       if(window._fbSignOut && window._fbAuth) await window._fbSignOut(window._fbAuth);
@@ -1492,7 +1476,7 @@ window._onAuthChange=async function(user){
       if(lockErr){lockErr.textContent='Access denied. This app is private.';lockErr.style.display='block';}
       return; // do NOT load Firestore data
     }
-    // â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ─────────────────────────────────────────────────────────
 
     window._fbCurrentUser=user;
     if(signedIn){signedIn.style.display='flex';signedIn.style.flexDirection='column';}
@@ -1500,7 +1484,7 @@ window._onAuthChange=async function(user){
     if(errEl)errEl.style.display='none';
     if(nameEl)nameEl.textContent=user.displayName||user.email||'Signed in';
     hideLockScreen();
-    // â”€â”€ PIN GATE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+    // ── PIN GATE ───────────────────────────────────────────────
     // App stays hidden behind the PIN screen until the correct PIN is
     // entered. pinVerified resets to false on sign-out and on every fresh
     // page load, so the PIN is required again each time per spec.
@@ -1520,7 +1504,7 @@ window._onAuthChange=async function(user){
   }
 };
 
-// Load cloud data and render the app â€” runs immediately if the PIN was
+// Load cloud data and render the app — runs immediately if the PIN was
 // already verified this session, or right after a correct PIN entry.
 async function completeSignIn(user){
   const loaded=await cloudLoad(user.uid);
@@ -1528,12 +1512,13 @@ async function completeSignIn(user){
     D.startDate=JOURNEY_START; // re-enforce after cloud overwrite
     // Re-init defaults
     if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
-    if(!D.goalMilestones)D.goalMilestones={1:[],2:[],3:[]};
-    [1,2,3].forEach(n=>{if(!D.goalMilestones[n])D.goalMilestones[n]=[];});
     if(!D.reContent)D.reContent={};
     if(!D.definitions)D.definitions=[];
     if(!D.milestones)D.milestones=[];
     if(!D.annualReviews)D.annualReviews=[];
+    if(D.goals&&D.goals.g1pct===undefined)D.goals.g1pct=0;
+    if(D.goals&&D.goals.g2pct===undefined)D.goals.g2pct=0;
+    if(D.goals&&D.goals.g3pct===undefined)D.goals.g3pct=0;
     // Re-render whichever page is active
     const activePage=document.querySelector('.page.active');
     if(activePage){
@@ -1545,7 +1530,7 @@ async function completeSignIn(user){
 
 function exportData(){exportBackup();}
 
-// â”€â”€ BACKUP & RESTORE â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── BACKUP & RESTORE ──────────────────────────────────────────
 
 function exportBackup(){
   const date=new Date().toISOString().split('T')[0]; // YYYY-MM-DD
@@ -1582,12 +1567,12 @@ function updateLastBackupDisplay(){
   el.textContent=day+' '+month+' '+year+', '+h12+':'+m+' '+ampm;
 }
 
-// Storage Status â€” size of D as stored/synced, vs Firestore's 1 GB free-tier limit.
+// Storage Status — size of D as stored/synced, vs Firestore's 1 GB free-tier limit.
 // Read-only display; never writes to D, never affects save/sync logic.
 const FIRESTORE_FREE_LIMIT_BYTES=1024*1024*1024; // 1 GB
 function renderStorageStatus(){
   const mbEl=document.getElementById('storage-used-mb');
-  if(!mbEl)return; // Settings page not in DOM / not open â€” skip silently
+  if(!mbEl)return; // Settings page not in DOM / not open — skip silently
   let bytes=0;
   try{ bytes=new Blob([JSON.stringify(D)]).size; }
   catch(e){ bytes=JSON.stringify(D).length; } // fallback if Blob unavailable
@@ -1623,22 +1608,22 @@ function handleImportFile(input){
     try{
       parsed=JSON.parse(e.target.result);
     }catch(err){
-      showImportError('Invalid file â€” could not parse JSON. Please select a valid JourneyOS backup file.');
+      showImportError('Invalid file — could not parse JSON. Please select a valid JourneyOS backup file.');
       return;
     }
     // Basic validation: must be an object and have at least one expected key
     if(typeof parsed!=='object'||parsed===null||Array.isArray(parsed)){
-      showImportError('Invalid backup file â€” the file does not contain valid app data.');
+      showImportError('Invalid backup file — the file does not contain valid app data.');
       return;
     }
     // Must have at least one known top-level key
-    const knownKeys=['goals','definitions','spiritual','spiritualGoals','adventureDays','scheduleMonths','weeklyReviews','monthlyReviews','quarterlyReviews','annualReviews','milestones','goalMilestones'];
+    const knownKeys=['goals','definitions','spiritual','spiritualGoals','adventureDays','scheduleMonths','weeklyReviews','monthlyReviews','quarterlyReviews','annualReviews','milestones'];
     const hasKey=knownKeys.some(k=>Object.prototype.hasOwnProperty.call(parsed,k));
     if(!hasKey){
-      showImportError('Invalid backup file â€” this does not appear to be a JourneyOS backup.');
+      showImportError('Invalid backup file — this does not appear to be a JourneyOS backup.');
       return;
     }
-    // Valid â€” store and show confirmation modal
+    // Valid — store and show confirmation modal
     _pendingImportData=parsed;
     _pendingImportName=file.name;
     document.getElementById('import-confirm-filename').textContent='File: '+file.name;
@@ -1652,7 +1637,7 @@ function handleImportFile(input){
 
 function showImportError(msg){
   const el=document.getElementById('import-msg-error');
-  if(el){el.textContent='âœ• '+msg;el.style.display='block';}
+  if(el){el.textContent='✕ '+msg;el.style.display='block';}
 }
 
 function cancelImport(){
@@ -1671,8 +1656,6 @@ async function confirmImport(){
   D.startDate=JOURNEY_START;
   // Ensure all required keys exist (graceful upgrade for older backups)
   if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
-  if(!D.goalMilestones)D.goalMilestones={1:[],2:[],3:[]};
-  [1,2,3].forEach(n=>{if(!D.goalMilestones[n])D.goalMilestones[n]=[];});
   if(!D.reContent)D.reContent={};
   if(!D.definitions)D.definitions=[];
   if(!D.milestones)D.milestones=[];
@@ -1680,7 +1663,10 @@ async function confirmImport(){
   if(!D.monthlyReviews)D.monthlyReviews=[];
   if(!D.quarterlyReviews)D.quarterlyReviews=[];
   if(!D.annualReviews)D.annualReviews=[];
-  if(!D.goals)D.goals={purpose:'',g1:'',g2:'',g3:'',g1next:'',g2next:'',g3next:''};
+  if(!D.goals)D.goals={purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0};
+  if(D.goals.g1pct===undefined)D.goals.g1pct=0;
+  if(D.goals.g2pct===undefined)D.goals.g2pct=0;
+  if(D.goals.g3pct===undefined)D.goals.g3pct=0;
   if(!D.scheduleMonths||D.scheduleMonths.length===0){
     const day1=new Date(D.startDate);
     const initLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
@@ -1737,7 +1723,7 @@ function goto(pg){
 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
 
-// Definitions â€” rich editor version
+// Definitions — rich editor version
 function openDefModal(idx){
   const eiEl=document.getElementById('modal-def');
   eiEl.dataset.ei=idx!==undefined?idx:'';
@@ -1780,44 +1766,14 @@ function renderDefs(){
 }
 function delDef(i){if(confirm('Delete this definition?')){D.definitions.splice(i,1);save();renderDefs();}}
 
-function renderGoals(){['purpose','g1','g2','g3'].forEach(k=>{const el=document.getElementById('goals-'+k);el.value=D.goals[k]||'';el.oninput=()=>{D.goals[k]=el.value;save();};});const el=document.getElementById('milestone-list');if(!D.milestones.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No milestones yet. Add your first step.</div>';return;}el.innerHTML=D.milestones.map((m,i)=>`<div class="item-row"><div class="check ${m.done?'checked':''}" onclick="toggleMs(${i})">${m.done?'âœ“':''}</div><div class="item-body"><div class="item-title" style="${m.done?'text-decoration:line-through;color:var(--text3)':''}">${esc(m.title)}</div><div class="item-meta">${m.cat?esc(m.cat)+' Â· ':''} ${m.date||'No target date'}</div></div><span class="badge ${m.done?'badge-done':'badge-pending'}">${m.done?'Done':'Pending'}</span><button class="btn btn-danger" onclick="delMs(${i})" style="font-size:11px;padding:4px 10px;">âœ•</button></div>`).join('');}
-function openMilestoneModal(goalNum,idx){
-  const goal=goalNum?parseInt(goalNum):null;
-  const list=goal?(D.goalMilestones&&D.goalMilestones[goal]?D.goalMilestones[goal]:[]):D.milestones;
-  const item=idx!==undefined&&list?list[idx]:null;
-  const titleEl=document.getElementById('milestone-modal-title');
-  if(titleEl)titleEl.textContent=item?'Edit milestone':'Add milestone';
-  document.getElementById('ms-title').value=item?item.title||'':'';
-  document.getElementById('ms-cat').value=item?item.cat||'':'';
-  document.getElementById('ms-date').value=item?item.date||'':'';
-  document.getElementById('ms-edit-idx').value=idx!==undefined?idx:'';
-  document.getElementById('ms-goal-num').value=goal||'';
-  document.getElementById('modal-milestone').classList.add('open');
-}
-function saveMilestone(){
-  const t=document.getElementById('ms-title').value.trim();if(!t)return;
-  const goal=parseInt(document.getElementById('ms-goal-num').value)||0;
-  const idxVal=document.getElementById('ms-edit-idx').value;
-  const data={title:t,cat:document.getElementById('ms-cat').value.trim(),date:document.getElementById('ms-date').value,done:false};
-  if(goal){
-    if(!D.goalMilestones)D.goalMilestones={1:[],2:[],3:[]};
-    if(!D.goalMilestones[goal])D.goalMilestones[goal]=[];
-    if(idxVal!==''){data.done=!!D.goalMilestones[goal][parseInt(idxVal)].done;D.goalMilestones[goal][parseInt(idxVal)]=data;}
-    else D.goalMilestones[goal].push(data);
-  }else{
-    if(idxVal!==''){data.done=!!D.milestones[parseInt(idxVal)].done;D.milestones[parseInt(idxVal)]=data;}
-    else D.milestones.push(data);
-  }
-  save();closeModal('modal-milestone');renderGoalsExtended();
-}
-function toggleMs(i){D.milestones[i].done=!D.milestones[i].done;save();renderGoalsExtended();}
-function delMs(i){D.milestones.splice(i,1);save();renderGoalsExtended();}
-function toggleGoalMs(n,i){D.goalMilestones[n][i].done=!D.goalMilestones[n][i].done;save();renderGoalMilestones(n);renderGoalProgressBars();}
-function editGoalMs(n,i){openMilestoneModal(n,i);}
-function delGoalMs(n,i){if(confirm('Delete this milestone?')){D.goalMilestones[n].splice(i,1);save();renderGoalMilestones(n);renderGoalProgressBars();}}
+function renderGoals(){['purpose','g1','g2','g3'].forEach(k=>{const el=document.getElementById('goals-'+k);el.value=D.goals[k]||'';el.oninput=()=>{D.goals[k]=el.value;save();};});const el=document.getElementById('milestone-list');if(!D.milestones.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No milestones yet. Add your first step.</div>';return;}el.innerHTML=D.milestones.map((m,i)=>`<div class="item-row"><div class="check ${m.done?'checked':''}" onclick="toggleMs(${i})">${m.done?'✓':''}</div><div class="item-body"><div class="item-title" style="${m.done?'text-decoration:line-through;color:var(--text3)':''}">${esc(m.title)}</div><div class="item-meta">${m.cat?esc(m.cat)+' · ':''} ${m.date||'No target date'}</div></div><span class="badge ${m.done?'badge-done':'badge-pending'}">${m.done?'Done':'Pending'}</span><button class="btn btn-danger" onclick="delMs(${i})" style="font-size:11px;padding:4px 10px;">✕</button></div>`).join('');}
+function openMilestoneModal(){document.getElementById('ms-title').value='';document.getElementById('ms-cat').value='';document.getElementById('ms-date').value='';document.getElementById('modal-milestone').classList.add('open');}
+function saveMilestone(){const t=document.getElementById('ms-title').value.trim();if(!t)return;D.milestones.push({title:t,cat:document.getElementById('ms-cat').value.trim(),date:document.getElementById('ms-date').value,done:false});save();closeModal('modal-milestone');renderGoals();}
+function toggleMs(i){D.milestones[i].done=!D.milestones[i].done;save();renderGoals();}
+function delMs(i){D.milestones.splice(i,1);save();renderGoals();}
 
 function renderSpiritual(){
-  // â”€â”€ Intention editor â”€â”€
+  // ── Intention editor ──
   setTimeout(()=>{
     const ed=document.getElementById('ed-spiritual-intention');
     if(ed){
@@ -1841,7 +1797,7 @@ function renderSpiritual(){
   });
   for(let i=1;i<=3;i++){
     const lbl=document.getElementById('sp-plan-label-'+i);
-    if(lbl){const g=D.spiritualGoals['g'+i];lbl.textContent=g?g+' â€” Detailed Plan':'Spiritual Goal '+i+' â€” Detailed Plan';}
+    if(lbl){const g=D.spiritualGoals['g'+i];lbl.textContent=g?g+' — Detailed Plan':'Spiritual Goal '+i+' — Detailed Plan';}
   }
   const barsEl=document.getElementById('sp-goal-bars');
   if(barsEl){
@@ -1884,18 +1840,18 @@ function renderSpiritualHabits(){
       const key=dayDate.getFullYear()+'-'+String(dayDate.getMonth()+1).padStart(2,'0')+'-'+String(dayDate.getDate()).padStart(2,'0');
       const done=log[key];
       const isToday=d===currentDayNum;
-      dots.push(`<div class="sp-habit-dot${done?' done':''}${isToday?' today-dot':''}" title="Day ${d} â€” ${key}" onclick="toggleSpiritualHabit(${hi},'${key}')">${done?'âœ“':d}</div>`);
+      dots.push(`<div class="sp-habit-dot${done?' done':''}${isToday?' today-dot':''}" title="Day ${d} — ${key}" onclick="toggleSpiritualHabit(${hi},'${key}')">${done?'✓':d}</div>`);
     }
     return`<div class="sp-habit-card">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;">
         <div>
           <div style="font-weight:500;font-size:14px;">${esc(h.name)}</div>
           ${h.goal?`<div style="font-size:12px;color:var(--text3);margin-top:2px;">${esc(h.goal)}</div>`:''}
-          <div style="font-size:11px;color:var(--text3);margin-top:2px;">Day <b style="color:var(--accent);">${currentDayNum}</b> of ${targetDays} Â· Started: ${h.startDate||'today'}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">Day <b style="color:var(--accent);">${currentDayNum}</b> of ${targetDays} · Started: ${h.startDate||'today'}</div>
         </div>
         <div style="display:flex;gap:6px;flex-shrink:0;">
-          <button class="btn btn-ghost" onclick="editSpiritualHabit(${hi})" style="font-size:11px;padding:4px 10px;">âœŽ Edit</button>
-          <button class="btn btn-danger" onclick="delSpiritualHabit(${hi})" style="font-size:11px;padding:4px 10px;">âœ•</button>
+          <button class="btn btn-ghost" onclick="editSpiritualHabit(${hi})" style="font-size:11px;padding:4px 10px;">✎ Edit</button>
+          <button class="btn btn-danger" onclick="delSpiritualHabit(${hi})" style="font-size:11px;padding:4px 10px;">✕</button>
         </div>
       </div>
       <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;">
@@ -1941,7 +1897,7 @@ function renderSpiritualProgress(){
   `;
 }
 
-// â”€â”€ Dedicated "Spiritual Progress" sidebar page â€” fully separate from Life/Goal Progress â”€â”€
+// ── Dedicated "Spiritual Progress" sidebar page — fully separate from Life/Goal Progress ──
 function renderSpiritualProgressPage(){
   if(!D.spiritualGoals)D.spiritualGoals={g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0};
   if(!D.spiritual)D.spiritual={intention:'',habits:[]};
@@ -1955,7 +1911,7 @@ function renderSpiritualProgressPage(){
       rows.filter(r=>r.has).map(r=>`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);">${esc(r.title)}</span><span style="color:var(--accent);font-weight:600;">${r.pct}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${r.pct}%"></div></div></div>`).join('');
   }
 
-  // Spiritual habits â€” this week (ported from old Progress page logic)
+  // Spiritual habits — this week (ported from old Progress page logic)
   const weekEl=document.getElementById('spprog-week');
   if(weekEl){
     const today=new Date();const week=[];
@@ -2003,7 +1959,7 @@ function saveSpGoal(){
   save();
   for(let i=1;i<=3;i++){
     const lbl=document.getElementById('sp-plan-label-'+i);
-    if(lbl){const g=D.spiritualGoals['g'+i];lbl.textContent=g?g+' â€” Detailed Plan':'Spiritual Goal '+i+' â€” Detailed Plan';}
+    if(lbl){const g=D.spiritualGoals['g'+i];lbl.textContent=g?g+' — Detailed Plan':'Spiritual Goal '+i+' — Detailed Plan';}
   }
   const barsEl=document.getElementById('sp-goal-bars');
   if(barsEl){
@@ -2098,7 +2054,7 @@ function renderAdventure(){
   const todayKey=ty+'-'+String(tm+1).padStart(2,'0')+'-'+String(td).padStart(2,'0');
   const dayNum=Math.max(0,Math.floor((new Date(ty,tm,td)-start)/86400000))+1;
   const subEl=document.getElementById('adventure-sub');
-  if(subEl){const prettyToday=td+' '+MONTH_NAMES[tm]+' '+ty;subEl.textContent='Your 1825-day journey Â· Today is Day '+dayNum+' â€” '+prettyToday;}
+  if(subEl){const prettyToday=td+' '+MONTH_NAMES[tm]+' '+ty;subEl.textContent='Your 1825-day journey · Today is Day '+dayNum+' — '+prettyToday;}
   grid.innerHTML='';
   for(let i=1;i<=1825;i++){
     const d=new Date(sy,sm-1,sd-1+i); // Day 1 = startDate, Day 1825 = last day of journey
@@ -2112,8 +2068,8 @@ function renderAdventure(){
     const div=document.createElement('div');
     let cls='day-dot';if(status==='done')cls+=' done';else if(status==='missed')cls+=' missed';else if(isPast)cls+=' past-empty';if(isToday)cls+=' today';
     div.className=cls;
-    div.innerHTML='<span class="dd-num">'+i+'</span><span class="dd-mark">'+(isToday?'â­':status==='done'?'âœ“':status==='missed'?'âœ•':'')+'</span>';
-    div.title='Day '+i+' â€” '+dd+' '+MONTH_NAMES[dmo]+' '+dy;
+    div.innerHTML='<span class="dd-num">'+i+'</span><span class="dd-mark">'+(isToday?'⭐':status==='done'?'✓':status==='missed'?'✕':'')+'</span>';
+    div.title='Day '+i+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy;
     div.onclick=()=>openDayModal(key,i,dd,dmo,dy);
     grid.appendChild(div);
   }
@@ -2121,10 +2077,10 @@ function renderAdventure(){
 function openDayModal(key,dayNum,dd,dmo,dy){
   selDay=key;dayStatus=null;dayHappy=null;
   const log=D.adventureDays[key]||{};
-  // dd, dmo, dy are local date parts computed in renderAdventure â€” use them directly
+  // dd, dmo, dy are local date parts computed in renderAdventure — use them directly
   // to avoid any possible UTC/timezone shift from re-parsing D.startDate
   const prettyDate=dd+' '+MONTH_NAMES[dmo]+' '+dy;
-  document.getElementById('modal-day-title').textContent='Day '+dayNum+' â€” '+prettyDate;
+  document.getElementById('modal-day-title').textContent='Day '+dayNum+' — '+prettyDate;
   ['r1','r2','r3'].forEach((r,i)=>{const el=document.getElementById('day-'+r);if(el)el.value=(log.reasons&&log.reasons[i])||'';});
   ['f1','f2','f3'].forEach((f,i)=>{const el=document.getElementById('day-'+f);if(el)el.value=(log.fixes&&log.fixes[i])||'';});
   dayStatus=log.status||null;
@@ -2197,7 +2153,7 @@ function addScheduleMonth(){
   D.scheduleMonths.push(m);D.curMonth=D.scheduleMonths.length-1;curDayIdx=0;save();renderScheduleNav();
 }
 
-function renderSchedule(){const month=D.scheduleMonths[D.curMonth];if(!month)return;if(!month.days){const daysCount=getDaysInMonth(month.label);month.days=Array.from({length:daysCount},(_,i)=>({dayNum:i+1,rows:month.rows?[...month.rows.map(r=>({...r}))]:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}));delete month.rows;save();}if(curDayIdx>=month.days.length)curDayIdx=0;const pillsEl=document.getElementById('month-day-pills');const todayD=new Date();const ty2=todayD.getFullYear(),tm2=todayD.getMonth(),td2=todayD.getDate();pillsEl.innerHTML=month.days.map((d,i)=>{const filled=d.rows&&d.rows.some(r=>r.task);const sel=i===curDayIdx;const actualDate=getActualDateForMonthDay(month.label,d.dayNum);const tooltip=actualDate?formatDayLabel(d.dayNum,actualDate):'Day '+d.dayNum;const isToday=!!actualDate&&actualDate.getFullYear()===ty2&&actualDate.getMonth()===tm2&&actualDate.getDate()===td2;const isPast=!!actualDate&&new Date(actualDate.getFullYear(),actualDate.getMonth(),actualDate.getDate())<new Date(ty2,tm2,td2);const pastEmpty=isPast&&!filled;let bg,border,color,fontWeight;if(sel){bg='var(--accent)';border='var(--accent)';color='#fff';fontWeight='700';}else if(filled){bg='var(--success)';border='var(--success)';color='#fff';fontWeight='600';}else if(isToday){bg='var(--accent)';border='var(--accent)';color='#fff';fontWeight='700';}else if(pastEmpty){bg='var(--surface2)';border='var(--accent)';color='var(--text2)';fontWeight='500';}else{bg='var(--surface2)';border='var(--border)';color='var(--text3)';fontWeight='400';}const ringStyle=isToday?(filled?'2px solid var(--text)':'2px solid var(--accent)'):('1px solid '+border);const mark=isToday?'â­':'';return`<div onclick="selectDay(${i})" title="${tooltip}" style="width:36px;height:36px;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-size:12px;font-weight:${fontWeight};cursor:pointer;background:${bg};color:${color};border:${ringStyle};transition:all .12s;position:relative;">${mark?`<span style="font-size:8px;line-height:1;">${mark}</span>`:''}<span style="line-height:1;">${d.dayNum}</span></div>`;}).join('');renderDaySchedule();renderSchedSummary();}
+function renderSchedule(){const month=D.scheduleMonths[D.curMonth];if(!month)return;if(!month.days){const daysCount=getDaysInMonth(month.label);month.days=Array.from({length:daysCount},(_,i)=>({dayNum:i+1,rows:month.rows?[...month.rows.map(r=>({...r}))]:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}));delete month.rows;save();}if(curDayIdx>=month.days.length)curDayIdx=0;const pillsEl=document.getElementById('month-day-pills');const todayD=new Date();const ty2=todayD.getFullYear(),tm2=todayD.getMonth(),td2=todayD.getDate();pillsEl.innerHTML=month.days.map((d,i)=>{const filled=d.rows&&d.rows.some(r=>r.task);const sel=i===curDayIdx;const actualDate=getActualDateForMonthDay(month.label,d.dayNum);const tooltip=actualDate?formatDayLabel(d.dayNum,actualDate):'Day '+d.dayNum;const isToday=!!actualDate&&actualDate.getFullYear()===ty2&&actualDate.getMonth()===tm2&&actualDate.getDate()===td2;const isPast=!!actualDate&&new Date(actualDate.getFullYear(),actualDate.getMonth(),actualDate.getDate())<new Date(ty2,tm2,td2);const pastEmpty=isPast&&!filled;let bg,border,color,fontWeight;if(sel){bg='var(--accent)';border='var(--accent)';color='#fff';fontWeight='700';}else if(filled){bg='var(--success)';border='var(--success)';color='#fff';fontWeight='600';}else if(isToday){bg='var(--accent)';border='var(--accent)';color='#fff';fontWeight='700';}else if(pastEmpty){bg='var(--surface2)';border='var(--accent)';color='var(--text2)';fontWeight='500';}else{bg='var(--surface2)';border='var(--border)';color='var(--text3)';fontWeight='400';}const ringStyle=isToday?(filled?'2px solid var(--text)':'2px solid var(--accent)'):('1px solid '+border);const mark=isToday?'⭐':'';return`<div onclick="selectDay(${i})" title="${tooltip}" style="width:36px;height:36px;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-size:12px;font-weight:${fontWeight};cursor:pointer;background:${bg};color:${color};border:${ringStyle};transition:all .12s;position:relative;">${mark?`<span style="font-size:8px;line-height:1;">${mark}</span>`:''}<span style="line-height:1;">${d.dayNum}</span></div>`;}).join('');renderDaySchedule();renderSchedSummary();}
 
 function selectDay(idx){curDayIdx=idx;renderSchedule();}
 function prevDay(){if(curDayIdx>0){curDayIdx--;renderSchedule();}}
@@ -2205,12 +2161,12 @@ function nextDay(){const month=D.scheduleMonths[D.curMonth];if(month&&curDayIdx<
 
 function autoGrowTextarea(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
 
-function renderDaySchedule(){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const day=month.days[curDayIdx];if(!day)return;const actualDate=getActualDateForMonthDay(month.label,day.dayNum);document.getElementById('day-schedule-title').textContent=formatDayLabel(day.dayNum,actualDate);const tbody=document.getElementById('schedule-body');tbody.innerHTML=day.rows.map((r,ri)=>{const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const isDone=!!r.done;const taskStyle=isDone?'text-decoration:line-through;opacity:0.6;':'';return`<tr class="${cls}" id="sr-${ri}"><td style="white-space:nowrap;width:80px;font-size:12px;color:var(--text3);">${r.time}</td><td class="task-cell"><textarea class="task-input" rows="1" placeholder="Enter taskâ€¦" oninput="updSchedTA(${ri},this)" onkeydown="if(['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();schedArrowKey(event,${ri},0);}" style="${taskStyle}">${esc(r.task)}</textarea></td><td><input type="text" class="yn-input" value="${r.urgent==='Y'?'Y':(r.urgent==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'urgent')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'urgent')"></td><td><input type="text" class="yn-input" value="${r.important==='Y'?'Y':(r.important==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'important')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'important')"></td><td class="task-check-cell"><div class="task-check${isDone?' done':''}" tabindex="0" onclick="toggleTaskDone(${ri})" onkeydown="if(['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(event.key)){schedArrowKey(event,${ri},3);}else if(event.key==='Enter'){event.preventDefault();toggleTaskDone(${ri});}" title="${isDone?'Mark incomplete (Enter to toggle)':'Mark complete (Enter to toggle)'}">${isDone?'âœ“':''}</div></td></tr>`;}).join('');tbody.querySelectorAll('textarea.task-input').forEach(ta=>{autoGrowTextarea(ta);});const hy=document.getElementById('sched-happy-y');const hn=document.getElementById('sched-happy-n');hy.style.background=day.happy===true?'var(--success)':'';hy.style.color=day.happy===true?'#fff':'';hy.style.borderColor=day.happy===true?'var(--success)':'var(--border)';hn.style.background=day.happy===false?'var(--danger)':'';hn.style.color=day.happy===false?'#fff':'';hn.style.borderColor=day.happy===false?'var(--danger)':'var(--border)';document.getElementById('sched-why').value=day.why||'';}
+function renderDaySchedule(){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const day=month.days[curDayIdx];if(!day)return;const actualDate=getActualDateForMonthDay(month.label,day.dayNum);document.getElementById('day-schedule-title').textContent=formatDayLabel(day.dayNum,actualDate);const tbody=document.getElementById('schedule-body');tbody.innerHTML=day.rows.map((r,ri)=>{const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const isDone=!!r.done;const taskStyle=isDone?'text-decoration:line-through;opacity:0.6;':'';return`<tr class="${cls}" id="sr-${ri}"><td style="white-space:nowrap;width:80px;font-size:12px;color:var(--text3);">${r.time}</td><td class="task-cell"><textarea class="task-input" rows="1" placeholder="Enter task…" oninput="updSchedTA(${ri},this)" onkeydown="if(['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();schedArrowKey(event,${ri},0);}" style="${taskStyle}">${esc(r.task)}</textarea></td><td><input type="text" class="yn-input" value="${r.urgent==='Y'?'Y':(r.urgent==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'urgent')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'urgent')"></td><td><input type="text" class="yn-input" value="${r.important==='Y'?'Y':(r.important==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'important')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'important')"></td><td class="task-check-cell"><div class="task-check${isDone?' done':''}" tabindex="0" onclick="toggleTaskDone(${ri})" onkeydown="if(['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(event.key)){schedArrowKey(event,${ri},3);}else if(event.key==='Enter'){event.preventDefault();toggleTaskDone(${ri});}" title="${isDone?'Mark incomplete (Enter to toggle)':'Mark complete (Enter to toggle)'}">${isDone?'✓':''}</div></td></tr>`;}).join('');tbody.querySelectorAll('textarea.task-input').forEach(ta=>{autoGrowTextarea(ta);});const hy=document.getElementById('sched-happy-y');const hn=document.getElementById('sched-happy-n');hy.style.background=day.happy===true?'var(--success)':'';hy.style.color=day.happy===true?'#fff':'';hy.style.borderColor=day.happy===true?'var(--success)':'var(--border)';hn.style.background=day.happy===false?'var(--danger)':'';hn.style.color=day.happy===false?'#fff':'';hn.style.borderColor=day.happy===false?'var(--danger)':'var(--border)';document.getElementById('sched-why').value=day.why||'';}
 
 function updSchedTA(ri,el){autoGrowTextarea(el);updSched(ri,'task',el.value);}
 
 function toggleTaskDone(ri){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const row=month.days[curDayIdx].rows[ri];row.done=!row.done;save();// Update just this row's checkbox and task style without full re-render
-const checkEl=document.querySelector('#sr-'+ri+' .task-check');const taEl=document.querySelector('#sr-'+ri+' textarea.task-input');if(checkEl){checkEl.classList.toggle('done',row.done);checkEl.textContent=row.done?'âœ“':'';}if(taEl){taEl.style.textDecoration=row.done?'line-through':'none';taEl.style.opacity=row.done?'0.6':'1';}renderSchedSummary();}
+const checkEl=document.querySelector('#sr-'+ri+' .task-check');const taEl=document.querySelector('#sr-'+ri+' textarea.task-input');if(checkEl){checkEl.classList.toggle('done',row.done);checkEl.textContent=row.done?'✓':'';}if(taEl){taEl.style.textDecoration=row.done?'line-through':'none';taEl.style.opacity=row.done?'0.6':'1';}renderSchedSummary();}
 
 function updSched(ri,field,val){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;month.days[curDayIdx].rows[ri][field]=val;save();const r=month.days[curDayIdx].rows[ri];const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const row=document.getElementById('sr-'+ri);if(row)row.className=cls;renderSchedSummary();}
 
@@ -2237,10 +2193,10 @@ function renderSchedSummary(){
 
   // Existing inline summary (urgent/important breakdown)
   document.getElementById('schedule-summary').innerHTML=`<div style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px;">
-    <span style="color:var(--danger);">â–  Urgent+Important: <b>${uu}</b></span>
-    <span style="color:var(--warning);">â–  Urgent only: <b>${un}</b></span>
-    <span style="color:var(--success);">â–  Important only: <b>${nu}</b></span>
-    <span style="color:var(--text3);">â–  Neither: <b>${nn}</b></span>
+    <span style="color:var(--danger);">■ Urgent+Important: <b>${uu}</b></span>
+    <span style="color:var(--warning);">■ Urgent only: <b>${un}</b></span>
+    <span style="color:var(--success);">■ Important only: <b>${nu}</b></span>
+    <span style="color:var(--text3);">■ Neither: <b>${nn}</b></span>
   </div>`;
 
   // New detailed stats panel
@@ -2248,19 +2204,19 @@ function renderSchedSummary(){
   if(!statsEl)return;
   statsEl.innerHTML=`
   <div style="border-top:1px solid var(--border);padding-top:14px;">
-    <div class="card-title" style="margin-bottom:10px;"><span>ðŸ“‹</span> Day Statistics</div>
+    <div class="card-title" style="margin-bottom:10px;"><span>📋</span> Day Statistics</div>
     <div class="sched-stats-grid">
-      <div class="sched-stat-row"><span class="sched-stat-label" style="color:var(--danger);">â–  Urgent + Important</span><span class="sched-stat-val danger">${uu}</span></div>
-      <div class="sched-stat-row"><span class="sched-stat-label" style="color:var(--warning);">â–  Urgent Only</span><span class="sched-stat-val warning">${un}</span></div>
-      <div class="sched-stat-row"><span class="sched-stat-label" style="color:var(--success);">â–  Important Only</span><span class="sched-stat-val success">${nu}</span></div>
-      <div class="sched-stat-row"><span class="sched-stat-label" style="color:var(--text3);">â–  Neither</span><span class="sched-stat-val muted">${nn}</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label" style="color:var(--danger);">■ Urgent + Important</span><span class="sched-stat-val danger">${uu}</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label" style="color:var(--warning);">■ Urgent Only</span><span class="sched-stat-val warning">${un}</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label" style="color:var(--success);">■ Important Only</span><span class="sched-stat-val success">${nu}</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label" style="color:var(--text3);">■ Neither</span><span class="sched-stat-val muted">${nn}</span></div>
     </div>
     <div style="height:1px;background:var(--border);margin:10px 0;"></div>
     <div class="sched-stats-grid">
       <div class="sched-stat-row"><span class="sched-stat-label">Total Tasks</span><span class="sched-stat-val accent">${total}</span></div>
       <div class="sched-stat-row"><span class="sched-stat-label">Planned Hours</span><span class="sched-stat-val accent">${planned}h</span></div>
-      <div class="sched-stat-row"><span class="sched-stat-label">âœ“ Completed Tasks</span><span class="sched-stat-val success">${completed}</span></div>
-      <div class="sched-stat-row"><span class="sched-stat-label">âœ“ Completed Hours</span><span class="sched-stat-val success">${completedHrs}h</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label">✓ Completed Tasks</span><span class="sched-stat-val success">${completed}</span></div>
+      <div class="sched-stat-row"><span class="sched-stat-label">✓ Completed Hours</span><span class="sched-stat-val success">${completedHrs}h</span></div>
       <div class="sched-stat-row"><span class="sched-stat-label">Remaining Tasks</span><span class="sched-stat-val${remaining>0?' warning':' muted'}">${remaining}</span></div>
       <div class="sched-stat-row"><span class="sched-stat-label">Remaining Hours</span><span class="sched-stat-val${remainingHrs>0?' warning':' muted'}">${remainingHrs}h</span></div>
     </div>
@@ -2286,120 +2242,44 @@ function renderSchedSummary(){
   </div>`;
 }
 
-function renderHome(){document.getElementById('home-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const start=new Date(D.startDate),today=new Date();const dayNum=Math.max(0,Math.floor((today-start)/86400000))+1;const pct=Math.min(100,Math.round(dayNum/1825*100));const done=Object.values(D.adventureDays).filter(d=>d.status==='done').length;const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;const wrc=(D.weeklyReviews||[]).length,mrc=(D.monthlyReviews||[]).length,qrc=(D.quarterlyReviews||[]).length,arc=(D.annualReviews||[]).length;document.getElementById('home-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Day of journey</div></div><div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days completed</div></div><div class="stat-card"><div class="stat-num">${msDone}/${msTotal}</div><div class="stat-label">Milestones done</div></div>`;document.getElementById('home-biggoal').textContent=D.goals.g1||'No main goal set yet â€” go to My Goals to add one';document.getElementById('home-day-num').textContent='Day '+dayNum;document.getElementById('home-progress').style.width=pct+'%';renderMonthlySuccess(document.getElementById('home-month-success'),true);const todayKey=new Date().toISOString().split('T')[0];document.getElementById('home-spiritual').innerHTML=D.spiritual.habits.length===0?'No spiritual habits added yet.':D.spiritual.habits.map(h=>{const d=h.log&&h.log[todayKey];return`<span style="margin-right:14px;color:${d?'var(--success)':'var(--text3)'}">${d?'âœ“':'â—‹'} ${esc(h.name)}</span>`;}).join('');
+function renderHome(){document.getElementById('home-date').textContent=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const start=new Date(D.startDate),today=new Date();const dayNum=Math.max(0,Math.floor((today-start)/86400000))+1;const pct=Math.min(100,Math.round(dayNum/1825*100));const done=Object.values(D.adventureDays).filter(d=>d.status==='done').length;const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;const wrc=(D.weeklyReviews||[]).length,mrc=(D.monthlyReviews||[]).length,qrc=(D.quarterlyReviews||[]).length,arc=(D.annualReviews||[]).length;document.getElementById('home-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Day of journey</div></div><div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days completed</div></div><div class="stat-card"><div class="stat-num">${msDone}/${msTotal}</div><div class="stat-label">Milestones done</div></div>`;document.getElementById('home-biggoal').textContent=D.goals.g1||'No main goal set yet — go to My Goals to add one';document.getElementById('home-day-num').textContent='Day '+dayNum;document.getElementById('home-progress').style.width=pct+'%';const todayKey=new Date().toISOString().split('T')[0];document.getElementById('home-spiritual').innerHTML=D.spiritual.habits.length===0?'No spiritual habits added yet.':D.spiritual.habits.map(h=>{const d=h.log&&h.log[todayKey];return`<span style="margin-right:14px;color:${d?'var(--success)':'var(--text3)'}">${d?'✓':'○'} ${esc(h.name)}</span>`;}).join('');
   // Review stats card
   const homeReviewEl=document.getElementById('home-review-stats');
-  const goalProgress=getAllGoalProgress(),g1p=goalProgress[0].pct,g2p=goalProgress[1].pct,g3p=goalProgress[2].pct;
+  const g1p=D.goals.g1pct||0,g2p=D.goals.g2pct||0,g3p=D.goals.g3pct||0;
   const totalReviews=wrc+mrc+qrc+arc;
-  if(homeReviewEl){homeReviewEl.innerHTML=`<div style="display:flex;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--text2);margin-bottom:12px;"><span>ðŸ“… <b>${wrc}</b> weekly</span><span>ðŸ—“ <b>${mrc}</b> monthly</span><span>ðŸ“Š <b>${qrc}</b> quarterly</span><span>ðŸ“… <b>${arc}</b> annual</span><span style="color:var(--accent);font-weight:600;">Total: ${totalReviews}</span></div>
+  if(homeReviewEl){homeReviewEl.innerHTML=`<div style="display:flex;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--text2);margin-bottom:12px;"><span>📅 <b>${wrc}</b> weekly</span><span>🗓 <b>${mrc}</b> monthly</span><span>📊 <b>${qrc}</b> quarterly</span><span>📅 <b>${arc}</b> annual</span><span style="color:var(--accent);font-weight:600;">Total: ${totalReviews}</span></div>
   ${D.goals.g1?`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text2);">${esc(D.goals.g1)}</span><span style="color:var(--accent);font-weight:600;">${g1p}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${g1p}%"></div></div></div>`:''}
   ${D.goals.g2?`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text2);">${esc(D.goals.g2)}</span><span style="color:var(--accent);font-weight:600;">${g2p}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${g2p}%"></div></div></div>`:''}
   ${D.goals.g3?`<div style="margin-bottom:8px;"><div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px;"><span style="color:var(--text2);">${esc(D.goals.g3)}</span><span style="color:var(--accent);font-weight:600;">${g3p}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${g3p}%"></div></div></div>`:''}
   `;}
 }
 
-function getScheduleTaskStatsForRange(startDate,endDate){
-  let total=0,completed=0;
-  (D.scheduleMonths||[]).forEach(month=>{
-    (month.days||[]).forEach(day=>{
-      const date=getActualDateForMonthDay(month.label,day.dayNum);
-      if(!date)return;
-      const local=new Date(date.getFullYear(),date.getMonth(),date.getDate());
-      if(local<startDate||local>endDate)return;
-      (day.rows||[]).forEach(row=>{
-        if(row.task&&row.task.trim()){
-          total++;
-          if(row.done)completed++;
-        }
-      });
-    });
-  });
-  return{completed,total,pct:total?Math.round(completed/total*100):0};
-}
-function getCurrentMonthScheduleStats(){
-  const now=new Date();
-  const start=new Date(now.getFullYear(),now.getMonth(),1);
-  const end=new Date(now.getFullYear(),now.getMonth()+1,0);
-  const stats=getScheduleTaskStatsForRange(start,end);
-  stats.label=MONTH_NAMES[now.getMonth()]+' '+now.getFullYear();
-  return stats;
-}
-function getCurrentWeekScheduleStats(){
-  const now=new Date();
-  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  const day=(today.getDay()+6)%7;
-  const start=new Date(today);start.setDate(today.getDate()-day);
-  const end=new Date(start);end.setDate(start.getDate()+6);
-  const stats=getScheduleTaskStatsForRange(start,end);
-  stats.label=start.getDate()+' '+MONTH_NAMES_SHORT[start.getMonth()]+' - '+end.getDate()+' '+MONTH_NAMES_SHORT[end.getMonth()]+' '+end.getFullYear();
-  return stats;
-}
-function getWeeklySpiritualHabitStats(){
-  const habits=(D.spiritual&&D.spiritual.habits)?D.spiritual.habits:[];
-  const now=new Date();
-  const today=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-  const day=(today.getDay()+6)%7;
-  const start=new Date(today);start.setDate(today.getDate()-day);
-  let daysDone=0;
-  for(let i=0;i<7;i++){
-    const d=new Date(start);d.setDate(start.getDate()+i);
-    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-    if(habits.some(h=>h.log&&h.log[key]))daysDone++;
-  }
-  return{completed:daysDone,total:7};
-}
-function getGoalProgressChange(){
-  const latest=(D.weeklyReviews||[]).length?D.weeklyReviews[D.weeklyReviews.length-1]:null;
-  if(!latest||latest.rGoal===''||latest.rGoal===undefined)return 0;
-  return getOverallLifeProgress()-(parseInt(latest.rGoal)||0)*10;
-}
-function renderMonthlySuccess(el,compact){
-  if(!el)return;
-  const stats=getCurrentMonthScheduleStats();
-  el.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><div><div style="font-size:13px;color:var(--text2);font-weight:500;">${esc(stats.label)}</div>${compact?'':`<div style="font-size:12px;color:var(--text3);margin-top:2px;">Success Rate: ${stats.pct}%<br>Tasks Completed: ${stats.completed}<br>Tasks Planned: ${stats.total}</div>`}</div><div style="font-family:'DM Serif Display',serif;font-size:${compact?'24px':'30px'};color:var(--accent);">${stats.pct}%</div></div><div class="progress-wrap"><div class="progress-fill green" style="width:${stats.pct}%"></div></div>${compact?`<div style="font-size:11px;color:var(--text3);margin-top:5px;">${stats.completed} of ${stats.total} tasks complete</div>`:''}`;
-}
-function renderProgressSummaryCards(){
-  const lifePct=getOverallLifeProgress();
-  const lifeEl=document.getElementById('overall-life-progress');
-  if(lifeEl){
-    const goals=getAllGoalProgress();
-    lifeEl.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;"><div style="font-size:13px;color:var(--text2);font-weight:500;">Average of Goal 1, Goal 2, Goal 3</div><div style="font-family:'DM Serif Display',serif;font-size:30px;color:var(--accent);">${lifePct}%</div></div><div class="progress-wrap"><div class="progress-fill" style="width:${lifePct}%"></div></div><div style="font-size:11px;color:var(--text3);margin-top:6px;">Goal 1: ${goals[0].pct}% · Goal 2: ${goals[1].pct}% · Goal 3: ${goals[2].pct}%</div>`;
-  }
-  renderMonthlySuccess(document.getElementById('monthly-success-rate'),false);
-  const week=getCurrentWeekScheduleStats();
-  const sp=getWeeklySpiritualHabitStats();
-  const change=getGoalProgressChange();
-  const weekEl=document.getElementById('weekly-review-summary');
-  if(weekEl){
-    weekEl.innerHTML=`<div class="sched-stats-grid"><div class="sched-stat-row"><span class="sched-stat-label">Current Week</span><span class="sched-stat-val accent">${esc(week.label)}</span></div><div class="sched-stat-row"><span class="sched-stat-label">Tasks Completed</span><span class="sched-stat-val success">${week.completed}</span></div><div class="sched-stat-row"><span class="sched-stat-label">Tasks Planned</span><span class="sched-stat-val accent">${week.total}</span></div><div class="sched-stat-row"><span class="sched-stat-label">Weekly Success Rate</span><span class="sched-stat-val success">${week.pct}%</span></div><div class="sched-stat-row"><span class="sched-stat-label">Spiritual Habits</span><span class="sched-stat-val accent">${sp.completed} / ${sp.total} Days</span></div><div class="sched-stat-row"><span class="sched-stat-label">Goal Progress Change</span><span class="sched-stat-val ${change>=0?'success':'danger'}">${change>=0?'+':''}${change}%</span></div></div><div style="margin-top:10px;"><div class="progress-wrap"><div class="progress-fill green" style="width:${week.pct}%"></div></div></div>`;
-  }
-}
 let advChart=null;
-function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>d.status==='done').length;const logged=Object.values(D.adventureDays).filter(d=>d.status).length;const start=new Date(D.startDate);const dayNum=Math.max(0,Math.floor((new Date()-start)/86400000))+1;document.getElementById('progress-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days done</div></div><div class="stat-card"><div class="stat-num">${Math.round(logged>0?done/logged*100:0)}%</div><div class="stat-label">Success rate</div></div><div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Current day</div></div>`;renderProgressSummaryCards();const labels=[],doneD=[],missD=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];const l=D.adventureDays[k];labels.push(d.toLocaleDateString('en-IN',{month:'short',day:'numeric'}));doneD.push(l&&l.status==='done'?1:0);missD.push(l&&l.status==='missed'?1:0);}const ctx=document.getElementById('chart-adventure');if(advChart)advChart.destroy();advChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Done',data:doneD,backgroundColor:'rgba(58,138,110,0.7)',borderRadius:4},{label:'Missed',data:missD,backgroundColor:'rgba(184,90,90,0.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#5a5448',font:{size:11}}}},scales:{x:{stacked:true,ticks:{color:'#9a9488',font:{size:9},maxTicksLimit:10},grid:{color:'#e0ddd6'}},y:{stacked:true,ticks:{color:'#9a9488',stepSize:1},grid:{color:'#e0ddd6'},max:1}}}});const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;document.getElementById('progress-milestones').textContent=msTotal===0?'No milestones added.':`${msDone} of ${msTotal} milestones completed`;document.getElementById('milestone-bar').style.width=msTotal>0?Math.round(msDone/msTotal*100)+'%':'0%';document.getElementById('milestone-pct').textContent=msTotal>0?Math.round(msDone/msTotal*100)+'% complete':'';
+function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>d.status==='done').length;const logged=Object.values(D.adventureDays).filter(d=>d.status).length;const start=new Date(D.startDate);const dayNum=Math.max(0,Math.floor((new Date()-start)/86400000))+1;document.getElementById('progress-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days done</div></div><div class="stat-card"><div class="stat-num">${Math.round(logged>0?done/logged*100:0)}%</div><div class="stat-label">Success rate</div></div><div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Current day</div></div>`;const labels=[],doneD=[],missD=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];const l=D.adventureDays[k];labels.push(d.toLocaleDateString('en-IN',{month:'short',day:'numeric'}));doneD.push(l&&l.status==='done'?1:0);missD.push(l&&l.status==='missed'?1:0);}const ctx=document.getElementById('chart-adventure');if(advChart)advChart.destroy();advChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Done',data:doneD,backgroundColor:'rgba(58,138,110,0.7)',borderRadius:4},{label:'Missed',data:missD,backgroundColor:'rgba(184,90,90,0.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#5a5448',font:{size:11}}}},scales:{x:{stacked:true,ticks:{color:'#9a9488',font:{size:9},maxTicksLimit:10},grid:{color:'#e0ddd6'}},y:{stacked:true,ticks:{color:'#9a9488',stepSize:1},grid:{color:'#e0ddd6'},max:1}}}});const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;document.getElementById('progress-milestones').textContent=msTotal===0?'No milestones added.':`${msDone} of ${msTotal} milestones completed`;document.getElementById('milestone-bar').style.width=msTotal>0?Math.round(msDone/msTotal*100)+'%':'0%';document.getElementById('milestone-pct').textContent=msTotal>0?Math.round(msDone/msTotal*100)+'% complete':'';
   // Reviews section
   const wrs=D.weeklyReviews||[],mrs=D.monthlyReviews||[],qrs=D.quarterlyReviews||[],ars=D.annualReviews||[];
   const latestW=wrs.length?wrs[wrs.length-1]:'';const latestM=mrs.length?mrs[mrs.length-1]:'';const latestQ=qrs.length?qrs[qrs.length-1]:'';const latestA=ars.length?ars[ars.length-1]:'';
   const prEl=document.getElementById('progress-reviews');
-  const goalProgress=getAllGoalProgress(),g1p=goalProgress[0].pct,g2p=goalProgress[1].pct,g3p=goalProgress[2].pct;
+  const g1p=D.goals.g1pct||0,g2p=D.goals.g2pct||0,g3p=D.goals.g3pct||0;
   if(prEl){prEl.innerHTML=`<div style="display:flex;flex-direction:column;gap:10px;">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);">
-      <div><div style="font-size:13px;font-weight:500;color:var(--text);">ðŸ“… Weekly Reviews</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">${latestW?'Latest: '+(latestW.week||'')+' '+(latestW.year||''):'No reviews yet'}</div></div>
+      <div><div style="font-size:13px;font-weight:500;color:var(--text);">📅 Weekly Reviews</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">${latestW?'Latest: '+(latestW.week||'')+' '+(latestW.year||''):'No reviews yet'}</div></div>
       <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--accent);">${wrs.length}</div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);">
-      <div><div style="font-size:13px;font-weight:500;color:var(--text);">ðŸ—“ Monthly Reviews</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">${latestM?'Latest: '+(latestM.month||'')+' '+(latestM.year||''):'No reviews yet'}</div></div>
+      <div><div style="font-size:13px;font-weight:500;color:var(--text);">🗓 Monthly Reviews</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">${latestM?'Latest: '+(latestM.month||'')+' '+(latestM.year||''):'No reviews yet'}</div></div>
       <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--accent);">${mrs.length}</div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);">
-      <div><div style="font-size:13px;font-weight:500;color:var(--text);">ðŸ“Š Quarterly Reviews</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">${latestQ?'Latest: '+(latestQ.quarter||'')+' '+(latestQ.year||''):'No reviews yet'}</div></div>
+      <div><div style="font-size:13px;font-weight:500;color:var(--text);">📊 Quarterly Reviews</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">${latestQ?'Latest: '+(latestQ.quarter||'')+' '+(latestQ.year||''):'No reviews yet'}</div></div>
       <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--accent);">${qrs.length}</div>
     </div>
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);">
-      <div><div style="font-size:13px;font-weight:500;color:var(--text);">ðŸ“… Annual Reviews</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">${latestA?'Latest: '+(latestA.year||''):'No reviews yet'}</div></div>
+      <div><div style="font-size:13px;font-weight:500;color:var(--text);">📅 Annual Reviews</div><div style="font-size:11px;color:var(--text3);margin-top:2px;">${latestA?'Latest: '+(latestA.year||''):'No reviews yet'}</div></div>
       <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--accent);">${ars.length}</div>
     </div>
   </div>
-  <div class="card-title" style="margin-top:18px;margin-bottom:10px;"><span>ðŸŽ¯</span> Goal Progress Summary</div>
+  <div class="card-title" style="margin-top:18px;margin-bottom:10px;"><span>🎯</span> Goal Progress Summary</div>
   ${D.goals.g1?`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;"><span style="color:var(--text);">${esc(D.goals.g1)}</span><span style="color:var(--accent);font-weight:600;">${g1p}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${g1p}%"></div></div></div>`:''}
   ${D.goals.g2?`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;"><span style="color:var(--text);">${esc(D.goals.g2)}</span><span style="color:var(--accent);font-weight:600;">${g2p}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${g2p}%"></div></div></div>`:''}
   ${D.goals.g3?`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;"><span style="color:var(--text);">${esc(D.goals.g3)}</span><span style="color:var(--accent);font-weight:600;">${g3p}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${g3p}%"></div></div></div>`:''}
@@ -2408,7 +2288,7 @@ function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>d.
 load();renderHome();renderScheduleNav();
 
 // ============================================================
-// RICH EDITOR SYSTEM â€” shared by definitions, goals, adventure
+// RICH EDITOR SYSTEM — shared by definitions, goals, adventure
 // ============================================================
 
 // Toggle TOOLS bar visibility
@@ -2428,7 +2308,7 @@ function reCmd(id,cmd){
   document.execCommand(cmd,false,null);
 }
 
-// â”€â”€ TEXT COLOUR + HIGHLIGHTER â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── TEXT COLOUR + HIGHLIGHTER ────────────────────────────────
 const TEXT_COLORS=['#1a1814','#b85a5a','#b8892a','#3a8a6e','#4a5a9e','#7a4ab8'];
 const HILITE_COLORS=['#fff3a0','#ffd9a0','#b9f6c4','#bcd9ff','#f3c4ff','transparent'];
 const reColorState={}; // remembers which mode (fore/hilite) each editor's bar is showing
@@ -2463,8 +2343,8 @@ function toggleReColorBar(id,mode){
   const cmd=mode==='fore'?'foreColor':'hiliteColor';
   const label=mode==='fore'?'Text colour:':'Highlight:';
   const resetBtn=mode==='fore'
-    ? '<button title="Reset to default text colour" onclick="resetReColor(\''+id+'\',\'fore\')" style="height:22px;padding:0 8px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:var(--surface2);color:var(--text2);cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;margin-left:4px;font-family:\'DM Sans\',sans-serif;">â†© Default</button>'
-    : '<button title="Remove all highlight" onclick="resetReColor(\''+id+'\',\'hilite\')" style="height:22px;padding:0 8px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:var(--surface2);color:var(--text2);cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;margin-left:4px;font-family:\'DM Sans\',sans-serif;">â†© No highlight</button>';
+    ? '<button title="Reset to default text colour" onclick="resetReColor(\''+id+'\',\'fore\')" style="height:22px;padding:0 8px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:var(--surface2);color:var(--text2);cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;margin-left:4px;font-family:\'DM Sans\',sans-serif;">↩ Default</button>'
+    : '<button title="Remove all highlight" onclick="resetReColor(\''+id+'\',\'hilite\')" style="height:22px;padding:0 8px;font-size:11px;border:1px solid var(--border);border-radius:4px;background:var(--surface2);color:var(--text2);cursor:pointer;display:inline-flex;align-items:center;gap:4px;white-space:nowrap;margin-left:4px;font-family:\'DM Sans\',sans-serif;">↩ No highlight</button>';
   bar.innerHTML='<span style="font-size:11px;color:var(--text3);margin-right:2px;">'+label+'</span>'+
     colors.map(c=>{
       if(c==='transparent'){
@@ -2495,7 +2375,7 @@ function applyReColor(id,cmd,color){
   document.execCommand('styleWithCSS',false,false);
 }
 
-// Reset text colour or highlight â€” Word/Google Docs behaviour
+// Reset text colour or highlight — Word/Google Docs behaviour
 function resetReColor(id,mode){
   const ed=document.getElementById('ed-'+id);
   if(!ed)return;
@@ -2520,18 +2400,18 @@ function resetReColor(id,mode){
     let insertAfterNode=null;
     if(sel&&sel.rangeCount>0){
       const range=sel.getRangeAt(0);
-      range.collapse(false); // move cursor to end of selection â€” do NOT remove highlighted text
+      range.collapse(false); // move cursor to end of selection — do NOT remove highlighted text
       sel.removeAllRanges();
       sel.addRange(range);
     }
     // Insert a sentinel span: background:none, no color, zero-width space.
     // This breaks the "inherited" highlight context so the next real character
-    // is typed without a background â€” identical to how Word/Docs work.
+    // is typed without a background — identical to how Word/Docs work.
     const sentinel=document.createElement('span');
     sentinel.style.backgroundColor='transparent';
     sentinel.style.background='none';
     sentinel.setAttribute('data-nohl','1');
-    sentinel.textContent='â€‹'; // zero-width space (invisible)
+    sentinel.textContent='​'; // zero-width space (invisible)
     document.execCommand('insertHTML',false,sentinel.outerHTML);
     // Move cursor after the sentinel
     const newSel=window.getSelection();
@@ -2568,7 +2448,7 @@ function loadReEditor(id){
   if(D.reContent&&D.reContent[id])ed.innerHTML=D.reContent[id];
 }
 
-// â”€â”€ DRAWING inside rich editors â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── DRAWING inside rich editors ──────────────────────────────
 const reDrawState={};
 const DRAW_COLORS=['#1a1814','#b8892a','#3a8a6e','#b85a5a','#4a9e8e','#6060c0'];
 
@@ -2640,10 +2520,10 @@ function saveReDraw(id){
   D.reContent[id+'_draw']=canvas.toDataURL();
   save();
   const btn=document.getElementById('draw-btn-'+id);
-  if(btn){const orig=btn.innerHTML;btn.innerHTML='Saved âœ“';btn.style.color='var(--success)';setTimeout(()=>{btn.innerHTML=orig;btn.style.color='';},1500);}
+  if(btn){const orig=btn.innerHTML;btn.innerHTML='Saved ✓';btn.style.color='var(--success)';setTimeout(()=>{btn.innerHTML=orig;btn.style.color='';},1500);}
 }
 
-// â”€â”€ REVIEWS SYSTEM â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── REVIEWS SYSTEM ───────────────────────────────────────────
 
 function switchReviewTab(type, btn){
   document.querySelectorAll('#review-tabs .tab-btn').forEach(b=>b.classList.remove('active'));
@@ -2662,7 +2542,7 @@ function renderReviews(){
   renderWeeklyList();renderMonthlyList();renderQuarterlyList();renderAnnualList();
 }
 
-// â”€â”€ RATING BADGE helper â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── RATING BADGE helper ──────────────────────────────────────
 function ratingBadge(val){
   const n=parseInt(val);
   if(isNaN(n))return'';
@@ -2670,7 +2550,7 @@ function ratingBadge(val){
   return`<span style="display:inline-block;padding:1px 8px;border-radius:20px;font-size:11px;font-weight:600;background:rgba(0,0,0,0.06);color:${color};">${n}/10</span>`;
 }
 
-// â”€â”€ WEEKLY REVIEWS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── WEEKLY REVIEWS ───────────────────────────────────────────
 function openReviewModal(type, idx){
   if(type==='weekly'){
     const modal=document.getElementById('modal-review-weekly');
@@ -2789,8 +2669,8 @@ function renderWeeklyList(){
     return`<div class="card">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">
         <div style="flex:1;">
-          <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--accent);">${esc(r.week||'')}${r.year?' Â· '+esc(r.year):''}</div>
-          ${r.start||r.end?`<div style="font-size:12px;color:var(--text3);margin-top:2px;">${r.start||''} ${r.start&&r.end?'â†’':''} ${r.end||''}</div>`:''}
+          <div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--accent);">${esc(r.week||'')}${r.year?' · '+esc(r.year):''}</div>
+          ${r.start||r.end?`<div style="font-size:12px;color:var(--text3);margin-top:2px;">${r.start||''} ${r.start&&r.end?'→':''} ${r.end||''}</div>`:''}
           ${avg!==null?`<div style="margin-top:6px;">${ratingBadge(avg)} <span style="font-size:11px;color:var(--text3);">avg rating</span></div>`:''}
         </div>
         <div style="display:flex;gap:7px;flex-shrink:0;">
@@ -2802,16 +2682,16 @@ function renderWeeklyList(){
       ${r.lessons?`<div style="margin-top:10px;"><div class="label" style="margin-bottom:3px;">Lessons Learned</div><div style="font-size:13px;color:var(--text2);">${esc(r.lessons)}</div></div>`:''}
       ${r.plan?`<div style="margin-top:10px;"><div class="label" style="margin-bottom:3px;">Plan For Next Week</div><div style="font-size:13px;color:var(--text2);">${esc(r.plan)}</div></div>`:''}
       <div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;">
-        ${r.rSpiritual!==''&&r.rSpiritual!==undefined?`<span style="font-size:12px;color:var(--text3);">âœ¦ Spiritual ${ratingBadge(r.rSpiritual)}</span>`:''}
-        ${r.rGoal!==''&&r.rGoal!==undefined?`<span style="font-size:12px;color:var(--text3);">ðŸŽ¯ Goals ${ratingBadge(r.rGoal)}</span>`:''}
-        ${r.rComm!==''&&r.rComm!==undefined?`<span style="font-size:12px;color:var(--text3);">ðŸ’¬ Comm ${ratingBadge(r.rComm)}</span>`:''}
-        ${r.rHealth!==''&&r.rHealth!==undefined?`<span style="font-size:12px;color:var(--text3);">ðŸ’ª Health ${ratingBadge(r.rHealth)}</span>`:''}
+        ${r.rSpiritual!==''&&r.rSpiritual!==undefined?`<span style="font-size:12px;color:var(--text3);">✦ Spiritual ${ratingBadge(r.rSpiritual)}</span>`:''}
+        ${r.rGoal!==''&&r.rGoal!==undefined?`<span style="font-size:12px;color:var(--text3);">🎯 Goals ${ratingBadge(r.rGoal)}</span>`:''}
+        ${r.rComm!==''&&r.rComm!==undefined?`<span style="font-size:12px;color:var(--text3);">💬 Comm ${ratingBadge(r.rComm)}</span>`:''}
+        ${r.rHealth!==''&&r.rHealth!==undefined?`<span style="font-size:12px;color:var(--text3);">💪 Health ${ratingBadge(r.rHealth)}</span>`:''}
       </div>
     </div>`;
   }).join('');
 }
 
-// â”€â”€ MONTHLY REVIEWS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── MONTHLY REVIEWS ──────────────────────────────────────────
 function saveMonthlyReview(){
   const month=document.getElementById('mr-month').value;
   if(!month){alert('Please select a month.');return;}
@@ -2855,7 +2735,7 @@ function renderMonthlyList(){
   }).join('');
 }
 
-// â”€â”€ QUARTERLY REVIEWS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── QUARTERLY REVIEWS ────────────────────────────────────────
 function saveQuarterlyReview(){
   const quarter=document.getElementById('qr-quarter').value;
   if(!quarter){alert('Please select a quarter.');return;}
@@ -2904,9 +2784,9 @@ function renderQuarterlyList(){
       ${r.lesson?`<div style="margin-top:10px;"><div class="label" style="margin-bottom:3px;">Most Important Lesson</div><div style="font-size:13px;color:var(--text2);">${esc(r.lesson)}</div></div>`:''}
       ${r.focus?`<div style="margin-top:10px;"><div class="label" style="margin-bottom:3px;">Next Quarter Focus</div><div style="font-size:13px;color:var(--text2);">${esc(r.focus)}</div></div>`:''}
       <div style="margin-top:10px;display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--text3);">
-        ${r.stop?`<span>ðŸ›‘ Stop: ${esc(r.stop.substring(0,60))}${r.stop.length>60?'â€¦':''}</span>`:''}
-        ${r.continue?`<span>âœ… Continue: ${esc(r.continue.substring(0,60))}${r.continue.length>60?'â€¦':''}</span>`:''}
-        ${r.start?`<span>ðŸš€ Start: ${esc(r.start.substring(0,60))}${r.start.length>60?'â€¦':''}</span>`:''}
+        ${r.stop?`<span>🛑 Stop: ${esc(r.stop.substring(0,60))}${r.stop.length>60?'…':''}</span>`:''}
+        ${r.continue?`<span>✅ Continue: ${esc(r.continue.substring(0,60))}${r.continue.length>60?'…':''}</span>`:''}
+        ${r.start?`<span>🚀 Start: ${esc(r.start.substring(0,60))}${r.start.length>60?'…':''}</span>`:''}
       </div>
     </div>`;
   }).join('');
@@ -2921,7 +2801,7 @@ function delReview(type,idx){
   save();renderReviews();
 }
 
-// â”€â”€ ANNUAL REVIEWS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── ANNUAL REVIEWS ───────────────────────────────────────────
 function saveAnnualReview(){
   const year=document.getElementById('ar-year').value.trim();
   if(!year){alert('Please enter a year.');return;}
@@ -2975,16 +2855,16 @@ function renderAnnualList(){
       ${r.memories?`<div style="margin-top:10px;"><div class="label" style="margin-bottom:3px;">Top 5 Memories</div><div style="font-size:13px;color:var(--text2);">${esc(r.memories)}</div></div>`:''}
       ${r.nextgoals?`<div style="margin-top:10px;"><div class="label" style="margin-bottom:3px;">Goals For Next Year</div><div style="font-size:13px;color:var(--text2);">${esc(r.nextgoals)}</div></div>`:''}
       <div style="margin-top:10px;display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--text3);">
-        ${r.spiritual?`<span>âœ¦ Spiritual: ${esc(r.spiritual.substring(0,50))}${r.spiritual.length>50?'â€¦':''}</span>`:''}
-        ${r.career?`<span>ðŸ’¼ Career: ${esc(r.career.substring(0,50))}${r.career.length>50?'â€¦':''}</span>`:''}
-        ${r.financial?`<span>ðŸ’° Financial: ${esc(r.financial.substring(0,50))}${r.financial.length>50?'â€¦':''}</span>`:''}
-        ${r.health?`<span>ðŸ’ª Health: ${esc(r.health.substring(0,50))}${r.health.length>50?'â€¦':''}</span>`:''}
+        ${r.spiritual?`<span>✦ Spiritual: ${esc(r.spiritual.substring(0,50))}${r.spiritual.length>50?'…':''}</span>`:''}
+        ${r.career?`<span>💼 Career: ${esc(r.career.substring(0,50))}${r.career.length>50?'…':''}</span>`:''}
+        ${r.financial?`<span>💰 Financial: ${esc(r.financial.substring(0,50))}${r.financial.length>50?'…':''}</span>`:''}
+        ${r.health?`<span>💪 Health: ${esc(r.health.substring(0,50))}${r.health.length>50?'…':''}</span>`:''}
       </div>
     </div>`;
   }).join('');
 }
 
-// â”€â”€ GOAL TABS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── GOAL TABS ────────────────────────────────────────────────
 function switchGoalTab(n, btn){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
   document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
@@ -2993,7 +2873,7 @@ function switchGoalTab(n, btn){
   if(panel)panel.classList.add('active');
 }
 
-// â”€â”€ GOAL SUB-SECTIONS (Goal 1 / 2 / 3) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── GOAL SUB-SECTIONS (Goal 1 / 2 / 3) ──────────────────────
 if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
 
 function renderGoalSubs(n){
@@ -3075,11 +2955,11 @@ function toggleGSub(n,i,e){
 
 function toggleHideGSub(n,i){D.goalSubs[n][i].hidden=!D.goalSubs[n][i].hidden;save();renderGoalSubs(n);}
 function updateGSubTitle(n,i,v){D.goalSubs[n][i].title=v;save();}
-function saveGSubContent(n,i){const ed=document.getElementById('ed-gs'+n+i);if(ed){D.goalSubs[n][i].content=ed.innerHTML;save();renderGoalProgressBars();}}
+function saveGSubContent(n,i){const ed=document.getElementById('ed-gs'+n+i);if(ed){D.goalSubs[n][i].content=ed.innerHTML;save();}}
 function clearGSub(n,i){if(!confirm('Clear content?'))return;D.goalSubs[n][i].content='';save();renderGoalSubs(n);}
 function delGSub(n,i){if(!confirm('Delete sub-section?'))return;D.goalSubs[n].splice(i,1);save();renderGoalSubs(n);}
 
-// â”€â”€ UPDATE goal headings from goal inputs â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── UPDATE goal headings from goal inputs ─────────────────────
 function updateGoalTabHeadings(){
   const g1=document.getElementById('goals-g1');
   const g2=document.getElementById('goals-g2');
@@ -3092,104 +2972,40 @@ function updateGoalTabHeadings(){
   if(h3&&g3&&g3.value)h3.textContent=g3.value;
 }
 
-// â”€â”€ ADVENTURE DAY MODAL â€” rich editor connect â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── ADVENTURE DAY MODAL — rich editor connect ─────────────────
 // definitions, adventure modals handled above directly
 
-// â”€â”€ GOAL PROGRESS % â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── GOAL PROGRESS % ──────────────────────────────────────────
+function saveGoalPct(n,v){
+  if(!D.goals)D.goals={};
+  D.goals['g'+n+'pct']=parseInt(v)||0;
+  save();
+  renderGoalProgressBars();
+}
+
 function renderGoalProgressBars(){
   const el=document.getElementById('goals-progress-bars');
   if(!el)return;
-  const progress=getAllGoalProgress();
-  const p1=progress[0].pct,p2=progress[1].pct,p3=progress[2].pct;
   const g1=D.goals.g1||'Goal 1',g2=D.goals.g2||'Goal 2',g3=D.goals.g3||'Goal 3';
+  const p1=D.goals.g1pct||0,p2=D.goals.g2pct||0,p3=D.goals.g3pct||0;
   el.innerHTML=`
-    <div class="card-title" style="margin-bottom:10px;"><span>ðŸ“Š</span> Goal Progress</div>
+    <div class="card-title" style="margin-bottom:10px;"><span>📊</span> Goal Progress</div>
     ${D.goals.g1?`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);">${esc(g1)}</span><span style="color:var(--accent);font-weight:600;">${p1}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${p1}%"></div></div></div>`:''}
     ${D.goals.g2?`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);">${esc(g2)}</span><span style="color:var(--accent);font-weight:600;">${p2}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${p2}%"></div></div></div>`:''}
     ${D.goals.g3?`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);">${esc(g3)}</span><span style="color:var(--accent);font-weight:600;">${p3}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${p3}%"></div></div></div>`:''}
   `;
 }
 
-// â”€â”€ Extended renderGoals â€” handles goals + subs + tabs + purpose editor â”€â”€
-function stripHtml(html){const div=document.createElement('div');div.innerHTML=html||'';return div.textContent||div.innerText||'';}
-function parseGoalTaskStats(n){
-  const subs=(D.goalSubs&&D.goalSubs[n])?D.goalSubs[n]:[];
-  let total=0,completed=0;
-  subs.forEach(sub=>{
-    if(sub.hidden)return;
-    const lines=stripHtml(sub.content||'').split(/\n|â€¢|Â·/).map(s=>s.trim()).filter(Boolean);
-    lines.forEach(line=>{
-      total++;
-      if(/(^|\s)(âœ…|âœ“|âœ”|â˜‘|\[x\]|done|completed)(\s|$|:|-)/i.test(line))completed++;
-    });
-  });
-  return{completed,total,pct:total?Math.round(completed/total*100):0};
-}
-function getGoalProgress(n){
-  const milestones=(D.goalMilestones&&D.goalMilestones[n])?D.goalMilestones[n]:[];
-  if(milestones.length){
-    const completed=milestones.filter(m=>m.done).length;
-    return{completed,total:milestones.length,pct:Math.round(completed/milestones.length*100),source:'milestones'};
-  }
-  const taskStats=parseGoalTaskStats(n);
-  return{completed:taskStats.completed,total:taskStats.total,pct:taskStats.pct,source:taskStats.total?'tasks':'empty'};
-}
-function getAllGoalProgress(){return[1,2,3].map(n=>getGoalProgress(n));}
-function getOverallLifeProgress(){const p=getAllGoalProgress();return Math.round(p.reduce((sum,g)=>sum+g.pct,0)/3);}
-function renderGoalProgressBars(){
-  const el=document.getElementById('goals-progress-bars');
-  if(!el)return;
-  const progress=getAllGoalProgress();
-  el.innerHTML=`
-    <div class="card-title" style="margin-bottom:10px;"><span>ðŸ“Š</span> Goal Progress</div>
-    ${[1,2,3].map(n=>{
-      const title=D.goals['g'+n]||('Goal '+n);
-      const p=progress[n-1];
-      return`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);">Goal ${n} Progress${D.goals['g'+n]?` â€” ${esc(title)}`:''}</span><span style="color:var(--accent);font-weight:600;">${p.pct}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${p.pct}%"></div></div><div style="font-size:11px;color:var(--text3);margin-top:3px;">${p.total?`${p.completed} of ${p.total} ${p.source==='milestones'?'milestones':'tasks'} complete`:'No milestones or tasks yet'}</div></div>`;
-    }).join('')}
-  `;
-}
-
-function renderGoalMilestones(n){
-  if(!D.goalMilestones)D.goalMilestones={1:[],2:[],3:[]};
-  if(!D.goalMilestones[n])D.goalMilestones[n]=[];
-  const nextEl=document.getElementById('goal-next-'+n);
-  if(nextEl){
-    const action=(D.goals&&D.goals['g'+n+'next'])?D.goals['g'+n+'next'].trim():'';
-    nextEl.innerHTML=`<div style="margin-bottom:12px;padding:10px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);"><div class="label" style="margin-bottom:4px;">Next Action</div><div style="font-size:14px;color:${action?'var(--accent)':'var(--text3)'};font-weight:500;">${action?esc(action):'No next action set yet.'}</div></div>`;
-  }
-  const el=document.getElementById('goal-ms-'+n);
-  if(!el)return;
-  const list=D.goalMilestones[n];
-  const progress=getGoalProgress(n);
-  el.innerHTML=`
-    <div style="margin-bottom:14px;padding:12px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
-        <div class="card-title" style="margin:0;"><span>ðŸŽ¯</span> Goal ${n} Milestones</div>
-        <button class="btn btn-ghost" onclick="openMilestoneModal(${n})" style="font-size:12px;padding:5px 12px;">+ Add Milestone</button>
-      </div>
-      <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px;"><span style="color:var(--text2);">Goal ${n} Progress</span><span style="color:var(--accent);font-weight:600;">${progress.pct}%</span></div>
-      <div class="progress-wrap"><div class="progress-fill" style="width:${progress.pct}%"></div></div>
-      <div style="font-size:11px;color:var(--text3);margin-top:5px;">${progress.total?`${progress.completed} of ${progress.total} ${progress.source==='milestones'?'milestones':'tasks'} complete`:'No milestones yet. Task progress will be used when tasks exist.'}</div>
-      <div style="margin-top:10px;">${list.length?list.map((m,i)=>`<div class="item-row"><div class="check ${m.done?'checked':''}" onclick="toggleGoalMs(${n},${i})">${m.done?'âœ“':''}</div><div class="item-body"><div class="item-title" style="${m.done?'text-decoration:line-through;color:var(--text3)':''}">${esc(m.title)}</div><div class="item-meta">${m.cat?esc(m.cat)+' Â· ':''}${m.date||'No target date'}</div></div><span class="badge ${m.done?'badge-done':'badge-pending'}">${m.done?'Done':'Pending'}</span><button class="btn btn-ghost" onclick="editGoalMs(${n},${i})" style="font-size:11px;padding:4px 10px;">Edit</button><button class="btn btn-danger" onclick="delGoalMs(${n},${i})" style="font-size:11px;padding:4px 10px;">Ã—</button></div>`).join(''):'<div style="color:var(--text3);font-size:13px;padding:6px 0;">No goal milestones yet.</div>'}</div>
-    </div>`;
-}
-
+// ── Extended renderGoals — handles goals + subs + tabs + purpose editor ──
 function renderGoalsExtended(){
   // Load basic text inputs
   ['purpose','g1','g2','g3'].forEach(k=>{
     const el=document.getElementById('goals-'+k);
     if(!el)return;
     el.value=D.goals[k]||'';
-    el.oninput=()=>{D.goals[k]=el.value;save();updateGoalTabHeadings();renderGoalProgressBars();};
+    el.oninput=()=>{D.goals[k]=el.value;save();updateGoalTabHeadings();};
   });
-  [1,2,3].forEach(n=>{
-    const el=document.getElementById('goals-g'+n+'next');
-    if(!el)return;
-    el.value=D.goals['g'+n+'next']||'';
-    el.oninput=()=>{D.goals['g'+n+'next']=el.value;save();renderGoalMilestones(n);};
-  });
-  // Older saved manual percentages are ignored; progress is calculated live.
+  // Load progress % inputs
   [1,2,3].forEach(n=>{
     const el=document.getElementById('goals-g'+n+'pct');
     if(el){el.value=D.goals['g'+n+'pct']||0;}
@@ -3199,12 +3015,11 @@ function renderGoalsExtended(){
   const mel=document.getElementById('milestone-list');
   if(mel){
     if(!D.milestones.length){mel.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No milestones yet.</div>';}
-    else{mel.innerHTML=D.milestones.map((m,i)=>`<div class="item-row"><div class="check ${m.done?'checked':''}" onclick="toggleMs(${i})">${m.done?'âœ“':''}</div><div class="item-body"><div class="item-title" style="${m.done?'text-decoration:line-through;color:var(--text3)':''}">${esc(m.title)}</div><div class="item-meta">${m.cat?esc(m.cat)+' Â· ':''} ${m.date||'No target date'}</div></div><span class="badge ${m.done?'badge-done':'badge-pending'}">${m.done?'Done':'Pending'}</span><button class="btn btn-danger" onclick="delMs(${i})" style="font-size:11px;padding:4px 10px;">&#10005;</button></div>`).join('');}
+    else{mel.innerHTML=D.milestones.map((m,i)=>`<div class="item-row"><div class="check ${m.done?'checked':''}" onclick="toggleMs(${i})">${m.done?'✓':''}</div><div class="item-body"><div class="item-title" style="${m.done?'text-decoration:line-through;color:var(--text3)':''}">${esc(m.title)}</div><div class="item-meta">${m.cat?esc(m.cat)+' · ':''} ${m.date||'No target date'}</div></div><span class="badge ${m.done?'badge-done':'badge-pending'}">${m.done?'Done':'Pending'}</span><button class="btn btn-danger" onclick="delMs(${i})" style="font-size:11px;padding:4px 10px;">&#10005;</button></div>`).join('');}
   }
   // Goal subs
   if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
-  if(!D.goalMilestones)D.goalMilestones={1:[],2:[],3:[]};
-  [1,2,3].forEach(n=>{renderGoalMilestones(n);renderGoalSubs(n);});
+  [1,2,3].forEach(n=>renderGoalSubs(n));
   updateGoalTabHeadings();
   // Load purpose rich editor content
   setTimeout(()=>{
@@ -3213,7 +3028,7 @@ function renderGoalsExtended(){
     else if(ed&&D.goals.purpose)ed.textContent=D.goals.purpose;
   },20);
 }
-// â”€â”€ GLOBAL SEARCH â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── GLOBAL SEARCH ─────────────────────────────────────────────
 function runSearch(query){
   const q=(query||'').trim().toLowerCase();
   const el=document.getElementById('search-results');
@@ -3236,14 +3051,14 @@ function runSearch(query){
   (D.definitions||[]).forEach((d,i)=>{
     const w=(d.word||'').toLowerCase(),m=(d.meaning||'').toLowerCase();
     if(w.includes(q)||m.includes(q)){
-      addResult('ðŸ“– Definitions',d.word||'(no word)',(d.meaning||'').substring(0,120),`goto('definitions')`);
+      addResult('📖 Definitions',d.word||'(no word)',(d.meaning||'').substring(0,120),`goto('definitions')`);
     }
   });
 
   // Search Goals
   ['g1','g2','g3'].forEach((k,i)=>{
     if((D.goals[k]||'').toLowerCase().includes(q)){
-      addResult('ðŸŽ¯ Goals','Goal '+(i+1)+': '+D.goals[k],'Click to open Goals page.',`goto('goals')`);
+      addResult('🎯 Goals','Goal '+(i+1)+': '+D.goals[k],'Click to open Goals page.',`goto('goals')`);
     }
   });
 
@@ -3255,7 +3070,7 @@ function runSearch(query){
         const c=((sub.content||'').replace(/<[^>]*>/g,'')).toLowerCase();
         if(t.includes(q)||c.includes(q)){
           const preview=(sub.content||'').replace(/<[^>]*>/g,'').substring(0,120);
-          addResult('ðŸ“‹ Goal Details','Goal '+n+' â€” '+esc(sub.title||'Sub-section'),preview,`goto('goals')`);
+          addResult('📋 Goal Details','Goal '+n+' — '+esc(sub.title||'Sub-section'),preview,`goto('goals')`);
         }
       });
     });
@@ -3264,11 +3079,11 @@ function runSearch(query){
   // Search Spiritual notes
   const spInt=((D.reContent&&D.reContent['spiritual-intention'])||'').replace(/<[^>]*>/g,'').toLowerCase();
   if(spInt.includes(q)){
-    addResult('âœ¦ Spiritual','Spiritual Intention',(D.reContent['spiritual-intention']||'').replace(/<[^>]*>/g,'').substring(0,120),`goto('spiritual')`);
+    addResult('✦ Spiritual','Spiritual Intention',(D.reContent['spiritual-intention']||'').replace(/<[^>]*>/g,'').substring(0,120),`goto('spiritual')`);
   }
   (D.spiritual.habits||[]).forEach((h,i)=>{
     if((h.name||'').toLowerCase().includes(q)||(h.goal||'').toLowerCase().includes(q)){
-      addResult('âœ¦ Spiritual','Habit: '+esc(h.name||''),(h.goal||''),`goto('spiritual')`);
+      addResult('✦ Spiritual','Habit: '+esc(h.name||''),(h.goal||''),`goto('spiritual')`);
     }
   });
 
@@ -3276,14 +3091,14 @@ function runSearch(query){
   Object.entries(D.adventureDays||{}).forEach(([date,d])=>{
     const g=(d.goals||'').toLowerCase(),adv=((d.advRich||'').replace(/<[^>]*>/g,'')).toLowerCase(),n=(d.notes||'').toLowerCase();
     if(g.includes(q)||adv.includes(q)||n.includes(q)){
-      addResult('âš” Adventure Log','Day: '+date,(d.goals||d.notes||'').substring(0,120),`goto('adventure')`);
+      addResult('⚔ Adventure Log','Day: '+date,(d.goals||d.notes||'').substring(0,120),`goto('adventure')`);
     }
   });
 
   // Search Milestones
   (D.milestones||[]).forEach((m,i)=>{
     if((m.title||'').toLowerCase().includes(q)||(m.cat||'').toLowerCase().includes(q)){
-      addResult('ðŸ“Œ Milestones',esc(m.title||''),(m.cat||'')+' Â· '+(m.date||''),`goto('goals')`);
+      addResult('📌 Milestones',esc(m.title||''),(m.cat||'')+' · '+(m.date||''),`goto('goals')`);
     }
   });
 
@@ -3291,7 +3106,7 @@ function runSearch(query){
   (D.weeklyReviews||[]).forEach((r,i)=>{
     const fields=[r.week,r.year,r.wins,r.mistakes,r.lessons,r.worked,r.notwork,r.plan].join(' ').toLowerCase();
     if(fields.includes(q)){
-      addResult('ðŸ“… Weekly Reviews',(r.week||'Week')+' '+(r.year||''),(r.wins||r.lessons||'').substring(0,120),`goto('reviews')`);
+      addResult('📅 Weekly Reviews',(r.week||'Week')+' '+(r.year||''),(r.wins||r.lessons||'').substring(0,120),`goto('reviews')`);
     }
   });
 
@@ -3299,7 +3114,7 @@ function runSearch(query){
   (D.monthlyReviews||[]).forEach((r,i)=>{
     const fields=[r.month,r.year,r.achievement,r.challenge,r.skills,r.courses,r.nextgoals].join(' ').toLowerCase();
     if(fields.includes(q)){
-      addResult('ðŸ—“ Monthly Reviews',(r.month||'Month')+' '+(r.year||''),(r.achievement||'').substring(0,120),`goto('reviews')`);
+      addResult('🗓 Monthly Reviews',(r.month||'Month')+' '+(r.year||''),(r.achievement||'').substring(0,120),`goto('reviews')`);
     }
   });
 
@@ -3307,7 +3122,7 @@ function runSearch(query){
   (D.quarterlyReviews||[]).forEach((r,i)=>{
     const fields=[r.quarter,r.year,r.success,r.failure,r.lesson,r.focus].join(' ').toLowerCase();
     if(fields.includes(q)){
-      addResult('ðŸ“Š Quarterly Reviews',(r.quarter||'Q?')+' '+(r.year||''),(r.success||r.lesson||'').substring(0,120),`goto('reviews')`);
+      addResult('📊 Quarterly Reviews',(r.quarter||'Q?')+' '+(r.year||''),(r.success||r.lesson||'').substring(0,120),`goto('reviews')`);
     }
   });
 
@@ -3315,7 +3130,7 @@ function runSearch(query){
   (D.annualReviews||[]).forEach((r,i)=>{
     const fields=[r.year,r.achievement,r.failure,r.lesson,r.memories,r.nextgoals,r.bestdecision,r.worstdecision].join(' ').toLowerCase();
     if(fields.includes(q)){
-      addResult('ðŸ“… Annual Reviews','Year '+(r.year||''),(r.achievement||r.lesson||'').substring(0,120),`goto('reviews')`);
+      addResult('📅 Annual Reviews','Year '+(r.year||''),(r.achievement||r.lesson||'').substring(0,120),`goto('reviews')`);
     }
   });
 
@@ -3342,8 +3157,8 @@ function runSearch(query){
   `).join('');
 }
 
-// â”€â”€ YN INPUT HELPERS (Urgent / Important keyboard shortcuts) â”€â”€â”€â”€
-// â”€â”€ SCHEDULE ARROW-KEY NAVIGATION â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── YN INPUT HELPERS (Urgent / Important keyboard shortcuts) ────
+// ── SCHEDULE ARROW-KEY NAVIGATION ──────────────────────────────
 // colIdx: 0=Task textarea, 1=Urgent yn-input, 2=Important yn-input, 3=Done div
 function schedArrowKey(e,ri,colIdx){
   const tbody=document.getElementById('schedule-body');
@@ -3389,21 +3204,21 @@ function ynKey(e,ri,field){
   }
 }
 
-// â”€â”€ MOTIVATION PHOTO â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── MOTIVATION PHOTO ─────────────────────────────────────────
 function renderMotivPhoto(){
   const card=document.getElementById('motiv-photo-card');
   if(!card)return;
   const photo=D.motivPhoto||'';
   const msg=D.motivMsg||'';
   card.innerHTML=`<div class="card" style="margin-bottom:16px;">
-    <div class="card-title"><span>ðŸ–¼</span> Personal Motivation</div>
+    <div class="card-title"><span>🖼</span> Personal Motivation</div>
     <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
       ${photo
         ?`<img src="${photo}" alt="Personal motivation" style="width:clamp(140px,40%,220px);border-radius:14px;display:block;object-fit:cover;aspect-ratio:1/1;box-shadow:0 4px 16px rgba(0,0,0,0.18);">`
         :`<label class="btn btn-primary" style="cursor:pointer;font-size:12px;padding:6px 16px;display:inline-flex;align-items:center;gap:6px;">
-        â¬† Upload Photo<input type="file" accept=".jpg,.jpeg,.png,.webp" style="display:none;" onchange="uploadMotivPhoto(this)">
+        ⬆ Upload Photo<input type="file" accept=".jpg,.jpeg,.png,.webp" style="display:none;" onchange="uploadMotivPhoto(this)">
         </label>
-        <div style="font-size:11px;color:var(--text3);">JPG, PNG or WEBP Â· Max 1 MB</div>`
+        <div style="font-size:11px;color:var(--text3);">JPG, PNG or WEBP · Max 1 MB</div>`
       }
       <textarea id="motiv-msg-input" rows="2" placeholder="Remember why you started."
         style="width:100%;max-width:320px;text-align:center;background:transparent;border:none;border-bottom:1px solid var(--border);border-radius:0;resize:none;font-size:13px;font-style:italic;color:var(--text2);line-height:1.6;padding:4px 0;outline:none;font-family:'DM Sans',sans-serif;white-space:pre-wrap;"
@@ -3441,7 +3256,7 @@ function ynBlur(inp,ri,field){
   inp.setAttribute('readonly','');
 }
 
-// â”€â”€ PIN SCREEN HELPERS (second security layer) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── PIN SCREEN HELPERS (second security layer) ────────────────
 function setPinScreenText(title,msg){
   const t=document.getElementById('pin-title');
   const m=document.getElementById('pin-msg');
@@ -3466,7 +3281,7 @@ function showPinScreen(){
     pinScreenMode='unlock';
     setPinScreenText('Enter PIN','Enter your 4-digit PIN to open JourneyOS.');
   }else{
-    // First time the feature runs â€” no PIN saved yet, so set one up first.
+    // First time the feature runs — no PIN saved yet, so set one up first.
     pinScreenMode='create';
     setPinScreenText('Create a PIN','Choose a 4-digit PIN to protect JourneyOS.');
   }
@@ -3543,8 +3358,8 @@ function cancelChangePin(){
   clearPinBoxes();
 }
 
-// Drives every PIN-box flow: first-time setup (createâ†’confirm), normal
-// unlock, and Change PIN from Settings (currentâ†’newâ†’confirm).
+// Drives every PIN-box flow: first-time setup (create→confirm), normal
+// unlock, and Change PIN from Settings (current→new→confirm).
 function validatePin(pin){
   if(pinScreenMode==='create'){
     pinTempValue=pin;
@@ -3563,7 +3378,7 @@ function validatePin(pin){
     }else{
       pinTempValue=null;
       pinScreenMode='create';
-      clearPinBoxes(false);pinShowError("PINs didn't match â€” try again.");
+      clearPinBoxes(false);pinShowError("PINs didn't match — try again.");
       setPinScreenText('Create a PIN','Choose a 4-digit PIN to protect JourneyOS.');
       pinFocusFirst();
     }
@@ -3598,7 +3413,7 @@ function validatePin(pin){
     }else{
       pinTempValue=null;
       pinScreenMode='change-new';
-      clearPinBoxes(false);pinShowError("PINs didn't match â€” try again.");
+      clearPinBoxes(false);pinShowError("PINs didn't match — try again.");
       setPinScreenText('Change PIN','Enter your new 4-digit PIN.');
       pinFocusFirst();
     }
@@ -3615,7 +3430,7 @@ function validatePin(pin){
   }
 }
 
-// â”€â”€ LOCK SCREEN HELPERS â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+// ── LOCK SCREEN HELPERS ───────────────────────────────────────
 function showLockScreen(){
   const ls=document.getElementById('lock-screen');
   const app=document.querySelector('.app');
@@ -3635,7 +3450,7 @@ function hideLockScreen(){
   if(ls)ls.classList.remove('visible');
   if(app)app.style.display='';
 }
-// Email sign-in from the lock screen â€” delegates to the real fbSignInEmail
+// Email sign-in from the lock screen — delegates to the real fbSignInEmail
 // but reads from the lock screen fields instead of the sidebar fields.
 async function lockSignInEmail(){
   if(!window._fbAuth||!window._fbSignInWithEmail)return alert('Firebase not ready yet. Try again in a moment.');
@@ -3656,5 +3471,3 @@ async function lockSignInEmail(){
 
 </script>
 </html>
-
-
