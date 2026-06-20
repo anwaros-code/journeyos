@@ -229,9 +229,9 @@ select option{background:var(--surface);color:var(--text)}
 .sp-habit-day-grid{display:flex;flex-wrap:wrap;gap:4px;margin-top:10px;}
 .sp-habit-dot{width:30px;height:30px;border-radius:5px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text3);cursor:pointer;user-select:none;transition:all .12s;background:var(--surface2);}
 .sp-habit-dot:hover{border-color:var(--accent);}
-.sp-habit-dot.done{background:rgba(58,138,110,.18);border-color:var(--success);color:var(--success);font-weight:700;}
+.sp-habit-dot.done{background:var(--success);border-color:var(--success);color:#fff;font-weight:700;}
 .sp-habit-dot.today-dot{border:2px solid var(--accent);color:var(--accent);font-weight:700;}
-.sp-habit-dot.done.today-dot{border:2px solid var(--accent);}
+.sp-habit-dot.done.today-dot{border:2px solid var(--text);color:#fff;}
 /* ── LOCK SCREEN ── */
 #lock-screen{display:none;position:fixed;inset:0;z-index:9999;background:var(--bg);align-items:center;justify-content:center;}
 #lock-screen.visible{display:flex;}
@@ -2147,7 +2147,7 @@ function addScheduleMonth(){
   D.scheduleMonths.push(m);D.curMonth=D.scheduleMonths.length-1;curDayIdx=0;save();renderScheduleNav();
 }
 
-function renderSchedule(){const month=D.scheduleMonths[D.curMonth];if(!month)return;if(!month.days){const daysCount=getDaysInMonth(month.label);month.days=Array.from({length:daysCount},(_,i)=>({dayNum:i+1,rows:month.rows?[...month.rows.map(r=>({...r}))]:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}));delete month.rows;save();}if(curDayIdx>=month.days.length)curDayIdx=0;const pillsEl=document.getElementById('month-day-pills');pillsEl.innerHTML=month.days.map((d,i)=>{const filled=d.rows&&d.rows.some(r=>r.task);const sel=i===curDayIdx;const actualDate=getActualDateForMonthDay(month.label,d.dayNum);const tooltip=actualDate?formatDayLabel(d.dayNum,actualDate):'Day '+d.dayNum;return`<div onclick="selectDay(${i})" title="${tooltip}" style="width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:${sel?'700':'400'};cursor:pointer;background:${sel?'var(--accent)':filled?'rgba(58,138,110,0.12)':'var(--surface2)'};color:${sel?'#fff':filled?'var(--success)':'var(--text3)'};border:1px solid ${sel?'var(--accent)':filled?'var(--success)':'var(--border)'};transition:all .12s;">${d.dayNum}</div>`;}).join('');renderDaySchedule();renderSchedSummary();}
+function renderSchedule(){const month=D.scheduleMonths[D.curMonth];if(!month)return;if(!month.days){const daysCount=getDaysInMonth(month.label);month.days=Array.from({length:daysCount},(_,i)=>({dayNum:i+1,rows:month.rows?[...month.rows.map(r=>({...r}))]:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}));delete month.rows;save();}if(curDayIdx>=month.days.length)curDayIdx=0;const pillsEl=document.getElementById('month-day-pills');pillsEl.innerHTML=month.days.map((d,i)=>{const filled=d.rows&&d.rows.some(r=>r.task);const sel=i===curDayIdx;const actualDate=getActualDateForMonthDay(month.label,d.dayNum);const tooltip=actualDate?formatDayLabel(d.dayNum,actualDate):'Day '+d.dayNum;return`<div onclick="selectDay(${i})" title="${tooltip}" style="width:36px;height:36px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:${sel?'700':filled?'600':'400'};cursor:pointer;background:${sel?'var(--accent)':filled?'var(--success)':'var(--surface2)'};color:${sel?'#fff':filled?'#fff':'var(--text3)'};border:1px solid ${sel?'var(--accent)':filled?'var(--success)':'var(--border)'};transition:all .12s;">${d.dayNum}</div>`;}).join('');renderDaySchedule();renderSchedSummary();}
 
 function selectDay(idx){curDayIdx=idx;renderSchedule();}
 function prevDay(){if(curDayIdx>0){curDayIdx--;renderSchedule();}}
