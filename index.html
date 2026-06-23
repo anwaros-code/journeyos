@@ -294,6 +294,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="nav-item active" onclick="goto('home')"><span class="nav-icon">⬡</span> Dashboard</div>
     <div class="nav-item" onclick="goto('definitions')"><span class="nav-icon">📖</span> Definitions</div>
     <div class="nav-item" onclick="goto('goals')"><span class="nav-icon">🎯</span> My Goals</div>
+    <div class="nav-item" onclick="goto('current-mission')"><span class="nav-icon">🚩</span> Current Mission</div>
     <div class="nav-item" onclick="goto('spiritual')"><span class="nav-icon">✦</span> Spiritual</div>
     <div class="nav-item" onclick="goto('adventure')"><span class="nav-icon">⚔</span> Adventure Log</div>
     <div class="nav-item" onclick="goto('schedule')"><span class="nav-icon">🗓</span> Time Schedule</div>
@@ -451,6 +452,73 @@ select option{background:var(--surface);color:var(--text)}
       <button class="btn btn-ghost" onclick="openMilestoneModal()" style="font-size:12px;padding:6px 14px;">+ Add milestone</button>
     </div>
     <div id="milestone-list"></div>
+  </div>
+</div>
+
+<!-- CURRENT MISSION (separate from the 3 main Goals — does not affect Goal/Overall/Spiritual Progress) -->
+<div id="page-current-mission" class="page">
+  <h1 class="page-title">Current Mission</h1>
+  <p class="page-sub">A temporary mission on the way to your 5-year goals</p>
+
+  <!-- MISSION TITLE -->
+  <div class="card">
+    <div class="card-title"><span>🚩</span> Mission title</div>
+    <input type="text" id="mission-title" placeholder="e.g. Get an HR Job">
+  </div>
+
+  <!-- MISSION DESCRIPTION (rich editor) -->
+  <div class="card">
+    <div class="card-title"><span>📝</span> Mission description</div>
+    <div class="re-wrap" id="re-mission-desc-wrap">
+      <div class="re-tools-toggle" onclick="toggleReTools('mission-desc')">
+        <span class="arr" id="arr-mission-desc">&#9658;</span> TOOLS
+      </div>
+      <div class="re-toolbar" id="tb-mission-desc">
+        <button class="re-btn" onclick="reCmd('mission-desc','bold')"><b>B</b></button>
+        <button class="re-btn" onclick="reCmd('mission-desc','italic')"><i>I</i></button>
+        <button class="re-btn" onclick="reCmd('mission-desc','underline')"><u>U</u></button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="reCmd('mission-desc','insertUnorderedList')" title="Bullet list">&#8801;</button>
+        <button class="re-btn" onclick="reCmd('mission-desc','insertOrderedList')" title="Numbered list">&#9312;</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReColorBar('mission-desc','fore')" id="tcbtn-mission-desc" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
+        <button class="re-btn" onclick="toggleReColorBar('mission-desc','hilite')" id="hlbtn-mission-desc" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReDraw('mission-desc')" id="draw-btn-mission-desc" title="Draw">&#9998; Draw</button>
+      </div>
+      <div class="re-color-bar" id="cbar-mission-desc"></div>
+      <div class="re-draw" id="draw-mission-desc">
+        <div class="re-draw-bar" id="dbar-mission-desc"></div>
+        <canvas id="dc-mission-desc" class="re-canvas" height="180"></canvas>
+      </div>
+      <div class="re-editor" id="ed-mission-desc" contenteditable="true" data-ph="What is this mission and why does it matter right now?" oninput="saveReEditor('mission-desc')"></div>
+    </div>
+  </div>
+
+  <!-- MISSION MILESTONES + MISSION PROGRESS (independent of Goal Progress) -->
+  <div class="card">
+    <div class="section-header" style="margin-bottom:12px;">
+      <div class="card-title" style="margin:0;"><span>📌</span> Mission milestones</div>
+      <button class="btn btn-ghost" onclick="openMissionMsModal()" style="font-size:12px;padding:6px 14px;">+ Add milestone</button>
+    </div>
+    <div id="mission-ms-list"></div>
+    <div class="mt16">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);font-weight:600;">Mission Progress</span><span style="color:var(--accent);font-weight:700;" id="mission-progress-pct">0%</span></div>
+      <div class="progress-wrap"><div class="progress-fill" id="mission-progress-bar" style="width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- SKILLS DEVELOPMENT + SKILLS PROGRESS (separate from Mission Progress) -->
+  <div class="card">
+    <div class="section-header" style="margin-bottom:12px;">
+      <div class="card-title" style="margin:0;"><span>🌱</span> Skills development</div>
+      <button class="btn btn-ghost" onclick="openSkillModal()" style="font-size:12px;padding:6px 14px;">+ Add skill</button>
+    </div>
+    <div id="skill-list"></div>
+    <div class="mt16">
+      <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px;"><span style="color:var(--text2);font-weight:600;">Skills Progress</span><span style="color:var(--accent);font-weight:700;" id="skills-progress-pct">0%</span></div>
+      <div class="progress-wrap"><div class="progress-fill green" id="skills-progress-bar" style="width:0%"></div></div>
+    </div>
   </div>
 </div>
 
@@ -692,6 +760,10 @@ select option{background:var(--surface);color:var(--text)}
   <div class="card">
     <div class="card-title"><span>📈</span> Reviews</div>
     <div id="progress-reviews"></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span>🚩</span> Current Mission Progress</div>
+    <div id="progress-mission"></div>
   </div>
 </div>
 
@@ -954,6 +1026,26 @@ select option{background:var(--surface);color:var(--text)}
       <option value="3">Goal 3</option>
     </select>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-milestone')">Cancel</button><button class="btn btn-primary" onclick="saveMilestone()">Save</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-mission-ms">
+  <div class="modal">
+    <div class="modal-title" id="mission-ms-modal-title">Add mission milestone</div>
+    <input type="hidden" id="mission-ms-edit-idx" value="">
+    <div class="label">Milestone title</div><input type="text" id="mission-ms-title" placeholder="e.g. Resume Complete">
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-mission-ms')">Cancel</button><button class="btn btn-primary" onclick="saveMissionMs()">Save</button></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-skill">
+  <div class="modal">
+    <div class="modal-title" id="skill-modal-title">Add skill</div>
+    <input type="hidden" id="skill-edit-idx" value="">
+    <div class="label">Skill name</div><input type="text" id="skill-name" placeholder="e.g. Communication">
+    <div class="label mt16">Notes / description</div><input type="text" id="skill-notes" placeholder="e.g. Practice daily conversation drills">
+    <div class="label mt16">Progress %</div><input type="number" id="skill-pct" min="0" max="100" placeholder="e.g. 20">
+    <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-skill')">Cancel</button><button class="btn btn-primary" onclick="saveSkill()">Save</button></div>
   </div>
 </div>
 
@@ -1278,7 +1370,7 @@ select option{background:var(--surface);color:var(--text)}
 <script>
 const KEY='mylifeos_v3';
 const JOURNEY_START='2026-06-23';
-let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:''};
+let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:'',currentMission:{title:'',milestones:[],skills:[]}};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
 // ── DATE HELPERS ─────────────────────────────────────────────
@@ -1333,6 +1425,11 @@ function load(){
   if(D.goals.g1pct===undefined)D.goals.g1pct=0;
   if(D.goals.g2pct===undefined)D.goals.g2pct=0;
   if(D.goals.g3pct===undefined)D.goals.g3pct=0;
+  // Init Current Mission — fully separate system, never affects Goal/Spiritual Progress
+  if(!D.currentMission)D.currentMission={title:'',milestones:[],skills:[]};
+  if(!D.currentMission.milestones)D.currentMission.milestones=[];
+  if(!D.currentMission.skills)D.currentMission.skills=[];
+  if(D.currentMission.title===undefined)D.currentMission.title='';
   // Show offline status until auth resolves
   setSaveStatus('offline');
 }
@@ -1676,6 +1773,10 @@ async function confirmImport(){
   if(D.goals.g1pct===undefined)D.goals.g1pct=0;
   if(D.goals.g2pct===undefined)D.goals.g2pct=0;
   if(D.goals.g3pct===undefined)D.goals.g3pct=0;
+  if(!D.currentMission)D.currentMission={title:'',milestones:[],skills:[]};
+  if(!D.currentMission.milestones)D.currentMission.milestones=[];
+  if(!D.currentMission.skills)D.currentMission.skills=[];
+  if(D.currentMission.title===undefined)D.currentMission.title='';
   if(!D.scheduleMonths||D.scheduleMonths.length===0){
     const day1=new Date(D.startDate);
     const initLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
@@ -1712,7 +1813,7 @@ function goto(pg){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+pg).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const map={home:0,definitions:1,goals:2,spiritual:3,adventure:4,schedule:5,progress:6,'spiritual-progress':7,reviews:8,search:9,settings:10};
+  const map={home:0,definitions:1,goals:2,'current-mission':3,spiritual:4,adventure:5,schedule:6,progress:7,'spiritual-progress':8,reviews:9,search:10,settings:11};
   const items=document.querySelectorAll('.nav-item');
   if(items[map[pg]])items[map[pg]].classList.add('active');
   document.querySelectorAll('.mobile-nav-item').forEach(n=>n.classList.remove('active'));
@@ -1720,6 +1821,7 @@ function goto(pg){
   if(pg==='home')renderHome();
   if(pg==='definitions')renderDefs();
   if(pg==='goals')renderGoalsExtended();
+  if(pg==='current-mission')renderCurrentMission();
   if(pg==='spiritual')renderSpiritual();
   if(pg==='adventure')renderAdventure();
   if(pg==='schedule')renderScheduleNav();
@@ -2294,6 +2396,14 @@ function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>d.
   ${D.goals.g2?`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;"><span style="color:var(--text);">${esc(D.goals.g2)}</span><span style="color:var(--accent);font-weight:600;">${g2p}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${g2p}%"></div></div></div>`:''}
   ${D.goals.g3?`<div style="margin-bottom:10px;"><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;"><span style="color:var(--text);">${esc(D.goals.g3)}</span><span style="color:var(--accent);font-weight:600;">${g3p}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${g3p}%"></div></div></div>`:''}
   `;}
+  // Current Mission Progress — display only; computed independently from Mission Milestones only.
+  // Does not affect, and is not affected by, Goal Progress / Overall Life Progress / Spiritual Progress.
+  const pmEl=document.getElementById('progress-mission');
+  if(pmEl){
+    const missionPct=computeMissionPct();
+    const missionTitle=(D.currentMission&&D.currentMission.title)||'';
+    pmEl.innerHTML=`<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;"><span style="color:var(--text);">${missionTitle?esc(missionTitle):'No current mission set'}</span><span style="color:var(--accent);font-weight:600;">${missionPct}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${missionPct}%"></div></div>`;
+  }
 }
 load();renderHome();renderScheduleNav();
 
@@ -3046,6 +3156,156 @@ function renderGoalsExtended(){
     else if(ed&&D.goals.purpose)ed.textContent=D.goals.purpose;
   },20);
 }
+
+// ── CURRENT MISSION ─────────────────────────────────────────────
+// Fully independent system: separate title, description, milestones, and skills.
+// Mission Progress is derived ONLY from Mission Milestones.
+// Skills Progress is derived ONLY from Skill Progress values.
+// Neither value is read by, or written into, Goal Progress, Overall Life Progress,
+// or any Spiritual Progress calculation.
+
+function computeMissionPct(){
+  const list=(D.currentMission&&D.currentMission.milestones)||[];
+  if(list.length===0)return 0;
+  const doneCount=list.filter(m=>m.done).length;
+  const pct=Math.round((doneCount/list.length)*100);
+  return Number.isFinite(pct)?pct:0;
+}
+
+function computeSkillsPct(){
+  const list=(D.currentMission&&D.currentMission.skills)||[];
+  if(list.length===0)return 0;
+  const sum=list.reduce((acc,s)=>acc+(Number(s.pct)||0),0);
+  const pct=Math.round(sum/list.length);
+  return Number.isFinite(pct)?pct:0;
+}
+
+function renderCurrentMission(){
+  if(!D.currentMission)D.currentMission={title:'',milestones:[],skills:[]};
+  if(!D.currentMission.milestones)D.currentMission.milestones=[];
+  if(!D.currentMission.skills)D.currentMission.skills=[];
+
+  // Mission title
+  const titleEl=document.getElementById('mission-title');
+  if(titleEl){
+    titleEl.value=D.currentMission.title||'';
+    titleEl.oninput=()=>{D.currentMission.title=titleEl.value;save();};
+  }
+
+  // Mission description rich editor
+  setTimeout(()=>{
+    const ed=document.getElementById('ed-mission-desc');
+    if(ed&&D.reContent&&D.reContent['mission-desc'])ed.innerHTML=D.reContent['mission-desc'];
+  },20);
+
+  // Mission milestones list
+  const msEl=document.getElementById('mission-ms-list');
+  if(msEl){
+    if(!D.currentMission.milestones.length){
+      msEl.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No mission milestones yet.</div>';
+    } else {
+      msEl.innerHTML=D.currentMission.milestones.map((m,i)=>`<div class="item-row"><div class="check ${m.done?'checked':''}" onclick="toggleMissionMs(${i})">${m.done?'✓':''}</div><div class="item-body"><div class="item-title" style="${m.done?'text-decoration:line-through;color:var(--text3)':''}">${esc(m.title)}</div></div><span class="badge ${m.done?'badge-done':'badge-pending'}">${m.done?'Done':'Pending'}</span><button class="btn btn-ghost" onclick="openMissionMsModal(${i})" style="font-size:11px;padding:4px 10px;">Edit</button><button class="btn btn-danger" onclick="delMissionMs(${i})" style="font-size:11px;padding:4px 10px;">&#10005;</button></div>`).join('');
+    }
+  }
+
+  // Mission Progress (independent of Goal Progress)
+  const mPct=computeMissionPct();
+  const mPctEl=document.getElementById('mission-progress-pct');
+  const mBarEl=document.getElementById('mission-progress-bar');
+  if(mPctEl)mPctEl.textContent=mPct+'%';
+  if(mBarEl)mBarEl.style.width=mPct+'%';
+
+  // Skills list
+  const skEl=document.getElementById('skill-list');
+  if(skEl){
+    if(!D.currentMission.skills.length){
+      skEl.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No skills added yet.</div>';
+    } else {
+      skEl.innerHTML=D.currentMission.skills.map((s,i)=>`<div class="item-row"><div class="item-body"><div class="item-title">${esc(s.name)}</div><div class="item-meta">${s.notes?esc(s.notes):'No notes'}</div><div class="progress-wrap mt8" style="max-width:220px;"><div class="progress-fill green" style="width:${Number(s.pct)||0}%"></div></div></div><span class="badge" style="background:rgba(58,138,110,0.12);color:var(--accent);">${Number(s.pct)||0}%</span><button class="btn btn-ghost" onclick="openSkillModal(${i})" style="font-size:11px;padding:4px 10px;">Edit</button><button class="btn btn-danger" onclick="delSkill(${i})" style="font-size:11px;padding:4px 10px;">&#10005;</button></div>`).join('');
+    }
+  }
+
+  // Skills Progress (independent of Mission Progress — average of skill % values)
+  const sPct=computeSkillsPct();
+  const sPctEl=document.getElementById('skills-progress-pct');
+  const sBarEl=document.getElementById('skills-progress-bar');
+  if(sPctEl)sPctEl.textContent=sPct+'%';
+  if(sBarEl)sBarEl.style.width=sPct+'%';
+}
+
+// Mission milestone CRUD
+function openMissionMsModal(idx){
+  const titleField=document.getElementById('mission-ms-modal-title');
+  const idxField=document.getElementById('mission-ms-edit-idx');
+  const titleInput=document.getElementById('mission-ms-title');
+  if(idx!==undefined&&D.currentMission.milestones[idx]){
+    titleField.textContent='Edit mission milestone';
+    idxField.value=idx;
+    titleInput.value=D.currentMission.milestones[idx].title||'';
+  } else {
+    titleField.textContent='Add mission milestone';
+    idxField.value='';
+    titleInput.value='';
+  }
+  document.getElementById('modal-mission-ms').classList.add('open');
+}
+function saveMissionMs(){
+  const t=document.getElementById('mission-ms-title').value.trim();
+  if(!t)return;
+  const idxField=document.getElementById('mission-ms-edit-idx');
+  const idx=idxField.value;
+  if(!D.currentMission.milestones)D.currentMission.milestones=[];
+  if(idx!==''){
+    D.currentMission.milestones[parseInt(idx)].title=t;
+  } else {
+    D.currentMission.milestones.push({title:t,done:false});
+  }
+  save();closeModal('modal-mission-ms');renderCurrentMission();
+}
+function toggleMissionMs(i){D.currentMission.milestones[i].done=!D.currentMission.milestones[i].done;save();renderCurrentMission();}
+function delMissionMs(i){if(confirm('Delete this mission milestone?')){D.currentMission.milestones.splice(i,1);save();renderCurrentMission();}}
+
+// Skill CRUD
+function openSkillModal(idx){
+  const titleField=document.getElementById('skill-modal-title');
+  const idxField=document.getElementById('skill-edit-idx');
+  const nameInput=document.getElementById('skill-name');
+  const notesInput=document.getElementById('skill-notes');
+  const pctInput=document.getElementById('skill-pct');
+  if(idx!==undefined&&D.currentMission.skills[idx]){
+    titleField.textContent='Edit skill';
+    idxField.value=idx;
+    const s=D.currentMission.skills[idx];
+    nameInput.value=s.name||'';
+    notesInput.value=s.notes||'';
+    pctInput.value=s.pct!==undefined?s.pct:'';
+  } else {
+    titleField.textContent='Add skill';
+    idxField.value='';
+    nameInput.value='';
+    notesInput.value='';
+    pctInput.value='';
+  }
+  document.getElementById('modal-skill').classList.add('open');
+}
+function saveSkill(){
+  const name=document.getElementById('skill-name').value.trim();
+  if(!name)return;
+  const notes=document.getElementById('skill-notes').value.trim();
+  let pct=parseInt(document.getElementById('skill-pct').value);
+  if(!Number.isFinite(pct))pct=0;
+  pct=Math.max(0,Math.min(100,pct));
+  const idxField=document.getElementById('skill-edit-idx');
+  const idx=idxField.value;
+  if(!D.currentMission.skills)D.currentMission.skills=[];
+  if(idx!==''){
+    D.currentMission.skills[parseInt(idx)]={name,notes,pct};
+  } else {
+    D.currentMission.skills.push({name,notes,pct});
+  }
+  save();closeModal('modal-skill');renderCurrentMission();
+}
+function delSkill(i){if(confirm('Delete this skill?')){D.currentMission.skills.splice(i,1);save();renderCurrentMission();}}
 // ── GLOBAL SEARCH ─────────────────────────────────────────────
 function runSearch(query){
   const q=(query||'').trim().toLowerCase();
