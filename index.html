@@ -940,7 +940,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="card-title"><span>ℹ</span> About</div>
     <div style="font-size:13px;color:var(--text2);line-height:1.8;">
       <div><span style="color:var(--text3);">App:</span> My Life OS · JourneyOS</div>
-      <div><span style="color:var(--text3);">Journey Start:</span> 26 June 2026</div>
+      <div><span style="color:var(--text3);">Journey Start:</span> 27 June 2026</div>
       <div><span style="color:var(--text3);">Duration:</span> 5 Years · 1825 Days</div>
       <div><span style="color:var(--text3);">Storage:</span> localStorage + Firestore sync</div>
     </div>
@@ -1369,7 +1369,7 @@ select option{background:var(--surface);color:var(--text)}
 
 <script>
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-06-26';
+const JOURNEY_START='2026-06-27';
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:'',currentMission:{title:'',milestones:[],skills:[]}};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -1399,11 +1399,11 @@ function mkMonth(){const n=new Date();const label=n.toLocaleDateString('en-IN',{
 
 function load(){
   try{const s=localStorage.getItem(KEY);if(s)D=JSON.parse(s);}catch(e){}
-  // Journey start date = 26 June 2026 (Day 1)
+  // Journey start date = 27 June 2026 (Day 1)
   if(!D.startDate){D.startDate=JOURNEY_START;}
   // Always enforce the correct start date
   D.startDate=JOURNEY_START;
-  // Init schedule months — use the month containing the journey start date (26 June 2026)
+  // Init schedule months — use the month containing the journey start date (27 June 2026)
   if(!D.scheduleMonths||D.scheduleMonths.length===0){
     const day1=new Date(D.startDate);
     const initLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
@@ -2168,7 +2168,7 @@ function renderAdventure(){
   if(subEl){const prettyToday=td+' '+MONTH_NAMES[tm]+' '+ty;subEl.textContent='Your 1825-day journey · Today is Day '+dayNum+' — '+prettyToday;}
   grid.innerHTML='';
   for(let i=0;i<=1824;i++){
-    const d=new Date(sy,sm-1,sd+i); // Day 1 = startDate (26 June 2026), Day 1825 = last day of journey
+    const d=new Date(sy,sm-1,sd+i); // Day 1 = startDate (27 June 2026), Day 1825 = last day of journey
     const dayLabel=i+1;
     const dy=d.getFullYear(),dmo=d.getMonth(),dd=d.getDate();
     const key=dy+'-'+String(dmo+1).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
