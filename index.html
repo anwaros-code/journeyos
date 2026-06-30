@@ -2167,8 +2167,8 @@ function renderAdventure(){
   const subEl=document.getElementById('adventure-sub');
   if(subEl){const prettyToday=td+' '+MONTH_NAMES[tm]+' '+ty;subEl.textContent='Your 1825-day journey · Today is Day '+dayNum+' — '+prettyToday;}
   grid.innerHTML='';
-  for(let i=0;i<=1824;i++){
-    const d=new Date(sy,sm-1,sd+i); // Day 1 = startDate (1 July 2026), Day 1825 = last day of journey
+  for(let i=-1;i<=1824;i++){
+    const d=new Date(sy,sm-1,sd+i); // Day 0 = 30 June 2026, Day 1 = startDate (1 July 2026), Day 1825 = last day of journey
     const dayLabel=i+1;
     const dy=d.getFullYear(),dmo=d.getMonth(),dd=d.getDate();
     const key=dy+'-'+String(dmo+1).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
