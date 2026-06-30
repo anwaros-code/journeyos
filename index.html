@@ -696,6 +696,7 @@ select option{background:var(--surface);color:var(--text)}
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
       <select id="schedule-month" onchange="switchScheduleMonth()" style="width:auto;padding:8px 12px;font-size:13px;"></select>
       <button class="btn btn-ghost" onclick="addScheduleMonth()" style="font-size:12px;padding:7px 14px;">+ New month</button>
+      <button class="btn btn-ghost" onclick="deleteScheduleMonth()" style="font-size:12px;padding:7px 14px;color:var(--danger);">🗑 Delete month</button>
     </div>
   </div>
 
@@ -1403,13 +1404,10 @@ function load(){
   if(!D.startDate){D.startDate=JOURNEY_START;}
   // Always enforce the correct start date
   D.startDate=JOURNEY_START;
-  // Remove any previously-saved June 2026 schedule month (journey now starts 1 July 2026)
+  // Remove any previously-saved June/August 2026 schedule months (journey starts 1 July 2026; August added manually later)
   if(D.scheduleMonths&&D.scheduleMonths.length>0){
-    const removedIdx=D.scheduleMonths.findIndex(m=>m.label==='June 2026');
-    if(removedIdx!==-1){
-      D.scheduleMonths.splice(removedIdx,1);
-      if(D.curMonth>=D.scheduleMonths.length)D.curMonth=Math.max(0,D.scheduleMonths.length-1);
-    }
+    D.scheduleMonths=D.scheduleMonths.filter(m=>m.label!=='June 2026'&&m.label!=='August 2026');
+    if(D.curMonth>=D.scheduleMonths.length)D.curMonth=Math.max(0,D.scheduleMonths.length-1);
   }
   // Init schedule months — use the month containing the journey start date (1 July 2026)
   if(!D.scheduleMonths||D.scheduleMonths.length===0){
@@ -2254,6 +2252,14 @@ function saveDayLog(){
 let curDayIdx=0;
 function renderScheduleNav(){const sel=document.getElementById('schedule-month');sel.innerHTML=D.scheduleMonths.map((m,i)=>`<option value="${i}" ${i==D.curMonth?'selected':''}>${m.label||'Month '+(i+1)}</option>`).join('');renderSchedule();}
 function switchScheduleMonth(){D.curMonth=parseInt(document.getElementById('schedule-month').value);curDayIdx=0;renderSchedule();}
+function deleteScheduleMonth(){
+  if(D.scheduleMonths.length<=1){alert('You need at least one month — cannot delete the last remaining month.');return;}
+  var month=D.scheduleMonths[D.curMonth];
+  if(!confirm('Delete '+(month.label||'this month')+'? This will permanently remove all its schedule data.'))return;
+  D.scheduleMonths.splice(D.curMonth,1);
+  D.curMonth=Math.max(0,D.curMonth-1);
+  curDayIdx=0;save();renderScheduleNav();
+}
 function addScheduleMonth(){
   var nextLabel='';
   if(D.scheduleMonths.length>0){
