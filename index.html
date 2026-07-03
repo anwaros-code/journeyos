@@ -248,25 +248,6 @@ select option{background:var(--surface);color:var(--text)}
 .pin-box{width:52px;height:60px;text-align:center;font-size:28px;font-weight:600;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);color:var(--text);outline:none;}
 .pin-box:focus{border-color:var(--accent);background:var(--surface);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 22%,transparent);}
 
-/* ── OFFLINE SPELL CHECK (custom context menu + suggestion popup) ── */
-.sc-menu{position:fixed;z-index:10001;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.18);padding:4px;display:none;min-width:150px;font-family:inherit;}
-.sc-menu.visible{display:block;}
-.sc-menu-item{padding:9px 14px;font-size:13px;color:var(--text);cursor:pointer;border-radius:6px;white-space:nowrap;}
-.sc-menu-item:hover{background:var(--surface2);}
-.sc-popup{position:fixed;z-index:10002;background:var(--surface);border:1px solid var(--border);border-radius:8px;box-shadow:0 8px 24px rgba(0,0,0,0.18);padding:6px;display:none;min-width:160px;max-width:240px;font-family:inherit;}
-.sc-popup.visible{display:block;}
-.sc-popup-label{font-size:10px;letter-spacing:0.05em;text-transform:uppercase;color:var(--text3);padding:4px 8px 6px;}
-.sc-popup-item{padding:8px 10px;font-size:13.5px;color:var(--text);cursor:pointer;border-radius:6px;}
-.sc-popup-item:hover{background:var(--surface2);color:var(--accent);}
-.sc-popup-empty{padding:8px 10px;font-size:12.5px;color:var(--text3);}
-.sc-toggle-row{display:flex;align-items:center;justify-content:space-between;gap:14px;}
-.sc-switch{position:relative;width:42px;height:24px;flex-shrink:0;cursor:pointer;}
-.sc-switch input{opacity:0;width:0;height:0;position:absolute;}
-.sc-switch-track{position:absolute;inset:0;background:var(--border);border-radius:24px;transition:background .15s;}
-.sc-switch input:checked + .sc-switch-track{background:var(--accent);}
-.sc-switch-thumb{position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:transform .15s;box-shadow:0 1px 3px rgba(0,0,0,0.3);}
-.sc-switch input:checked ~ .sc-switch-thumb{transform:translateX(18px);}
-
 </style>
 </head>
 <body>
@@ -737,6 +718,7 @@ select option{background:var(--surface);color:var(--text)}
       <div style="display:flex;gap:8px;">
         <button class="btn btn-ghost" onclick="prevDay()" style="font-size:12px;padding:5px 12px;">← Prev</button>
         <button class="btn btn-ghost" onclick="nextDay()" style="font-size:12px;padding:5px 12px;">Next →</button>
+        <button class="btn btn-ghost" onclick="clearScheduleDay()" style="font-size:12px;padding:5px 12px;color:var(--danger);">🗑 Clear day</button>
       </div>
     </div>
     <div style="display:flex;gap:14px;margin-bottom:12px;flex-wrap:wrap;">
@@ -952,27 +934,6 @@ select option{background:var(--surface);color:var(--text)}
       <div id="pin-changed-msg" style="display:none;margin-top:12px;padding:10px 14px;border-radius:var(--rs);background:rgba(58,138,110,0.1);border:1px solid rgba(58,138,110,0.25);color:var(--success);font-size:13px;">
         ✓ PIN updated successfully.
       </div>
-    </div>
-  </div>
-
-  <!-- OFFLINE SPELL SUGGESTIONS CARD -->
-  <div class="card">
-    <div class="card-title"><span>✎</span> Spell Suggestions</div>
-    <p style="font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.6;">
-      Right-click (or long-press) a word and choose <strong>Check Spelling</strong> to see offline English/Hinglish suggestions. Works fully offline — no text ever leaves this device, and nothing is saved. Setting is stored only on this device, never synced or backed up.
-    </p>
-    <div style="border:1px solid var(--border);border-radius:var(--rs);padding:16px 20px;background:var(--surface2);">
-      <label class="sc-toggle-row" for="sc-toggle-input" style="cursor:pointer;">
-        <div>
-          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:2px;">Enable Offline Spell Suggestions</div>
-          <div style="font-size:12px;color:var(--text3);">On-device only · No internet required</div>
-        </div>
-        <span class="sc-switch">
-          <input type="checkbox" id="sc-toggle-input" onchange="scToggleSetting(this.checked)">
-          <span class="sc-switch-track"></span>
-          <span class="sc-switch-thumb"></span>
-        </span>
-      </label>
     </div>
   </div>
 
@@ -1352,12 +1313,6 @@ select option{background:var(--surface);color:var(--text)}
     </div>
   </div>
 </div>
-
-<!-- OFFLINE SPELL CHECK — custom right-click menu + suggestion popup. No data is ever stored here; content is transient and cleared on close. -->
-<div class="sc-menu" id="sc-context-menu">
-  <div class="sc-menu-item" id="sc-menu-check" onclick="scRunCheck()">🔍 Check Spelling</div>
-</div>
-<div class="sc-popup" id="sc-suggest-popup"></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
 
@@ -2330,15 +2285,27 @@ function renderSchedule(){const month=D.scheduleMonths[D.curMonth];if(!month)ret
 function selectDay(idx){curDayIdx=idx;renderSchedule();}
 function prevDay(){if(curDayIdx>0){curDayIdx--;renderSchedule();}}
 function nextDay(){const month=D.scheduleMonths[D.curMonth];if(month&&curDayIdx<month.days.length-1){curDayIdx++;renderSchedule();}}
+function clearScheduleDay(){
+  const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;
+  const day=month.days[curDayIdx];if(!day)return;
+  const actualDate=getActualDateForMonthDay(month.label,day.dayNum);
+  const label=formatDayLabel(day.dayNum,actualDate);
+  if(!confirm('Clear all tasks for '+label+'? This cannot be undone.'))return;
+  day.rows=TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:'',done:false,bold:false}));
+  day.happy=null;day.why='';
+  save();renderSchedule();
+}
 
 function autoGrowTextarea(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
 
-function renderDaySchedule(){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const day=month.days[curDayIdx];if(!day)return;const actualDate=getActualDateForMonthDay(month.label,day.dayNum);document.getElementById('day-schedule-title').textContent=formatDayLabel(day.dayNum,actualDate);const tbody=document.getElementById('schedule-body');tbody.innerHTML=day.rows.map((r,ri)=>{const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const isDone=!!r.done;const taskStyle=isDone?'text-decoration:line-through;opacity:0.6;':'';return`<tr class="${cls}" id="sr-${ri}"><td style="white-space:nowrap;width:80px;font-size:12px;color:var(--text3);">${r.time}</td><td class="task-cell"><textarea class="task-input" rows="1" placeholder="Enter task…" oninput="updSchedTA(${ri},this)" onkeydown="if(['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();schedArrowKey(event,${ri},0);}" style="${taskStyle}">${esc(r.task)}</textarea></td><td><input type="text" class="yn-input" value="${r.urgent==='Y'?'Y':(r.urgent==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'urgent')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'urgent')"></td><td><input type="text" class="yn-input" value="${r.important==='Y'?'Y':(r.important==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'important')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'important')"></td><td class="task-check-cell"><div class="task-check${isDone?' done':''}" tabindex="0" onclick="toggleTaskDone(${ri})" onkeydown="if(['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(event.key)){schedArrowKey(event,${ri},3);}else if(event.key==='Enter'){event.preventDefault();toggleTaskDone(${ri});}" title="${isDone?'Mark incomplete (Enter to toggle)':'Mark complete (Enter to toggle)'}">${isDone?'✓':''}</div></td></tr>`;}).join('');tbody.querySelectorAll('textarea.task-input').forEach(ta=>{autoGrowTextarea(ta);});const hy=document.getElementById('sched-happy-y');const hn=document.getElementById('sched-happy-n');hy.style.background=day.happy===true?'var(--success)':'';hy.style.color=day.happy===true?'#fff':'';hy.style.borderColor=day.happy===true?'var(--success)':'var(--border)';hn.style.background=day.happy===false?'var(--danger)':'';hn.style.color=day.happy===false?'#fff':'';hn.style.borderColor=day.happy===false?'var(--danger)':'var(--border)';document.getElementById('sched-why').value=day.why||'';}
+function renderDaySchedule(){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const day=month.days[curDayIdx];if(!day)return;const actualDate=getActualDateForMonthDay(month.label,day.dayNum);document.getElementById('day-schedule-title').textContent=formatDayLabel(day.dayNum,actualDate);const tbody=document.getElementById('schedule-body');tbody.innerHTML=day.rows.map((r,ri)=>{const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const isDone=!!r.done;const isBold=!!r.bold;const taskStyle=(isDone?'text-decoration:line-through;opacity:0.6;':'')+(isBold?'font-weight:700;':'');return`<tr class="${cls}" id="sr-${ri}"><td style="white-space:nowrap;width:80px;font-size:12px;color:var(--text3);">${r.time}</td><td class="task-cell"><div style="display:flex;align-items:flex-start;gap:4px;"><textarea class="task-input" rows="1" placeholder="Enter task…" oninput="updSchedTA(${ri},this)" onkeydown="if(['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();schedArrowKey(event,${ri},0);}" style="${taskStyle}">${esc(r.task)}</textarea><button type="button" class="btn btn-ghost" onclick="toggleTaskBold(${ri})" title="Bold task text" style="flex-shrink:0;padding:3px 9px;font-size:12px;font-weight:700;line-height:1.4;${isBold?'background:var(--accent);color:#fff;border-color:var(--accent);':''}">B</button></div></td><td><input type="text" class="yn-input" value="${r.urgent==='Y'?'Y':(r.urgent==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'urgent')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'urgent')"></td><td><input type="text" class="yn-input" value="${r.important==='Y'?'Y':(r.important==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'important')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'important')"></td><td class="task-check-cell"><div class="task-check${isDone?' done':''}" tabindex="0" onclick="toggleTaskDone(${ri})" onkeydown="if(['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(event.key)){schedArrowKey(event,${ri},3);}else if(event.key==='Enter'){event.preventDefault();toggleTaskDone(${ri});}" title="${isDone?'Mark incomplete (Enter to toggle)':'Mark complete (Enter to toggle)'}">${isDone?'✓':''}</div></td></tr>`;}).join('');tbody.querySelectorAll('textarea.task-input').forEach(ta=>{autoGrowTextarea(ta);});const hy=document.getElementById('sched-happy-y');const hn=document.getElementById('sched-happy-n');hy.style.background=day.happy===true?'var(--success)':'';hy.style.color=day.happy===true?'#fff':'';hy.style.borderColor=day.happy===true?'var(--success)':'var(--border)';hn.style.background=day.happy===false?'var(--danger)':'';hn.style.color=day.happy===false?'#fff':'';hn.style.borderColor=day.happy===false?'var(--danger)':'var(--border)';document.getElementById('sched-why').value=day.why||'';}
 
 function updSchedTA(ri,el){autoGrowTextarea(el);updSched(ri,'task',el.value);}
 
 function toggleTaskDone(ri){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const row=month.days[curDayIdx].rows[ri];row.done=!row.done;save();// Update just this row's checkbox and task style without full re-render
 const checkEl=document.querySelector('#sr-'+ri+' .task-check');const taEl=document.querySelector('#sr-'+ri+' textarea.task-input');if(checkEl){checkEl.classList.toggle('done',row.done);checkEl.textContent=row.done?'✓':'';}if(taEl){taEl.style.textDecoration=row.done?'line-through':'none';taEl.style.opacity=row.done?'0.6':'1';}renderSchedSummary();}
+
+function toggleTaskBold(ri){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const row=month.days[curDayIdx].rows[ri];row.bold=!row.bold;save();renderDaySchedule();}
 
 function updSched(ri,field,val){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;month.days[curDayIdx].rows[ri][field]=val;save();const r=month.days[curDayIdx].rows[ri];const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const row=document.getElementById('sr-'+ri);if(row)row.className=cls;renderSchedSummary();}
 
@@ -3807,316 +3774,5 @@ async function lockSignInEmail(){
 }
 
 
-</script>
-
-<!-- ═══════════════════════════════════════════════════════════════════
-     OFFLINE SPELL CHECK MODULE — added, self-contained, no edits to
-     any existing function. Privacy: 100% on-device, no network calls,
-     no storage of checked words/suggestions/history. See chat audit.
-     ═══════════════════════════════════════════════════════════════ -->
-<script>
-(function(){
-
-// ── Setting: persisted ONLY in its own localStorage key, isolated from
-// D (app data), KEY (main data key), Firestore sync, and backup export.
-// Default ON per spec.
-const SC_SETTING_KEY='journeyos_spellcheck_enabled';
-function scIsEnabled(){
-  const v=localStorage.getItem(SC_SETTING_KEY);
-  return v===null?true:v==='1';
-}
-window.scToggleSetting=function(checked){
-  localStorage.setItem(SC_SETTING_KEY,checked?'1':'0');
-};
-function scSyncToggleUI(){
-  const cb=document.getElementById('sc-toggle-input');
-  if(cb)cb.checked=scIsEnabled();
-}
-
-// ── Custom offline dictionaries (no external files, no CDN, no network).
-// Hinglish: common Roman-Hindi/Urdu typing variants → preferred spelling.
-// English: common misspellings → correct spelling.
-// Format: wrong (lowercase) -> [best suggestion, ...alternates]
-const SC_HINGLISH={
-  'muje':['mujhe','mujhse'],'mujhe':['mujhe','mujhse'],'mujko':['mujhko','mujhe'],
-  'chaiye':['chahiye'],'chahiye':['chahiye'],'chahiy':['chahiye'],
-  'krna':['karna'],'karna':['karna'],'kerna':['karna'],
-  'samajh':['samajh'],'samjh':['samajh'],'samajhna':['samajhna'],
-  'zindagi':['zindagi'],'zindagee':['zindagi'],'zindgi':['zindagi'],
-  'apko':['aapko'],'aapko':['aapko'],'apka':['aapka'],'aapka':['aapka'],
-  'apki':['aapki'],'aapki':['aapki'],'ap':['aap'],'aap':['aap'],
-  'kese':['kaise'],'kaise':['kaise'],'kesa':['kaisa'],'kaisa':['kaisa'],
-  'kyu':['kyun'],'kyun':['kyun'],'kyunki':['kyunki'],'kuki':['kyunki'],
-  'nahi':['nahin','nahi'],'nhi':['nahin'],'nahin':['nahin'],
-  'hai':['hai'],'h':['hai'],'hoga':['hoga'],'hoge':['hoge'],
-  'krunga':['karunga'],'karunga':['karunga'],'krungi':['karungi'],
-  'krega':['karega'],'karega':['karega'],'kregi':['karegi'],
-  'baat':['baat'],'bat':['baat'],'bhi':['bhi'],'bi':['bhi'],
-  'acha':['achha'],'achha':['achha'],'accha':['achha'],
-  'thik':['theek'],'theek':['theek'],'thk':['theek'],
-  'zaroor':['zaroor'],'zarur':['zaroor'],'jarur':['zaroor'],
-  'zaroorat':['zaroorat'],'jarurat':['zaroorat'],
-  'waqt':['waqt'],'wakt':['waqt'],'time':['time'],
-  'dost':['dost'],'dosth':['dost'],'dosti':['dosti'],
-  'khush':['khush'],'khus':['khush'],'khushi':['khushi'],
-  'mehnat':['mehnat'],'mehenat':['mehnat'],'mahnat':['mehnat'],
-  'kaam':['kaam'],'kam':['kaam'],'kaamyab':['kaamyab'],'kamyab':['kaamyab'],
-  'manzil':['manzil'],'menzil':['manzil'],
-  'niyat':['niyat'],'niyyat':['niyyat'],'niyat':['niyat'],
-  'sabr':['sabr'],'saber':['sabr'],'sabar':['sabr'],
-  'shukr':['shukr'],'shukar':['shukr'],'shukriya':['shukriya'],
-  'dua':['dua'],'duaa':['dua'],'duayen':['duayen'],
-  'imaan':['imaan'],'iman':['imaan'],'eemaan':['imaan'],
-  'namaz':['namaz'],'namaaz':['namaz'],'namaj':['namaz'],
-  'roza':['roza'],'rozaa':['roza'],'rozey':['rozey'],
-  'zindagee':['zindagi'],'jindagi':['zindagi'],
-  'muskil':['mushkil'],'mushkil':['mushkil'],'muskail':['mushkil'],
-  'asaan':['aasan'],'aasan':['aasan'],'asan':['aasan'],
-  'shuru':['shuru'],'shuroo':['shuru'],'shuru':['shuru'],
-  'khatam':['khatam'],'khtm':['khatam'],'khatm':['khatam'],
-  'aaj':['aaj'],'aj':['aaj'],'kal':['kal'],
-  'raat':['raat'],'rat':['raat'],'subah':['subah'],'subha':['subah'],
-  'ghar':['ghar'],'gher':['ghar'],'safar':['safar'],'safer':['safar'],
-  'umeed':['umeed'],'umid':['umeed'],'ummeed':['umeed'],
-  'fikr':['fikr'],'fiker':['fikr'],'pareshan':['pareshan'],'preshan':['pareshan'],
-  'himmat':['himmat'],'himmt':['himmat'],'hosla':['hausla'],'hausla':['hausla'],
-  'mehnati':['mehnati'],'bharosa':['bharosa'],'bharosaa':['bharosa'],
-  'rishta':['rishta'],'rishtaa':['rishta'],'rishton':['rishton'],
-  'sapna':['sapna'],'sapne':['sapne'],'khwab':['khwab'],'khawab':['khwab']
-};
-
-const SC_ENGLISH={
-  'teh':['the'],'hte':['the'],'nad':['and'],'adn':['and'],'yuor':['your'],
-  'youre':['you\'re','your'],'thier':['their'],'theyre':['they\'re','there'],
-  'recieve':['receive'],'recieved':['received'],'recieving':['receiving'],
-  'seperate':['separate'],'seperated':['separated'],'seperately':['separately'],
-  'definately':['definitely'],'definatly':['definitely'],
-  'occured':['occurred'],'occuring':['occurring'],
-  'untill':['until'],'wich':['which'],'becuase':['because'],'becasue':['because'],
-  'beacuse':['because'],'begining':['beginning'],'beleive':['believe'],
-  'beleif':['belief'],'calender':['calendar'],'catagory':['category'],
-  'comitted':['committed'],'commited':['committed'],'concious':['conscious'],
-  'definitly':['definitely'],'diffrent':['different'],'differant':['different'],
-  'embarass':['embarrass'],'enviroment':['environment'],'exercize':['exercise'],
-  'existance':['existence'],'experiance':['experience'],'familys':['families'],
-  'finaly':['finally'],'foriegn':['foreign'],'goverment':['government'],
-  'garuntee':['guarantee'],'gaurantee':['guarantee'],'happend':['happened'],
-  'immediatly':['immediately'],'independant':['independent'],'intrest':['interest'],
-  'knowlege':['knowledge'],'lightening':['lightning'],'maintainance':['maintenance'],
-  'managment':['management'],'mispell':['misspell'],'neccessary':['necessary'],
-  'necesary':['necessary'],'noticable':['noticeable'],'occassion':['occasion'],
-  'oppurtunity':['opportunity'],'oppertunity':['opportunity'],'peice':['piece'],
-  'posession':['possession'],'prefered':['preferred'],'privilage':['privilege'],
-  'probaly':['probably'],'promiss':['promise'],'pronounciation':['pronunciation'],
-  'publically':['publicly'],'realy':['really'],'reccomend':['recommend'],
-  'recomend':['recommend'],'refered':['referred'],'relevent':['relevant'],
-  'religous':['religious'],'rember':['remember'],'remeber':['remember'],
-  'responsability':['responsibility'],'succesful':['successful'],
-  'sucessful':['successful'],'succsess':['success'],'suprise':['surprise'],
-  'suprised':['surprised'],'tommorow':['tomorrow'],'tommorrow':['tomorrow'],
-  'tomorow':['tomorrow'],'truely':['truly'],'unfortunatly':['unfortunately'],
-  'usualy':['usually'],'wether':['whether'],'writting':['writing'],
-  'accomodate':['accommodate'],'acheive':['achieve'],'acheived':['achieved'],
-  'acknowlege':['acknowledge'],'appearence':['appearance'],'arguement':['argument'],
-  'athlete':['athlete'],'awkward':['awkward'],'basicly':['basically'],
-  'buisness':['business'],'cemetary':['cemetery'],'changable':['changeable'],
-  'collegue':['colleague'],'comming':['coming'],'consistant':['consistent'],
-  'daily':['daily'],'decieve':['deceive'],'dilemna':['dilemma'],
-  'dissapoint':['disappoint'],'dissapear':['disappear'],'entertainment':['entertainment'],
-  'excelent':['excellent'],'grammer':['grammar'],'harrass':['harass'],
-  'hieght':['height'],'humourous':['humorous'],'incidently':['incidentally'],
-  'jist':['gist'],'liesure':['leisure'],'liason':['liaison'],'libary':['library'],
-  'lonelyness':['loneliness'],'medcine':['medicine'],'millenium':['millennium'],
-  'mischeivous':['mischievous'],'momento':['memento'],'neice':['niece'],
-  'noticably':['noticeably'],'occassionally':['occasionally'],'parliment':['parliament'],
-  'persistant':['persistent'],'personel':['personnel'],'plesant':['pleasant'],
-  'posession':['possession'],'potatoe':['potato'],'proceedure':['procedure'],
-  'prufe':['proof'],'pursuade':['persuade'],'questionaire':['questionnaire'],
-  'readible':['readable'],'recieipt':['receipt'],'recomended':['recommended'],
-  'refering':['referring'],'reguard':['regard'],'restarant':['restaurant'],
-  'restaraunt':['restaurant'],'rythm':['rhythm'],'saftey':['safety'],
-  'schedual':['schedule'],'secratary':['secretary'],'seige':['siege'],
-  'sence':['sense'],'sieze':['seize'],'similer':['similar'],'sincerly':['sincerely'],
-  'speach':['speech'],'strenght':['strength'],'suceed':['succeed'],
-  'suggestable':['suggestible'],'suprising':['surprising'],'symetry':['symmetry'],
-  'temperture':['temperature'],'therefor':['therefore'],'threshhold':['threshold'],
-  'tounge':['tongue'],'twelth':['twelfth'],'tyrany':['tyranny'],'unatural':['unnatural'],
-  'wich':['which'],'wierd':['weird'],'wellcome':['welcome'],'wellfare':['welfare']
-};
-
-// Merge into one lookup + build a candidate word list for fuzzy fallback.
-const SC_MAP=Object.assign({},SC_ENGLISH,SC_HINGLISH);
-const SC_WORDLIST=(function(){
-  const s=new Set();
-  Object.keys(SC_MAP).forEach(k=>s.add(k));
-  Object.values(SC_MAP).forEach(arr=>arr.forEach(w=>s.add(w.toLowerCase())));
-  return Array.from(s);
-})();
-
-function scLevenshtein(a,b){
-  const m=a.length,n=b.length;
-  if(m===0)return n; if(n===0)return m;
-  const dp=Array.from({length:m+1},()=>new Array(n+1).fill(0));
-  for(let i=0;i<=m;i++)dp[i][0]=i;
-  for(let j=0;j<=n;j++)dp[0][j]=j;
-  for(let i=1;i<=m;i++){
-    for(let j=1;j<=n;j++){
-      dp[i][j]=a[i-1]===b[j-1]?dp[i-1][j-1]:1+Math.min(dp[i-1][j-1],dp[i-1][j],dp[i][j-1]);
-    }
-  }
-  return dp[m][n];
-}
-
-function scMatchCase(sample,word){
-  if(sample===sample.toUpperCase()&&sample!==sample.toLowerCase())return word.toUpperCase();
-  if(sample[0]===sample[0].toUpperCase())return word.charAt(0).toUpperCase()+word.slice(1);
-  return word;
-}
-
-// Returns an array of up to 3 suggestions (own words, not fetched/generated remotely).
-function scGetSuggestions(rawWord){
-  const word=(rawWord||'').trim();
-  if(!word)return [];
-  const lower=word.toLowerCase();
-  let out=[];
-  if(SC_MAP[lower]){
-    out=SC_MAP[lower].slice();
-  }else{
-    // Fuzzy fallback: closest words in our own offline word list (edit distance <= 2).
-    const scored=SC_WORDLIST
-      .map(w=>({w,d:scLevenshtein(lower,w)}))
-      .filter(x=>x.d>0&&x.d<=2)
-      .sort((a,b)=>a.d-b.d)
-      .slice(0,3)
-      .map(x=>x.w);
-    out=scored;
-  }
-  out=out.filter(w=>w.toLowerCase()!==lower);
-  out=Array.from(new Set(out)).slice(0,3);
-  return out.map(w=>scMatchCase(word,w));
-}
-
-// ── Selection tracking (transient only — cleared after each use, never persisted) ──
-let scPending=null; // {kind:'field'|'ce', el, start, end, range, word}
-
-function scGetFieldSelection(el){
-  const start=el.selectionStart,end=el.selectionEnd;
-  if(start==null||end==null||start===end)return null;
-  const word=el.value.substring(start,end);
-  if(!/^[A-Za-z']+$/.test(word))return null;
-  return {kind:'field',el,start,end,word};
-}
-
-function scGetCESelection(){
-  const sel=window.getSelection();
-  if(!sel||sel.rangeCount===0||sel.isCollapsed)return null;
-  const word=sel.toString();
-  if(!/^[A-Za-z']+$/.test(word))return null;
-  const range=sel.getRangeAt(0).cloneRange();
-  return {kind:'ce',range,word};
-}
-
-function scIsEditableTarget(el){
-  if(!el)return false;
-  if(el.tagName==='TEXTAREA')return true;
-  if(el.tagName==='INPUT'&&(el.type==='text'||el.type==='search'))return true;
-  if(el.isContentEditable)return true;
-  return false;
-}
-
-document.addEventListener('contextmenu',function(e){
-  if(!scIsEnabled())return;
-  const target=e.target;
-  if(!scIsEditableTarget(target))return;
-  let info=null;
-  if(target.isContentEditable){
-    info=scGetCESelection();
-  }else{
-    info=scGetFieldSelection(target);
-  }
-  if(!info)return; // no valid single-word selection — let the normal browser menu show
-  e.preventDefault();
-  scPending=info;
-  const menu=document.getElementById('sc-context-menu');
-  menu.style.left=Math.min(e.clientX,window.innerWidth-170)+'px';
-  menu.style.top=Math.min(e.clientY,window.innerHeight-60)+'px';
-  menu.classList.add('visible');
-});
-
-window.scRunCheck=function(){
-  document.getElementById('sc-context-menu').classList.remove('visible');
-  if(!scPending)return;
-  const suggestions=scGetSuggestions(scPending.word);
-  const popup=document.getElementById('sc-suggest-popup');
-  const menu=document.getElementById('sc-context-menu');
-  popup.innerHTML='<div class="sc-popup-label">Suggestions</div>'+
-    (suggestions.length
-      ? suggestions.map((s,i)=>`<div class="sc-popup-item" data-idx="${i}">${esc(s)}</div>`).join('')
-      : '<div class="sc-popup-empty">No suggestions found</div>');
-  popup.style.left=menu.style.left;
-  popup.style.top=menu.style.top;
-  popup.classList.add('visible');
-  popup.querySelectorAll('.sc-popup-item').forEach(item=>{
-    item.addEventListener('click',function(){
-      scApplySuggestion(suggestions[parseInt(this.getAttribute('data-idx'))]);
-    });
-  });
-};
-
-function scApplySuggestion(word){
-  if(!scPending||!word)return scClosePopups();
-  if(scPending.kind==='field'){
-    const el=scPending.el;
-    const before=el.value.slice(0,scPending.start);
-    const after=el.value.slice(scPending.end);
-    el.value=before+word+after;
-    const pos=scPending.start+word.length;
-    el.setSelectionRange(pos,pos);
-    el.focus();
-    el.dispatchEvent(new Event('input',{bubbles:true}));
-  }else if(scPending.kind==='ce'){
-    const range=scPending.range;
-    range.deleteContents();
-    const node=document.createTextNode(word);
-    range.insertNode(node);
-    range.setStartAfter(node);
-    range.setEndAfter(node);
-    const sel=window.getSelection();
-    sel.removeAllRanges();
-    sel.addRange(range);
-    let host=node.parentElement;
-    while(host&&!host.isContentEditable)host=host.parentElement;
-    if(host)host.dispatchEvent(new Event('input',{bubbles:true}));
-  }
-  scClosePopups();
-}
-
-function scClosePopups(){
-  document.getElementById('sc-context-menu').classList.remove('visible');
-  document.getElementById('sc-suggest-popup').classList.remove('visible');
-  scPending=null;
-}
-
-document.addEventListener('click',function(e){
-  if(e.target.closest('#sc-context-menu')||e.target.closest('#sc-suggest-popup'))return;
-  scClosePopups();
-});
-document.addEventListener('keydown',function(e){
-  if(e.key==='Escape')scClosePopups();
-});
-
-// Sync the Settings toggle UI whenever the Settings page is opened, without touching goto().
-const scObserver=new MutationObserver(()=>{
-  const settingsPage=document.getElementById('page-settings');
-  if(settingsPage&&settingsPage.classList.contains('active'))scSyncToggleUI();
-});
-document.addEventListener('DOMContentLoaded',function(){
-  scSyncToggleUI();
-  const settingsPage=document.getElementById('page-settings');
-  if(settingsPage)scObserver.observe(settingsPage,{attributes:true,attributeFilter:['class']});
-});
-if(document.readyState!=='loading')scSyncToggleUI();
-
-})();
 </script>
 </html>
