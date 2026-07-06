@@ -1370,7 +1370,7 @@ select option{background:var(--surface);color:var(--text)}
 
 <script>
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-07-04';
+const JOURNEY_START='2026-07-07'; // single source of truth — Day 1 = Tue 7 July 2026, Day 2 = Wed 8 July 2026
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:'',currentMission:{title:'',milestones:[],skills:[]}};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -1405,6 +1405,21 @@ function cleanOldAdventureDays(){
   Object.keys(D.adventureDays).forEach(k=>{ if(k<JOURNEY_START) delete D.adventureDays[k]; });
 }
 
+// One-time fresh-start reset for the new journey beginning 7 July 2026.
+// Clears ONLY time-based progress (Adventure Log, Time Schedule / current
+// month schedule data, daily completion records). Goals, Goal Details,
+// Current Mission, Skills, Spiritual Goals, Definitions, Reviews and
+// Settings are never touched here. Runs once per data source (local,
+// cloud, or a device that hasn't synced yet) via the D.freshStart_20260707
+// flag, so it will not wipe data again on subsequent loads.
+function applyFreshStartReset(){
+  if(D.freshStart_20260707)return;
+  D.adventureDays={};
+  D.scheduleMonths=[];
+  D.curMonth=0;
+  D.freshStart_20260707=true;
+}
+
 function load(){
   try{const s=localStorage.getItem(KEY);if(s)D=JSON.parse(s);}catch(e){}
   // Journey start date = 4 July 2026 (Day 1)
@@ -1412,12 +1427,13 @@ function load(){
   // Always enforce the correct start date
   D.startDate=JOURNEY_START;
   cleanOldAdventureDays();
+  applyFreshStartReset();
   // Remove any previously-saved June/August 2026 schedule months (journey starts 4 July 2026; August added manually later)
   if(D.scheduleMonths&&D.scheduleMonths.length>0){
     D.scheduleMonths=D.scheduleMonths.filter(m=>m.label!=='June 2026'&&m.label!=='August 2026');
     if(D.curMonth>=D.scheduleMonths.length)D.curMonth=Math.max(0,D.scheduleMonths.length-1);
   }
-  // Init schedule months — use the month containing the journey start date (4 July 2026)
+  // Init schedule months — use the month containing the journey start date (7 July 2026)
   if(!D.scheduleMonths||D.scheduleMonths.length===0){
     const day1=new Date(D.startDate);
     const initLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
@@ -1630,6 +1646,8 @@ async function completeSignIn(user){
   if(loaded){
     D.startDate=JOURNEY_START; // re-enforce after cloud overwrite
     cleanOldAdventureDays();
+    const _wasFreshStart=!D.freshStart_20260707;
+    applyFreshStartReset();
     // Re-init defaults
     if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
     if(!D.reContent)D.reContent={};
@@ -1640,6 +1658,19 @@ async function completeSignIn(user){
     if(D.goals&&D.goals.g1pct===undefined)D.goals.g1pct=0;
     if(D.goals&&D.goals.g2pct===undefined)D.goals.g2pct=0;
     if(D.goals&&D.goals.g3pct===undefined)D.goals.g3pct=0;
+    // If the fresh-start reset just ran on this cloud data, make sure a
+    // fresh schedule month exists (mirrors the same init logic in load())
+    // and sync the reset back up to Firestore so it doesn't re-trigger.
+    if(_wasFreshStart){
+      if(!D.scheduleMonths||D.scheduleMonths.length===0){
+        const day1=new Date(D.startDate);
+        const initLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
+        const initDays=new Date(day1.getFullYear(),day1.getMonth()+1,0).getDate();
+        D.scheduleMonths=[{label:initLabel,days:Array.from({length:initDays},(_,i)=>({dayNum:i+1,rows:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}))}];
+        D.curMonth=0;
+      }
+      save();
+    }
     // Re-render whichever page is active
     const activePage=document.querySelector('.page.active');
     if(activePage){
