@@ -1399,6 +1399,17 @@ function getActualDateForMonthDay(monthLabel, dayNum){
   return new Date(yr, mIdx, dayNum);
 }
 
+// Parses a 'YYYY-MM-DD' string into a local-midnight Date object.
+// Using `new Date('YYYY-MM-DD')` parses it as UTC midnight, which can shift
+// to the previous local day in negative-offset timezones — this avoids that
+// entirely so JOURNEY_START always lands on the correct local calendar day.
+function parseYMDLocal(str){
+  if(!str)return null;
+  const[y,m,d]=String(str).split('-').map(Number);
+  if(!y||!m||!d)return null;
+  return new Date(y,m-1,d);
+}
+
 // Format: "Day 5 — 5 June 2026"
 function formatDayLabel(dayNum, dateObj){
   if(!dateObj||isNaN(dateObj))return 'Day '+dayNum;
@@ -2303,15 +2314,33 @@ function saveDayLog(){
 }
 
 let curDayIdx=0;
+let curDayIdxAutoSet=false; // ensures the very first render of the Schedule page jumps to TODAY instead of Day 1; later navigation (selectDay/prevDay/nextDay) is left alone
+// Given a schedule month object, returns the array index that corresponds to
+// today's real calendar date if this month IS the current real month,
+// otherwise falls back to Day 1 (index 0). Used whenever we (re)default the
+// selected day — first load, switching months, adding/deleting a month —
+// so new/edited tasks land on the correct date for Goal Work Time bucketing.
+function defaultDayIdxForMonth(month){
+  if(!month||!month.days||!month.days.length)return 0;
+  const now=new Date();
+  const label=month.label||'';
+  const mIdx=MONTH_NAMES.findIndex(m=>label.includes(m));
+  const parts=label.split(' ');
+  const yr=parseInt(parts[parts.length-1])||now.getFullYear();
+  if(mIdx===now.getMonth()&&yr===now.getFullYear()){
+    return Math.min(now.getDate()-1,month.days.length-1);
+  }
+  return 0;
+}
 function renderScheduleNav(){const sel=document.getElementById('schedule-month');sel.innerHTML=D.scheduleMonths.map((m,i)=>`<option value="${i}" ${i==D.curMonth?'selected':''}>${m.label||'Month '+(i+1)}</option>`).join('');renderSchedule();}
-function switchScheduleMonth(){D.curMonth=parseInt(document.getElementById('schedule-month').value);curDayIdx=0;renderSchedule();}
+function switchScheduleMonth(){D.curMonth=parseInt(document.getElementById('schedule-month').value);curDayIdx=defaultDayIdxForMonth(D.scheduleMonths[D.curMonth]);renderSchedule();}
 function deleteScheduleMonth(){
   if(D.scheduleMonths.length<=1){alert('You need at least one month — cannot delete the last remaining month.');return;}
   var month=D.scheduleMonths[D.curMonth];
   if(!confirm('Delete '+(month.label||'this month')+'? This will permanently remove all its schedule data.'))return;
   D.scheduleMonths.splice(D.curMonth,1);
   D.curMonth=Math.max(0,D.curMonth-1);
-  curDayIdx=0;save();renderScheduleNav();
+  curDayIdx=defaultDayIdxForMonth(D.scheduleMonths[D.curMonth]);save();renderScheduleNav();
 }
 function addScheduleMonth(){
   var nextLabel='';
@@ -2329,10 +2358,10 @@ function addScheduleMonth(){
   }
   var daysCount=getDaysInMonth(nextLabel);
   var m={label:nextLabel,days:Array.from({length:daysCount},function(_,i){return{dayNum:i+1,rows:TIME_SLOTS.map(function(t){return{time:t,task:'',urgent:'',important:''};;}),happy:null,why:''};})};
-  D.scheduleMonths.push(m);D.curMonth=D.scheduleMonths.length-1;curDayIdx=0;save();renderScheduleNav();
+  D.scheduleMonths.push(m);D.curMonth=D.scheduleMonths.length-1;curDayIdx=defaultDayIdxForMonth(m);save();renderScheduleNav();
 }
 
-function renderSchedule(){const month=D.scheduleMonths[D.curMonth];if(!month)return;if(!month.days){const daysCount=getDaysInMonth(month.label);month.days=Array.from({length:daysCount},(_,i)=>({dayNum:i+1,rows:month.rows?[...month.rows.map(r=>({...r}))]:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}));delete month.rows;save();}if(curDayIdx>=month.days.length)curDayIdx=0;const pillsEl=document.getElementById('month-day-pills');const todayD=new Date();const ty2=todayD.getFullYear(),tm2=todayD.getMonth(),td2=todayD.getDate();pillsEl.innerHTML=month.days.map((d,i)=>{const filled=d.rows&&d.rows.some(r=>r.task);const sel=i===curDayIdx;const actualDate=getActualDateForMonthDay(month.label,d.dayNum);const tooltip=actualDate?formatDayLabel(d.dayNum,actualDate):'Day '+d.dayNum;const isToday=!!actualDate&&actualDate.getFullYear()===ty2&&actualDate.getMonth()===tm2&&actualDate.getDate()===td2;const isPast=!!actualDate&&new Date(actualDate.getFullYear(),actualDate.getMonth(),actualDate.getDate())<new Date(ty2,tm2,td2);const pastEmpty=isPast&&!filled;let bg,border,color,fontWeight;if(sel){bg='var(--accent)';border='var(--accent)';color='#fff';fontWeight='700';}else if(filled){bg='var(--success)';border='var(--success)';color='#fff';fontWeight='600';}else if(isToday){bg='var(--accent)';border='var(--accent)';color='#fff';fontWeight='700';}else if(pastEmpty){bg='var(--surface2)';border='var(--border)';color='var(--text3)';fontWeight='400';}else{bg='var(--surface2)';border='var(--border)';color='var(--text3)';fontWeight='400';}const ringStyle=isToday?(filled?'2px solid var(--text)':'2px solid var(--accent)'):('1px solid '+border);const mark=isToday?'⭐':'';return`<div onclick="selectDay(${i})" title="${tooltip}" style="width:36px;height:36px;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-size:12px;font-weight:${fontWeight};cursor:pointer;background:${bg};color:${color};border:${ringStyle};transition:all .12s;position:relative;">${mark?`<span style="font-size:8px;line-height:1;">${mark}</span>`:''}<span style="line-height:1;">${d.dayNum}</span></div>`;}).join('');renderDaySchedule();renderSchedSummary();}
+function renderSchedule(){const month=D.scheduleMonths[D.curMonth];if(!month)return;if(!month.days){const daysCount=getDaysInMonth(month.label);month.days=Array.from({length:daysCount},(_,i)=>({dayNum:i+1,rows:month.rows?[...month.rows.map(r=>({...r}))]:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}));delete month.rows;save();}if(curDayIdx>=month.days.length)curDayIdx=0;if(!curDayIdxAutoSet){curDayIdx=defaultDayIdxForMonth(month);curDayIdxAutoSet=true;}const pillsEl=document.getElementById('month-day-pills');const todayD=new Date();const ty2=todayD.getFullYear(),tm2=todayD.getMonth(),td2=todayD.getDate();pillsEl.innerHTML=month.days.map((d,i)=>{const filled=d.rows&&d.rows.some(r=>r.task);const sel=i===curDayIdx;const actualDate=getActualDateForMonthDay(month.label,d.dayNum);const tooltip=actualDate?formatDayLabel(d.dayNum,actualDate):'Day '+d.dayNum;const isToday=!!actualDate&&actualDate.getFullYear()===ty2&&actualDate.getMonth()===tm2&&actualDate.getDate()===td2;const isPast=!!actualDate&&new Date(actualDate.getFullYear(),actualDate.getMonth(),actualDate.getDate())<new Date(ty2,tm2,td2);const pastEmpty=isPast&&!filled;let bg,border,color,fontWeight;if(sel){bg='var(--accent)';border='var(--accent)';color='#fff';fontWeight='700';}else if(filled){bg='var(--success)';border='var(--success)';color='#fff';fontWeight='600';}else if(isToday){bg='var(--accent)';border='var(--accent)';color='#fff';fontWeight='700';}else if(pastEmpty){bg='var(--surface2)';border='var(--border)';color='var(--text3)';fontWeight='400';}else{bg='var(--surface2)';border='var(--border)';color='var(--text3)';fontWeight='400';}const ringStyle=isToday?(filled?'2px solid var(--text)':'2px solid var(--accent)'):('1px solid '+border);const mark=isToday?'⭐':'';return`<div onclick="selectDay(${i})" title="${tooltip}" style="width:36px;height:36px;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;font-size:12px;font-weight:${fontWeight};cursor:pointer;background:${bg};color:${color};border:${ringStyle};transition:all .12s;position:relative;">${mark?`<span style="font-size:8px;line-height:1;">${mark}</span>`:''}<span style="line-height:1;">${d.dayNum}</span></div>`;}).join('');renderDaySchedule();renderSchedSummary();}
 
 function selectDay(idx){curDayIdx=idx;renderSchedule();}
 function prevDay(){if(curDayIdx>0){curDayIdx--;renderSchedule();}}
@@ -2401,7 +2430,7 @@ function computeGoalWorkTime(){
   const now=new Date();
   const todayKey=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const{start:weekStart,end:weekEnd}=getWeekBounds(now);
-  const journeyStart=new Date(D.startDate);
+  const journeyStart=parseYMDLocal(D.startDate)||new Date(D.startDate);
   let todayMin=0,weekMin=0,monthMin=0,journeyMin=0;
   (D.scheduleMonths||[]).forEach(month=>{
     if(!month.days)return;
@@ -2470,6 +2499,7 @@ function renderSchedSummary(){
       </div>
       <div style="height:1px;background:var(--border);margin:10px 0;"></div>
       <div class="sched-stats-grid">
+        <div class="sched-stat-row"><span class="sched-stat-label">🕐 Scheduled Hours</span><span class="sched-stat-val accent">${total}</span></div>
         <div class="sched-stat-row"><span class="sched-stat-label">Total Tasks</span><span class="sched-stat-val accent">${total}</span></div>
         <div class="sched-stat-row"><span class="sched-stat-label">✓ Completed Tasks</span><span class="sched-stat-val success">${completed}</span></div>
         <div class="sched-stat-row"><span class="sched-stat-label">Remaining Tasks</span><span class="sched-stat-val${remaining>0?' warning':' muted'}">${remaining}</span></div>
