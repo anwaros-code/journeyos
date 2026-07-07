@@ -95,8 +95,13 @@ select option{background:var(--surface);color:var(--text)}
 .time-table tr.nn td{background:var(--surface2)}
 /* ── TASK COMPLETION CHECKBOX ── */
 .task-check{width:18px;height:18px;border:2px solid var(--border);border-radius:4px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:11px;flex-shrink:0;transition:all .15s;user-select:none;background:var(--surface);margin-top:2px;}
+.check-cell-row{display:flex;align-items:center;justify-content:center;gap:6px;}
+.rest-toggle{width:18px;height:18px;border:2px solid var(--border);border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;transition:all .15s;user-select:none;background:var(--surface);opacity:.45;filter:grayscale(1);}
+.rest-toggle:hover{opacity:.8;}
+.rest-toggle.active{border-color:var(--accent2);opacity:1;filter:none;background:rgba(74,158,142,0.12);}
+.time-table tr.rest-row td{background:rgba(74,158,142,0.08)!important;}
 .task-check.done{border-color:var(--success);background:rgba(58,138,110,0.15);color:var(--success);}
-.task-check-cell{width:28px;text-align:center;}
+.task-check-cell{width:56px;text-align:center;}
 /* ── STATS SUMMARY GRID ── */
 .sched-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px;}
 .sched-stat-row{display:flex;align-items:center;justify-content:space-between;padding:7px 12px;background:var(--surface2);border-radius:var(--rs);border:1px solid var(--border);font-size:13px;}
@@ -726,7 +731,7 @@ select option{background:var(--surface);color:var(--text)}
       <span style="font-size:12px;color:var(--success);">■ Important only</span>
       <span style="font-size:12px;color:var(--text3);">■ Neither</span>
     </div>
-    <table class="time-table"><thead><tr><th>Time slot</th><th>Task</th><th>Urgent?</th><th>Important?</th><th style="width:36px;text-align:center;">Done?</th></tr></thead><tbody id="schedule-body"></tbody></table>
+    <table class="time-table"><thead><tr><th>Time slot</th><th>Task</th><th>Urgent?</th><th>Important?</th><th style="width:56px;text-align:center;" title="☕ = Rest/downtime, ✓ = Done">Rest / Done</th></tr></thead><tbody id="schedule-body"></tbody></table>
     <div style="margin-top:16px;" id="schedule-summary"></div>
     <div style="margin-top:12px;" id="schedule-stats"></div>
     <div style="margin-top:16px;padding-top:14px;border-top:1px solid var(--border);">
@@ -2329,14 +2334,20 @@ function nextDay(){const month=D.scheduleMonths[D.curMonth];if(month&&curDayIdx<
 
 function autoGrowTextarea(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
 
-function renderDaySchedule(){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const day=month.days[curDayIdx];if(!day)return;const actualDate=getActualDateForMonthDay(month.label,day.dayNum);document.getElementById('day-schedule-title').textContent=formatDayLabel(day.dayNum,actualDate);const tbody=document.getElementById('schedule-body');tbody.innerHTML=day.rows.map((r,ri)=>{const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const isDone=!!r.done;const taskStyle=isDone?'text-decoration:line-through;opacity:0.6;':'';return`<tr class="${cls}" id="sr-${ri}"><td style="white-space:nowrap;width:80px;font-size:12px;color:var(--text3);">${r.time}</td><td class="task-cell"><textarea class="task-input" rows="1" placeholder="Enter task…" oninput="updSchedTA(${ri},this)" onkeydown="if(['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();schedArrowKey(event,${ri},0);}" style="${taskStyle}">${esc(r.task)}</textarea></td><td><input type="text" class="yn-input" value="${r.urgent==='Y'?'Y':(r.urgent==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'urgent')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'urgent')"></td><td><input type="text" class="yn-input" value="${r.important==='Y'?'Y':(r.important==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'important')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'important')"></td><td class="task-check-cell"><div class="task-check${isDone?' done':''}" tabindex="0" onclick="toggleTaskDone(${ri})" onkeydown="if(['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(event.key)){schedArrowKey(event,${ri},3);}else if(event.key==='Enter'){event.preventDefault();toggleTaskDone(${ri});}" title="${isDone?'Mark incomplete (Enter to toggle)':'Mark complete (Enter to toggle)'}">${isDone?'✓':''}</div></td></tr>`;}).join('');tbody.querySelectorAll('textarea.task-input').forEach(ta=>{autoGrowTextarea(ta);});const hy=document.getElementById('sched-happy-y');const hn=document.getElementById('sched-happy-n');hy.style.background=day.happy===true?'var(--success)':'';hy.style.color=day.happy===true?'#fff':'';hy.style.borderColor=day.happy===true?'var(--success)':'var(--border)';hn.style.background=day.happy===false?'var(--danger)':'';hn.style.color=day.happy===false?'#fff':'';hn.style.borderColor=day.happy===false?'var(--danger)':'var(--border)';document.getElementById('sched-why').value=day.why||'';}
+function renderDaySchedule(){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const day=month.days[curDayIdx];if(!day)return;const actualDate=getActualDateForMonthDay(month.label,day.dayNum);document.getElementById('day-schedule-title').textContent=formatDayLabel(day.dayNum,actualDate);const tbody=document.getElementById('schedule-body');tbody.innerHTML=day.rows.map((r,ri)=>{const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const isRest=!!r.rest;const rowCls=(cls+(isRest?' rest-row':'')).trim();const isDone=!!r.done;const taskStyle=isDone?'text-decoration:line-through;opacity:0.6;':'';return`<tr class="${rowCls}" id="sr-${ri}"><td style="white-space:nowrap;width:80px;font-size:12px;color:var(--text3);">${r.time}</td><td class="task-cell"><textarea class="task-input" rows="1" placeholder="Enter task…" oninput="updSchedTA(${ri},this)" onkeydown="if(['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(event.key)){event.preventDefault();schedArrowKey(event,${ri},0);}" style="${taskStyle}">${esc(r.task)}</textarea></td><td><input type="text" class="yn-input" value="${r.urgent==='Y'?'Y':(r.urgent==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'urgent')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'urgent')"></td><td><input type="text" class="yn-input" value="${r.important==='Y'?'Y':(r.important==='N'?'N':'')}" placeholder="-" maxlength="1" readonly title="y=Yes  n=No  -=clear" onkeydown="ynKey(event,${ri},'important')" onclick="this.removeAttribute('readonly');this.select();" onblur="ynBlur(this,${ri},'important')"></td><td class="task-check-cell"><div class="check-cell-row"><div class="rest-toggle${isRest?' active':''}" tabindex="0" onclick="toggleSchedRest(${ri})" onkeydown="if(event.key==='Enter'){event.preventDefault();toggleSchedRest(${ri});}" title="${isRest?'Marked as Rest time — click to unmark':'Mark this hour as Rest / downtime (excluded from productivity stats)'}">☕</div><div class="task-check${isDone?' done':''}" tabindex="0" onclick="toggleTaskDone(${ri})" onkeydown="if(['ArrowRight','ArrowLeft','ArrowDown','ArrowUp'].includes(event.key)){schedArrowKey(event,${ri},3);}else if(event.key==='Enter'){event.preventDefault();toggleTaskDone(${ri});}" title="${isDone?'Mark incomplete (Enter to toggle)':'Mark complete (Enter to toggle)'}">${isDone?'✓':''}</div></div></td></tr>`;}).join('');tbody.querySelectorAll('textarea.task-input').forEach(ta=>{autoGrowTextarea(ta);});const hy=document.getElementById('sched-happy-y');const hn=document.getElementById('sched-happy-n');hy.style.background=day.happy===true?'var(--success)':'';hy.style.color=day.happy===true?'#fff':'';hy.style.borderColor=day.happy===true?'var(--success)':'var(--border)';hn.style.background=day.happy===false?'var(--danger)':'';hn.style.color=day.happy===false?'#fff':'';hn.style.borderColor=day.happy===false?'var(--danger)':'var(--border)';document.getElementById('sched-why').value=day.why||'';}
 
 function updSchedTA(ri,el){autoGrowTextarea(el);updSched(ri,'task',el.value);}
 
 function toggleTaskDone(ri){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const row=month.days[curDayIdx].rows[ri];row.done=!row.done;save();// Update just this row's checkbox and task style without full re-render
 const checkEl=document.querySelector('#sr-'+ri+' .task-check');const taEl=document.querySelector('#sr-'+ri+' textarea.task-input');if(checkEl){checkEl.classList.toggle('done',row.done);checkEl.textContent=row.done?'✓':'';}if(taEl){taEl.style.textDecoration=row.done?'line-through':'none';taEl.style.opacity=row.done?'0.6':'1';}renderSchedSummary();}
 
-function updSched(ri,field,val){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;month.days[curDayIdx].rows[ri][field]=val;save();const r=month.days[curDayIdx].rows[ri];const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const row=document.getElementById('sr-'+ri);if(row)row.className=cls;renderSchedSummary();}
+// Mark/unmark an hour row as Rest / downtime (e.g. YouTube, doing nothing).
+// Purely a manual tag — no auto-detection. Rest-tagged rows are excluded
+// from Planned/Completed Hours and Completion Rate in renderSchedSummary,
+// so scheduled downtime never counts as, or against, productivity.
+function toggleSchedRest(ri){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;const row=month.days[curDayIdx].rows[ri];row.rest=!row.rest;save();const restEl=document.querySelector('#sr-'+ri+' .rest-toggle');if(restEl){restEl.classList.toggle('active',row.rest);restEl.title=row.rest?'Marked as Rest time — click to unmark':'Mark this hour as Rest / downtime (excluded from productivity stats)';}const rowEl=document.getElementById('sr-'+ri);if(rowEl){const cls=row.urgent==='Y'&&row.important==='Y'?'uu':row.urgent==='Y'&&row.important==='N'?'un':row.urgent==='N'&&row.important==='Y'?'nu':row.urgent==='N'&&row.important==='N'?'nn':'';rowEl.className=(cls+(row.rest?' rest-row':'')).trim();}renderSchedSummary();}
+
+function updSched(ri,field,val){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;month.days[curDayIdx].rows[ri][field]=val;save();const r=month.days[curDayIdx].rows[ri];const cls=r.urgent==='Y'&&r.important==='Y'?'uu':r.urgent==='Y'&&r.important==='N'?'un':r.urgent==='N'&&r.important==='Y'?'nu':r.urgent==='N'&&r.important==='N'?'nn':'';const row=document.getElementById('sr-'+ri);if(row)row.className=(cls+(r.rest?' rest-row':'')).trim();renderSchedSummary();}
 
 function setSchedHappy(val){const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;month.days[curDayIdx].happy=val;save();const hy=document.getElementById('sched-happy-y');const hn=document.getElementById('sched-happy-n');hy.style.background=val===true?'var(--success)':'';hy.style.color=val===true?'#fff':'';hy.style.borderColor=val===true?'var(--success)':'var(--border)';hn.style.background=val===false?'var(--danger)':'';hn.style.color=val===false?'#fff':'';hn.style.borderColor=val===false?'var(--danger)':'var(--border)';renderSchedSummary();}
 
@@ -2346,7 +2357,10 @@ function renderSchedSummary(){
   const month=D.scheduleMonths[D.curMonth];if(!month||!month.days)return;
   const day=month.days[curDayIdx];
   const allRows=day.rows;
-  const taskRows=allRows.filter(r=>r.task&&r.task.trim());
+  // Rest-tagged rows are deliberately excluded from every productivity
+  // metric below (Planned/Completed Hours, Completion Rate, quadrant
+  // breakdown) so scheduled downtime never counts as, or against, work.
+  const taskRows=allRows.filter(r=>r.task&&r.task.trim()&&!r.rest);
   const uu=taskRows.filter(r=>r.urgent==='Y'&&r.important==='Y').length;
   const un=taskRows.filter(r=>r.urgent==='Y'&&r.important==='N').length;
   const nu=taskRows.filter(r=>r.urgent==='N'&&r.important==='Y').length;
@@ -2358,6 +2372,9 @@ function renderSchedSummary(){
   const remaining=total-completed;
   const remainingHrs=planned-completedHrs;
   const rate=total>0?Math.round(completed/total*100):0;
+  const restRows=allRows.filter(r=>r.rest);
+  const restHrs=restRows.length;
+  const restTaken=restRows.filter(r=>r.done).length;
 
   // Existing inline summary (urgent/important breakdown)
   document.getElementById('schedule-summary').innerHTML=`<div style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px;">
@@ -2395,6 +2412,13 @@ function renderSchedSummary(){
       </div>
       <div class="completion-bar-wrap"><div class="completion-bar-fill" style="width:${rate}%;background:${rate>=80?'var(--success)':rate>=50?'var(--warning)':'var(--danger)'};"></div></div>
       <div style="font-size:11px;color:var(--text3);margin-top:5px;text-align:right;">${completed} of ${total} tasks done</div>
+    </div>
+    <div style="margin-top:10px;padding:10px 12px;background:rgba(74,158,142,0.08);border-radius:var(--rs);border:1px solid var(--accent2);">
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <span style="font-size:13px;color:var(--text2);font-weight:500;">☕ Rest Time Scheduled</span>
+        <span style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--accent2);">${restHrs}h</span>
+      </div>
+      <div style="font-size:11px;color:var(--text3);margin-top:5px;">${restHrs===0?'No rest hours tagged today — click the ☕ icon on any row to schedule downtime.':restTaken+' of '+restHrs+' rest hour'+(restHrs!==1?'s':'')+' taken'}</div>
     </div>
   </div>`;
 
