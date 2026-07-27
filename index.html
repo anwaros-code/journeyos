@@ -6,108 +6,171 @@
 // ============================================================
 // PERMANENT DEVELOPER ERROR SCREEN — built-in, hidden by default.
 // Tracks startup stages silently (no UI, negligible cost). Only
-// creates/shows any UI if a real startup error occurs, replacing
-// what would otherwise be a blank white screen. Not visible during
-// normal, successful use.
+// creates/shows any UI if a real startup error/timeout occurs,
+// replacing what would otherwise be a blank white screen. Not
+// visible during normal, successful use.
+//
+// EVIDENCE-ONLY REPORTING: this screen states only what was
+// directly observed (completed stages, stages never reached, the
+// actual captured error/rejection if any). It never infers or
+// guesses a cause (e.g. "network issue") without a concrete,
+// matched signal from a real captured error — see causeFromEvidence().
 // ============================================================
 (function(){
   var STAGES=['HTML Parsed','CSS Loaded','Classic Script Loaded','Module Script Loaded',
     'Firebase Imported','DOMContentLoaded','_onAuthChange Defined','Auth Callback Fired','App Rendered'];
-  var completed=[];
+  var completed=[]; // {stage, t} — pushed only in true call order, never reordered
+  var lastError=null;     // set only from a real window 'error' event
+  var lastRejection=null; // set only from a real 'unhandledrejection' event
+
   window.__mark=function(stage){
-    completed.push(stage);
+    // Ignore duplicate/repeat marks — a stage is recorded once, at its first
+    // occurrence, so re-firing an event can never produce duplicate entries.
+    for(var i=0;i<completed.length;i++){ if(completed[i].stage===stage) return; }
+    completed.push({stage:stage, t:Date.now()});
     if(stage==='App Rendered' && window.__watchdogTimer){
       clearTimeout(window.__watchdogTimer);
       window.__watchdogTimer=null;
     }
   };
 
-  function stepList(){
-    var lines=completed.map(function(s){ return '✓ '+s; });
-    var next=STAGES.filter(function(s){ return completed.indexOf(s)===-1; })[0];
-    if(next) lines.push('✗ '+next+' Failed');
-    return lines.join('\n');
+  function completedList(){
+    return completed.map(function(c){ return '✓ '+c.stage; }).join('\n') || '(none)';
+  }
+  function neverReachedList(){
+    var doneNames=completed.map(function(c){ return c.stage; });
+    var missing=STAGES.filter(function(s){ return doneNames.indexOf(s)===-1; });
+    return missing.length ? missing.join('\n') : '(none)';
   }
 
-  function guessCause(text){
-    var s=(text||'').toLowerCase();
-    if(s.indexOf('gstatic.com')>-1||s.indexOf('firebase')>-1)
-      return 'Firebase SDK failed to load or initialize — check network access to gstatic.com or the Firebase config.';
-    if(s.indexOf('is not defined')>-1)
-      return 'A variable or function was used before it was defined — check script load order or a missing declaration.';
-    if(s.indexOf('cannot read propert')>-1)
-      return 'Code tried to read a property on something null/undefined — likely a DOM element or object not ready yet.';
-    if(s.indexOf('networkerror')>-1||s.indexOf('failed to fetch')>-1)
-      return 'A network request failed — check internet connection or a blocked domain.';
-    if(s.indexOf('syntaxerror')>-1)
-      return 'Invalid JavaScript syntax — likely from a recent code edit.';
-    return 'Unknown — see the message and stack trace above for more context.';
+  // Only returns a cause when a captured error/rejection directly matches a
+  // known, concrete signal. Returns null otherwise — caller shows the
+  // explicit "Unknown" fallback rather than a guess.
+  function causeFromEvidence(){
+    var e=lastError||lastRejection;
+    if(!e) return null;
+    var type=e.type||'';
+    var msg=(e.message||'').toLowerCase();
+    var file=(e.file||'').toLowerCase();
+    if(type==='ReferenceError') return 'Undefined variable';
+    if(msg.indexOf('failed to fetch dynamically imported module')>-1 ||
+       (msg.indexOf('failed to fetch')>-1 && (file.indexOf('firebase')>-1||file.indexOf('gstatic')>-1)))
+      return 'Firebase CDN unavailable';
+    if(msg.indexOf('failed to fetch')>-1) return 'Network or CDN issue';
+    return null;
   }
 
-  function showError(type,message,file,line,stack,causeOverride){
-    var render=function(){
-      var screen=document.getElementById('__dev_error_screen');
-      if(!screen){
-        screen=document.createElement('div');
-        screen.id='__dev_error_screen';
-        screen.style.cssText='position:fixed;inset:0;z-index:999999;background:#fff;color:#1a1814;'+
-          'font-family:monospace;font-size:13px;padding:20px;overflow:auto;';
-        screen.innerHTML=
-          '<div style="font-size:19px;font-weight:bold;color:#b85a5a;margin-bottom:6px;">JourneyOS Startup Error</div>'+
-          '<div id="__dev_error_summary" style="margin-bottom:12px;font-size:14px;"></div>'+
-          '<button id="__dev_error_toggle" style="font-family:monospace;font-size:13px;padding:6px 14px;'+
-          'border:1px solid #b85a5a;background:#fff;color:#b85a5a;border-radius:6px;">Show Details</button>'+
-          '<div id="__dev_error_details" style="display:none;margin-top:16px;white-space:pre-wrap;'+
-          'line-height:1.6;border-top:1px solid #e0ddd6;padding-top:14px;"></div>';
-        document.body.appendChild(screen);
-        document.getElementById('__dev_error_toggle').onclick=function(){
-          var d=document.getElementById('__dev_error_details');
-          var open=d.style.display==='block';
-          d.style.display=open?'none':'block';
-          this.textContent=open?'Show Details':'Hide Details';
-        };
-      }
-      screen.style.display='block';
-      document.getElementById('__dev_error_summary').textContent=type+': '+message;
-      document.getElementById('__dev_error_details').textContent=
-        'Error Type:\n'+type+'\n\n'+
-        'Message:\n'+message+'\n\n'+
-        'File:\n'+(file||'(unknown)')+'\n\n'+
-        'Line:\n'+(line||'(unknown)')+'\n\n'+
-        'Stack Trace:\n'+(stack||'(not available)')+'\n\n'+
-        'Possible Cause:\n'+(causeOverride||guessCause((file||'')+' '+message))+'\n\n'+
-        'Startup Steps:\n'+stepList();
-    };
-    if(document.body) render(); else document.addEventListener('DOMContentLoaded', render);
+  function detectBrowser(){
+    var ua=(navigator&&navigator.userAgent)||'';
+    var browser='Unknown browser';
+    if(/Edg\//.test(ua)) browser='Edge';
+    else if(/OPR\//.test(ua)) browser='Opera';
+    else if(/Chrome\//.test(ua)) browser='Chrome';
+    else if(/Firefox\//.test(ua)) browser='Firefox';
+    else if(/Safari\//.test(ua)) browser='Safari';
+    var os='';
+    if(/Android/.test(ua)) os='Android';
+    else if(/iPhone|iPad|iPod/.test(ua)) os='iOS';
+    else if(/Windows/.test(ua)) os='Windows';
+    else if(/Macintosh/.test(ua)) os='Mac';
+    else if(/Linux/.test(ua)) os='Linux';
+    return (browser+(os?' '+os:'')).trim() || 'Unknown';
+  }
+
+  function formatTime(d){
+    var months=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    var h=d.getHours(), ampm=h>=12?'PM':'AM', h12=h%12; if(h12===0)h12=12;
+    var min=('0'+d.getMinutes()).slice(-2);
+    return d.getDate()+' '+months[d.getMonth()]+' '+d.getFullYear()+' '+h12+':'+min+' '+ampm;
+  }
+
+  function render(title){
+    var screen=document.getElementById('__dev_error_screen');
+    if(!screen){
+      screen=document.createElement('div');
+      screen.id='__dev_error_screen';
+      screen.style.cssText='position:fixed;inset:0;z-index:999999;background:#fff;color:#1a1814;'+
+        'font-family:monospace;font-size:13px;padding:20px;overflow:auto;';
+      screen.innerHTML=
+        '<div id="__dev_error_title" style="font-size:19px;font-weight:bold;color:#b85a5a;margin-bottom:6px;"></div>'+
+        '<button id="__dev_error_toggle" style="font-family:monospace;font-size:13px;padding:6px 14px;'+
+        'border:1px solid #b85a5a;background:#fff;color:#b85a5a;border-radius:6px;">Show Details</button>'+
+        '<div id="__dev_error_details" style="display:none;margin-top:16px;white-space:pre-wrap;'+
+        'line-height:1.6;border-top:1px solid #e0ddd6;padding-top:14px;"></div>';
+      document.body.appendChild(screen);
+      document.getElementById('__dev_error_toggle').onclick=function(){
+        var d=document.getElementById('__dev_error_details');
+        var open=d.style.display==='block';
+        d.style.display=open?'none':'block';
+        this.textContent=open?'Show Details':'Hide Details';
+      };
+    }
+    screen.style.display='block';
+    document.getElementById('__dev_error_title').textContent=title;
+
+    var errBlock='None';
+    if(lastError){
+      errBlock=lastError.type+': '+lastError.message+
+        '\nFile: '+(lastError.file||'(unknown)')+
+        '\nLine: '+(lastError.line||'(unknown)')+
+        '\nStack Trace:\n'+(lastError.stack||'(not available)');
+    }
+    var rejBlock='None';
+    if(lastRejection){
+      rejBlock=lastRejection.type+': '+lastRejection.message+
+        '\nStack Trace:\n'+(lastRejection.stack||'(not available)');
+    }
+    var cause=causeFromEvidence();
+    var causeText=cause||'Unknown. Startup stalled without a detected JavaScript exception.';
+
+    document.getElementById('__dev_error_details').textContent=
+      'Completed Stages:\n'+completedList()+'\n\n'+
+      'Never Reached:\n'+neverReachedList()+'\n\n'+
+      'Error:\n'+errBlock+'\n\n'+
+      'Promise Rejection:\n'+rejBlock+'\n\n'+
+      'Possible Cause:\n'+causeText+'\n\n'+
+      'Browser:\n'+detectBrowser()+'\n\n'+
+      'Time:\n'+formatTime(new Date());
+  }
+
+  function show(title){
+    if(document.body) render(title); else document.addEventListener('DOMContentLoaded', function(){ render(title); });
+    // A real captured error/timeout has now been reported — cancel the
+    // watchdog so a later timeout can never overwrite this with a less
+    // informative report.
+    if(window.__watchdogTimer){ clearTimeout(window.__watchdogTimer); window.__watchdogTimer=null; }
   }
 
   window.addEventListener('error', function(e){
     var err=e.error;
-    showError(err&&err.name?err.name:'JavaScript Error', e.message||'Unknown error',
-      e.filename||'', e.lineno||'', err&&err.stack?err.stack:'(no stack available)');
+    lastError={
+      type: err&&err.name ? err.name : 'JavaScript Error',
+      message: e.message||'Unknown error',
+      file: e.filename||'',
+      line: e.lineno||'',
+      stack: err&&err.stack ? err.stack : '(no stack available)'
+    };
+    show('JourneyOS Startup Error');
   });
   window.addEventListener('unhandledrejection', function(e){
     var reason=e.reason;
-    var msg=(reason&&reason.message)?reason.message:String(reason);
-    var stack=(reason&&reason.stack)?reason.stack:'(no stack available)';
-    var name=(reason&&reason.name)?reason.name:'Unhandled Promise Rejection';
-    showError(name, msg, '', '', stack);
+    lastRejection={
+      type: (reason&&reason.name) ? reason.name : 'Unhandled Promise Rejection',
+      message: (reason&&reason.message) ? reason.message : String(reason),
+      stack: (reason&&reason.stack) ? reason.stack : '(no stack available)'
+    };
+    show('JourneyOS Startup Error');
   });
 
   document.addEventListener('DOMContentLoaded', function(){ window.__mark('DOMContentLoaded'); });
 
-  // Startup watchdog — if App Rendered isn't reached within 15s of this
-  // script running (i.e. page load start), initialization has silently
-  // stalled without throwing a catchable error. __mark() cancels this the
-  // moment 'App Rendered' is recorded, so it never fires on success.
+  // Startup watchdog — if App Rendered isn't reached within 15s of page
+  // load, initialization has stalled. __mark() cancels this the moment
+  // 'App Rendered' is recorded, and show() cancels it if a real error/
+  // rejection already reported first — so it never fires on success or
+  // double-reports over a real captured error.
   window.__watchdogTimer=setTimeout(function(){
-    showError(
-      'Startup Timeout',
-      'The application did not finish initializing within 15 seconds.',
-      '', '',
-      '(not applicable — initialization stalled silently rather than throwing an error)',
-      '• Firebase unavailable\n• Internet connection issue\n• External CDN blocked\n• Initialization stalled'
-    );
+    show('JourneyOS Startup Timeout');
   }, 15000);
 })();
 </script>
@@ -253,27 +316,4 @@ select option{background:var(--surface);color:var(--text)}
 .mobile-nav-item .ico{font-size:20px}
 .export-bar{padding:12px 20px;border-top:1px solid var(--border)}
 .g1-sub{border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px;overflow:hidden}
-.g1-sub-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);cursor:pointer;user-select:none;transition:background .15s}
-.g1-sub-header:hover{background:#e8e6df}
-.g1-sub-title-input{font-size:14px;font-weight:500;color:var(--text);background:transparent;border:none;outline:none;flex:1;font-family:'DM Sans',sans-serif;cursor:text}
-.g1-sub-toggle{font-size:13px;color:var(--text3);flex-shrink:0;transition:transform .2s;display:inline-block}
-.g1-sub-toggle.open{transform:rotate(90deg)}
-.g1-sub-body{display:none;padding:0}
-.g1-sub-body.open{display:block}
-.rich-toolbar{display:flex;gap:4px;flex-wrap:wrap;padding:8px 12px;border-bottom:1px solid var(--border);background:#faf9f7;align-items:center}
-.rich-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:5px;border:1px solid transparent;cursor:pointer;font-size:13px;color:var(--text2);background:transparent;transition:all .12s;font-family:'DM Sans',sans-serif;font-weight:500}
-.rich-btn:hover{background:var(--surface2);border-color:var(--border);color:var(--text)}
-.rich-btn.active{background:rgba(184,137,42,.15);border-color:var(--accent);color:var(--accent)}
-.rich-sep{width:1px;height:20px;background:var(--border);margin:0 3px}
-.draw-toolbar{display:flex;gap:6px;padding:8px 12px;background:#faf9f7;border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center}
-.draw-canvas{display:block;width:100%;cursor:crosshair;background:#fff;touch-action:none}
-.color-dot{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:border-color .12s;flex-shrink:0}
-.color-dot.sel{border-color:var(--text)}
-.rich-editor{min-height:120px;padding:12px 14px;outline:none;font-size:14px;line-height:1.7;color:var(--text);font-family:'DM Sans',sans-serif}
-.rich-editor:empty::before{content:attr(data-ph);color:var(--text3);pointer-events:none}
-.rich-editor ul,.rich-editor ol{padding-left:20px}
-.hide-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(184,137,42,.12);color:var(--warning);border:1px solid rgba(184,137,42,.25);flex-shrink:0}
-.show-badge{font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(58,138,110,.1);color:var(--success);border:1px solid rgba(58,138,110,.25);flex-shrink:0}
-
-/* ── TABS ── */
-.tabs{display:flex;ga
+.g1-sub-header{display:flex;align-items:center
