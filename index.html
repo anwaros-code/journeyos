@@ -310,6 +310,13 @@ select option{background:var(--surface);color:var(--text)}
   .export-bar{padding:10px 12px;}
   .mobile-nav{display:none !important;}
 }
+@media(max-width:400px){
+  .sidebar{width:132px;min-width:112px;max-width:132px;}
+  .nav-item{padding:8px 8px;font-size:10.5px;gap:6px;}
+  .nav-icon{font-size:13px;width:16px;}
+  .logo h1{font-size:13px;}
+  .main{padding:12px 8px;}
+}
 .mobile-nav{display:none}
 .mobile-nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 4px;cursor:pointer;color:var(--text3);font-size:10px}
 .mobile-nav-item.active{color:var(--accent)}
@@ -2602,7 +2609,13 @@ function saveSchedWhy(){const month=D.scheduleMonths[D.curMonth];if(!month||!mon
 // calculation and `over` is flagged so the UI can show a warning.
 function parseExcludedMinutes(taskText){
   if(!taskText)return{minutes:0,over:false};
-  const matches=[...String(taskText).matchAll(/\$(\d{1,3})\b/g)];
+  // Was \$(\d{1,3})\b — the trailing word-boundary rejected valid, common
+  // patterns like "$15min" (digits immediately followed by letters), since
+  // a letter is a "word" character too and \b requires a transition out of
+  // one. A negative lookahead for "not another digit" keeps protection
+  // against malformed 4+ digit values while correctly matching "$15min",
+  // "$15Break", etc.
+  const matches=[...String(taskText).matchAll(/\$(\d{1,3})(?!\d)/g)];
   let sum=0;
   matches.forEach(m=>{const n=parseInt(m[1],10);if(n>=0&&n<=60)sum+=n;});
   return{minutes:Math.min(sum,60),over:sum>60};
