@@ -176,6 +176,30 @@
 </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<script>
+// Neither Safari nor Chrome on iOS reliably forces a wide CSS viewport when
+// "Request Desktop Website" is toggled — Safari sometimes does; Chrome iOS
+// does not (confirmed via testing) — so the physical device viewport can
+// stay genuinely narrow, meaning this page's own mobile breakpoints (which
+// are correct and needed for real mobile use) still apply even though
+// Desktop Site was requested. Detecting Desktop Site mode via the standard
+// "Mobile" token being stripped from navigator.userAgent on an
+// actually-touch-capable device, then widening the viewport meta tag
+// ourselves, is the standard, reliable way to force the desktop layout to
+// engage consistently across both browsers. This can't be done in CSS
+// alone — CSS has no way to inspect the User-Agent or rewrite the viewport
+// directive. 1024px clears the 700/400px mobile breakpoints (so the full
+// 230px sidebar applies) while staying under the 1300px threshold added
+// for .main's readable-line-length cap (so .main fills all available
+// width) — exactly the layout requested.
+(function(){
+  var isDesktopSiteOnTouchDevice = !/Mobile/.test(navigator.userAgent) && navigator.maxTouchPoints > 1;
+  if(isDesktopSiteOnTouchDevice){
+    var vp = document.querySelector('meta[name="viewport"]');
+    if(vp) vp.setAttribute('content', 'width=1024, initial-scale=1.0');
+  }
+})();
+</script>
 <title>My Life OS</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
 <style>
