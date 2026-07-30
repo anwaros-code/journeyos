@@ -2227,6 +2227,15 @@ function renderSpiritualHabits(){
     const todayLocal=new Date(ty,tm,td);
     const daysSinceStart=Math.floor((todayLocal-startDate)/86400000);
     const currentDayNum=Math.min(targetDays,Math.max(1,daysSinceStart+1));
+    // Display-only: reuses the same gregorianToHijri() the Dashboard uses —
+    // no second Hijri calculation, no API. h.startDate itself (the stored,
+    // sorted, synced value) is completely untouched below.
+    let startedDisplay='today';
+    if(h.startDate){
+      const _hij=gregorianToHijri(startDate);
+      startedDisplay=startDate.getDate()+' '+MONTH_NAMES_SHORT[startDate.getMonth()]+' '+startDate.getFullYear()+
+        ' ('+_hij.day+' '+_hij.month+' '+_hij.year+' AH)';
+    }
     const dots=[];
     for(let d=1;d<=targetDays;d++){
       const dayDate=new Date(startDate);
@@ -2241,7 +2250,7 @@ function renderSpiritualHabits(){
         <div>
           <div style="font-weight:500;font-size:14px;">${esc(h.name)}</div>
           ${h.goal?`<div style="font-size:12px;color:var(--text3);margin-top:2px;">${esc(h.goal)}</div>`:''}
-          <div style="font-size:11px;color:var(--text3);margin-top:2px;">Day <b style="color:var(--accent);">${currentDayNum}</b> of ${targetDays} · Started: ${h.startDate||'today'}</div>
+          <div style="font-size:11px;color:var(--text3);margin-top:2px;">Day <b style="color:var(--accent);">${currentDayNum}</b> of ${targetDays} · Started: ${startedDisplay}</div>
         </div>
         <div style="display:flex;gap:6px;flex-shrink:0;">
           <button class="btn btn-ghost" onclick="editSpiritualHabit(${hi})" style="font-size:11px;padding:4px 10px;">✎ Edit</button>
@@ -2438,6 +2447,19 @@ function delSpiritualHabit(i){D.spiritual.habits.splice(i,1);save();renderSpirit
 function delHabit(i){delSpiritualHabit(i);}
 
 let selDay=null,dayStatus=null,dayHappy=null;
+// Single source of truth for "what journey day is today" — parses
+// D.startDate and truncates "now" to local midnight before diffing, so the
+// day number flips exactly at local midnight (avoids the UTC-parse pitfall
+// of `new Date('YYYY-MM-DD')`, which shifts the boundary away from local
+// midnight). Originally lived inline in renderAdventure(); both it and
+// renderHome() now call this one function so they can never drift apart.
+function getCurrentJourneyDay(){
+  const [sy,sm,sd]=D.startDate.split('-').map(Number);
+  const start=new Date(sy,sm-1,sd);
+  const todayDate=new Date();
+  const ty=todayDate.getFullYear(),tm=todayDate.getMonth(),td=todayDate.getDate();
+  return Math.floor((new Date(ty,tm,td)-start)/86400000)+1;
+}
 function renderAdventure(){
   const grid=document.getElementById('day-grid');
   // Parse start date from parts to avoid UTC offset shift
@@ -2446,7 +2468,7 @@ function renderAdventure(){
   const todayDate=new Date();
   const ty=todayDate.getFullYear(),tm=todayDate.getMonth(),td=todayDate.getDate();
   const todayKey=ty+'-'+String(tm+1).padStart(2,'0')+'-'+String(td).padStart(2,'0');
-  const dayNum=Math.floor((new Date(ty,tm,td)-start)/86400000)+1;
+  const dayNum=getCurrentJourneyDay();
   const subEl=document.getElementById('adventure-sub');
   if(subEl){const prettyToday=td+' '+MONTH_NAMES[tm]+' '+ty;subEl.textContent='Your 1825-day journey · Today is Day '+dayNum+' — '+prettyToday;}
   grid.innerHTML='';
@@ -2755,7 +2777,7 @@ function gregorianToHijri(date){
   const hMonth=Math.floor((24*jd)/709),hDay=jd-Math.floor((709*hMonth)/24),hYear=30*n+j-30;
   return{day:hDay,month:HIJRI_MONTHS[hMonth-1],year:hYear};
 }
-function renderHome(){const _greg=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const _hij=gregorianToHijri(new Date());document.getElementById('home-date').textContent=`${_greg} (${_hij.day} ${_hij.month} ${_hij.year} AH)`;const start=new Date(D.startDate),today=new Date();const dayNum=Math.floor((today-start)/86400000)+1;const pct=Math.min(100,Math.round(dayNum/1825*100));const done=Object.values(D.adventureDays).filter(d=>d.status==='done').length;const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;const wrc=(D.weeklyReviews||[]).length,mrc=(D.monthlyReviews||[]).length,qrc=(D.quarterlyReviews||[]).length,arc=(D.annualReviews||[]).length;document.getElementById('home-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Day of journey</div></div><div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days completed</div></div><div class="stat-card"><div class="stat-num">${msDone}/${msTotal}</div><div class="stat-label">Milestones done</div></div>`;document.getElementById('home-biggoal').textContent=D.goals.g1||'No main goal set yet — go to My Goals to add one';document.getElementById('home-day-num').textContent='Day '+dayNum;document.getElementById('home-progress').style.width=pct+'%';const todayKey=new Date().toISOString().split('T')[0];document.getElementById('home-spiritual').innerHTML=D.spiritual.habits.length===0?'No spiritual habits added yet.':D.spiritual.habits.map(h=>{const d=h.log&&h.log[todayKey];return`<span style="margin-right:14px;color:${d?'var(--success)':'var(--text3)'}">${d?'✓':'○'} ${esc(h.name)}</span>`;}).join('');
+function renderHome(){const _greg=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const _hij=gregorianToHijri(new Date());document.getElementById('home-date').textContent=`${_greg} (${_hij.day} ${_hij.month} ${_hij.year} AH)`;const dayNum=getCurrentJourneyDay();const pct=Math.min(100,Math.round(dayNum/1825*100));const done=Object.values(D.adventureDays).filter(d=>d.status==='done').length;const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;const wrc=(D.weeklyReviews||[]).length,mrc=(D.monthlyReviews||[]).length,qrc=(D.quarterlyReviews||[]).length,arc=(D.annualReviews||[]).length;document.getElementById('home-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Day of journey</div></div><div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days completed</div></div><div class="stat-card"><div class="stat-num">${msDone}/${msTotal}</div><div class="stat-label">Milestones done</div></div>`;document.getElementById('home-biggoal').textContent=D.goals.g1||'No main goal set yet — go to My Goals to add one';document.getElementById('home-day-num').textContent='Day '+dayNum;document.getElementById('home-progress').style.width=pct+'%';const todayKey=new Date().toISOString().split('T')[0];document.getElementById('home-spiritual').innerHTML=D.spiritual.habits.length===0?'No spiritual habits added yet.':D.spiritual.habits.map(h=>{const d=h.log&&h.log[todayKey];return`<span style="margin-right:14px;color:${d?'var(--success)':'var(--text3)'}">${d?'✓':'○'} ${esc(h.name)}</span>`;}).join('');
   // Review stats card
   const homeReviewEl=document.getElementById('home-review-stats');
   const g1p=computeGoalPct(1),g2p=computeGoalPct(2),g3p=computeGoalPct(3);
