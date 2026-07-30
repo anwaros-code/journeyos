@@ -192,7 +192,18 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .nav-item:hover{color:var(--text);background:var(--surface2)}
 .nav-item.active{color:var(--accent);border-left-color:var(--accent);background:rgba(201,169,110,.06);font-weight:500}
 .nav-icon{font-size:17px;width:20px;text-align:center}
-.main{flex:1;padding:32px 36px;max-width:900px}
+.main{flex:1;padding:32px 36px;}
+/* .main's readable-line-length cap only applies on genuinely wide desktop
+   screens (>=1300px). Previously this was an unconditional max-width:900px,
+   which — combined with iOS Safari's "Request Desktop Website" forcing a
+   simulated ~980-1024px layout viewport regardless of this page's own
+   width=device-width meta tag (documented WebKit behavior, not a bug here)
+   — left unused space in that specific in-between range. Gating it behind
+   min-width keeps real desktop monitors looking exactly as before, while
+   letting .main correctly fill 100% of available width anywhere narrower,
+   including iPhone Desktop Site mode, without guessing Safari's exact
+   (undocumented, version-dependent) simulated width. */
+@media(min-width:1300px){.main{max-width:900px;}}
 .page{display:none}
 .page.active{display:block}
 .page-title{font-family:'DM Serif Display',serif;font-size:28px;color:var(--text);margin-bottom:6px}
@@ -2667,8 +2678,10 @@ function fmtHM(mins){const h=Math.floor(mins/60),m=mins%60;return h+'h '+m+'m';}
 // reusing the existing getActualDateForMonthDay() date-mapping — bucketed
 // into Today / This Week (Mon-Sun) / This Month / Journey Total (since
 // JOURNEY_START). Always calculated fresh; never stored.
-function computeGoalWorkTime(){
-  const now=new Date();
+// refDate: the day the cards should be relative to (defaults to the real
+// current date, preserving old behavior for any other caller).
+function computeGoalWorkTime(refDate){
+  const now=refDate||new Date();
   const todayKey=new Date(now.getFullYear(),now.getMonth(),now.getDate());
   const{start:weekStart,end:weekEnd}=getWeekBounds(now);
   const journeyStart=parseYMDLocal(D.startDate)||new Date(D.startDate);
@@ -2692,7 +2705,14 @@ function computeGoalWorkTime(){
 function renderGoalWorkTimeCards(){
   const el=document.getElementById('goal-work-time-cards');
   if(!el)return;
-  const{todayMin,weekMin,monthMin,journeyMin}=computeGoalWorkTime();
+  // Cards are relative to whichever day is currently selected in the
+  // schedule view, not always the real system date — reuses the same
+  // getActualDateForMonthDay() already used elsewhere (e.g. renderAdventure,
+  // computeGoalWorkTime's own loop) rather than a new date calculation.
+  const _month=D.scheduleMonths[D.curMonth];
+  const _selectedDay=(_month&&_month.days&&_month.days[curDayIdx])?_month.days[curDayIdx]:null;
+  const selectedDate=_selectedDay?getActualDateForMonthDay(_month.label,_selectedDay.dayNum):null;
+  const{todayMin,weekMin,monthMin,journeyMin}=computeGoalWorkTime(selectedDate);
   el.innerHTML=`
     <div class="stat-card"><div class="stat-num" style="font-size:22px;">${fmtHM(todayMin)}</div><div class="stat-label">🎯 Today</div></div>
     <div class="stat-card"><div class="stat-num" style="font-size:22px;">${fmtHM(weekMin)}</div><div class="stat-label">📅 This Week</div></div>
