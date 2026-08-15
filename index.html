@@ -1189,7 +1189,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="card-title"><span>ℹ</span> About</div>
     <div style="font-size:13px;color:var(--text2);line-height:1.8;">
       <div><span style="color:var(--text3);">App:</span> My Life OS · JourneyOS</div>
-      <div><span style="color:var(--text3);">Journey Start:</span> 29 July 2026</div>
+      <div><span style="color:var(--text3);">Journey Start:</span> 16 August 2026</div>
       <div><span style="color:var(--text3);">Duration:</span> 5 Years · 1825 Days</div>
       <div><span style="color:var(--text3);">Storage:</span> localStorage + Firestore sync</div>
     </div>
@@ -1623,7 +1623,7 @@ select option{background:var(--surface);color:var(--text)}
 <script>
 window.__mark('Classic Script Loaded');
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-07-29'; // single source of truth — Day 1 = Wed 29 July 2026, Day 2 = Thu 30 July 2026
+const JOURNEY_START='2026-08-16'; // single source of truth — Day 1 = Sun 16 Aug 2026, Day 2 = Mon 17 Aug 2026
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:'',currentMission:{title:'',milestones:[],skills:[]},autoLockSeconds:30};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -1684,6 +1684,23 @@ function applyFreshStartReset(){
   D.freshStart_20260716=true;
 }
 
+// One-time fresh-start reset for the new journey beginning 16 August 2026.
+// Same scope as the reset above (Adventure Log + Time Schedule only), but
+// also seeds Journey Total Goal Work Time with a fixed 21h baseline
+// (D.journeyWorkBaselineMin) representing work already done before this
+// reset, so Journey Total shows 21h even though the underlying schedule
+// rows were cleared. Today/This Week/This Month are unaffected — they're
+// always computed fresh from actual rows, so they correctly start at 0.
+// Runs once via the D.freshStart_20260816 flag.
+function applyFreshStartReset20260816(){
+  if(D.freshStart_20260816)return;
+  D.adventureDays={};
+  D.scheduleMonths=[];
+  D.curMonth=0;
+  D.journeyWorkBaselineMin=21*60;
+  D.freshStart_20260816=true;
+}
+
 function load(){
   try{const s=localStorage.getItem(KEY);if(s)D=JSON.parse(s);}catch(e){}
   // Journey start date = 29 July 2026 (Day 1)
@@ -1692,6 +1709,7 @@ function load(){
   D.startDate=JOURNEY_START;
   cleanOldAdventureDays();
   applyFreshStartReset();
+  applyFreshStartReset20260816();
   // Remove any previously-saved schedule months from before the journey start (journey now starts 29 July 2026)
   if(D.scheduleMonths&&D.scheduleMonths.length>0){
     D.scheduleMonths=D.scheduleMonths.filter(m=>m.label!=='June 2026'&&m.label!=='August 2026');
@@ -1916,8 +1934,9 @@ async function completeSignIn(user){
   if(loaded){
     D.startDate=JOURNEY_START; // re-enforce after cloud overwrite
     cleanOldAdventureDays();
-    const _wasFreshStart=!D.freshStart_20260716;
+    const _wasFreshStart=!D.freshStart_20260716||!D.freshStart_20260816;
     applyFreshStartReset();
+    applyFreshStartReset20260816();
     // Re-init defaults
     if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
     if(!D.reContent)D.reContent={};
@@ -2723,6 +2742,7 @@ function computeGoalWorkTime(refDate){
       if(dOnly>=journeyStart&&dOnly<=todayKey)journeyMin+=rowsMin;
     });
   });
+  journeyMin+=(D.journeyWorkBaselineMin||0);
   return{todayMin,weekMin,monthMin,journeyMin};
 }
 
@@ -2821,7 +2841,7 @@ function gregorianToHijri(date){
   const hMonth=Math.floor((24*jd)/709),hDay=jd-Math.floor((709*hMonth)/24),hYear=30*n+j-30;
   return{day:hDay,month:HIJRI_MONTHS[hMonth-1],year:hYear};
 }
-function renderHome(){const _greg=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const _hij=gregorianToHijri(new Date());document.getElementById('home-date').textContent=`${_greg} (${_hij.day} ${_hij.month} ${_hij.year} AH)`;const dayNum=getCurrentJourneyDay();const pct=Math.min(100,Math.round(dayNum/1825*100));const done=Object.values(D.adventureDays).filter(d=>d.status).length;const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;const wrc=(D.weeklyReviews||[]).length,mrc=(D.monthlyReviews||[]).length,qrc=(D.quarterlyReviews||[]).length,arc=(D.annualReviews||[]).length;document.getElementById('home-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Day of journey</div></div><div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days completed</div></div><div class="stat-card"><div class="stat-num">${msDone}/${msTotal}</div><div class="stat-label">Milestones done</div></div>`;document.getElementById('home-biggoal').textContent=D.goals.g1||'No main goal set yet — go to My Goals to add one';document.getElementById('home-day-num').textContent='Day '+dayNum;document.getElementById('home-progress').style.width=pct+'%';const todayKey=new Date().toISOString().split('T')[0];document.getElementById('home-spiritual').innerHTML=D.spiritual.habits.length===0?'No spiritual habits added yet.':D.spiritual.habits.map(h=>{const d=h.log&&h.log[todayKey];return`<span style="margin-right:14px;color:${d?'var(--success)':'var(--text3)'}">${d?'✓':'○'} ${esc(h.name)}</span>`;}).join('');
+function renderHome(){const _greg=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const _hij=gregorianToHijri(new Date());document.getElementById('home-date').textContent=`${_greg} (${_hij.day} ${_hij.month} ${_hij.year} AH)`;const dayNum=getCurrentJourneyDay();const pct=Math.min(100,Math.round(dayNum/1825*100));const done=Object.values(D.adventureDays).filter(d=>d.status==='done').length;const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;const wrc=(D.weeklyReviews||[]).length,mrc=(D.monthlyReviews||[]).length,qrc=(D.quarterlyReviews||[]).length,arc=(D.annualReviews||[]).length;document.getElementById('home-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Day of journey</div></div><div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days completed</div></div><div class="stat-card"><div class="stat-num">${msDone}/${msTotal}</div><div class="stat-label">Milestones done</div></div>`;document.getElementById('home-biggoal').textContent=D.goals.g1||'No main goal set yet — go to My Goals to add one';document.getElementById('home-day-num').textContent='Day '+dayNum;document.getElementById('home-progress').style.width=pct+'%';const todayKey=new Date().toISOString().split('T')[0];document.getElementById('home-spiritual').innerHTML=D.spiritual.habits.length===0?'No spiritual habits added yet.':D.spiritual.habits.map(h=>{const d=h.log&&h.log[todayKey];return`<span style="margin-right:14px;color:${d?'var(--success)':'var(--text3)'}">${d?'✓':'○'} ${esc(h.name)}</span>`;}).join('');
   // Review stats card
   const homeReviewEl=document.getElementById('home-review-stats');
   const g1p=computeGoalPct(1),g2p=computeGoalPct(2),g3p=computeGoalPct(3);
