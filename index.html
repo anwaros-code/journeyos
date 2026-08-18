@@ -1213,7 +1213,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="card-title"><span>ℹ</span> About</div>
     <div style="font-size:13px;color:var(--text2);line-height:1.8;">
       <div><span style="color:var(--text3);">App:</span> My Life OS · JourneyOS</div>
-      <div><span style="color:var(--text3);">Journey Start:</span> 16 August 2026</div>
+      <div><span style="color:var(--text3);">Journey Start:</span> 19 August 2026</div>
       <div><span style="color:var(--text3);">Duration:</span> 5 Years · 1825 Days</div>
       <div><span style="color:var(--text3);">Storage:</span> localStorage + Firestore sync</div>
     </div>
@@ -1647,7 +1647,7 @@ select option{background:var(--surface);color:var(--text)}
 <script>
 window.__mark('Classic Script Loaded');
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-08-16'; // single source of truth — Day 1 = Sun 16 Aug 2026, Day 2 = Mon 17 Aug 2026
+const JOURNEY_START='2026-08-19'; // single source of truth — Day 1 = Wed 19 Aug 2026, Day 2 = Thu 20 Aug 2026
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:'',currentMission:{title:'',milestones:[],skills:[]},autoLockSeconds:30};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -1734,12 +1734,7 @@ function load(){
   cleanOldAdventureDays();
   applyFreshStartReset();
   applyFreshStartReset20260816();
-  // Remove any previously-saved schedule months from before the journey start (journey now starts 29 July 2026)
-  if(D.scheduleMonths&&D.scheduleMonths.length>0){
-    D.scheduleMonths=D.scheduleMonths.filter(m=>m.label!=='June 2026'&&m.label!=='August 2026');
-    if(D.curMonth>=D.scheduleMonths.length)D.curMonth=Math.max(0,D.scheduleMonths.length-1);
-  }
-  // Init schedule months — use the month containing the journey start date (29 July 2026)
+  // Init schedule months — use the month containing the journey start date
   if(!D.scheduleMonths||D.scheduleMonths.length===0){
     const day1=new Date(D.startDate);
     const initLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
