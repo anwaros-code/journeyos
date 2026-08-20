@@ -1213,7 +1213,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="card-title"><span>ℹ</span> About</div>
     <div style="font-size:13px;color:var(--text2);line-height:1.8;">
       <div><span style="color:var(--text3);">App:</span> My Life OS · JourneyOS</div>
-      <div><span style="color:var(--text3);">Journey Start:</span> 19 August 2026</div>
+      <div><span style="color:var(--text3);">Journey Start:</span> 21 August 2026</div>
       <div><span style="color:var(--text3);">Duration:</span> 5 Years · 1825 Days</div>
       <div><span style="color:var(--text3);">Storage:</span> localStorage + Firestore sync</div>
     </div>
@@ -1647,7 +1647,7 @@ select option{background:var(--surface);color:var(--text)}
 <script>
 window.__mark('Classic Script Loaded');
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-08-19'; // single source of truth — Day 1 = Wed 19 Aug 2026, Day 2 = Thu 20 Aug 2026
+const JOURNEY_START='2026-08-21'; // single source of truth — Day 1 = Fri 21 Aug 2026, Day 2 = Sat 22 Aug 2026
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:'',currentMission:{title:'',milestones:[],skills:[]},autoLockSeconds:30};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -1708,7 +1708,7 @@ function applyFreshStartReset(){
   D.freshStart_20260716=true;
 }
 
-// One-time fresh-start reset for the new journey beginning 16 August 2026.
+// One-time fresh-start reset for the new journey beginning 21 August 2026.
 // Same scope as the reset above (Adventure Log + Time Schedule only), but
 // also seeds Journey Total Goal Work Time with a fixed 21h baseline
 // (D.journeyWorkBaselineMin) representing work already done before this
@@ -1734,7 +1734,12 @@ function load(){
   cleanOldAdventureDays();
   applyFreshStartReset();
   applyFreshStartReset20260816();
-  // Init schedule months — use the month containing the journey start date
+  // Remove any previously-saved schedule months from before the journey start (journey now starts 29 July 2026)
+  if(D.scheduleMonths&&D.scheduleMonths.length>0){
+    D.scheduleMonths=D.scheduleMonths.filter(m=>m.label!=='June 2026'&&m.label!=='August 2026');
+    if(D.curMonth>=D.scheduleMonths.length)D.curMonth=Math.max(0,D.scheduleMonths.length-1);
+  }
+  // Init schedule months — use the month containing the journey start date (29 July 2026)
   if(!D.scheduleMonths||D.scheduleMonths.length===0){
     const day1=new Date(D.startDate);
     const initLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
@@ -2851,11 +2856,39 @@ const HIJRI_MONTHS=['Muharram','Safar','Rabi al-Awwal','Rabi al-Thani','Jumada a
 // Hijri dates follow local moon-sighting announcements, which vary by
 // country/region (Saudi's Umm al-Qura calendar frequently runs 1 day ahead
 // of what's sighted/announced in India) — no formula can get this exactly
-// right for a specific region. D.hijriOffsetDays is a manual, explicit
-// calibration (default 0) the user sets once in Settings to match what's
-// announced locally in India; it shifts the underlying date before running
-// the same tabular Islamic calendar calculation as before.
+// right for a specific region, and there's no public feed of moon-sighting
+// announcements to pull from automatically.
+//
+// HIJRI_ANCHORS is a small, manually-updated table of confirmed month-start
+// dates as announced by Hyderabad's Sadar Majlis-e-Ulama-e-Deccan (Central
+// Moon Sighting Committee). When today's date falls within ~30 days of the
+// most recent anchor, it's used directly — no formula, no drift, matches
+// what was actually announced locally. Add a new entry here each time the
+// committee announces the next month's start (usually monthly); until then,
+// dates outside the anchors' range fall back to the tabular calculation
+// below, shifted by D.hijriOffsetDays, the manual calibration the user can
+// still set in Settings as a fallback.
+const HIJRI_ANCHORS=[
+  // Confirmed: Rabi al-Awwal 1448 AH began Sat, 15 Aug 2026 (Hyderabad
+  // moon not sighted 13 Aug -> Safar completed 30 days).
+  {start:'2026-08-15',monthIndex:2,year:1448}
+];
+function hijriFromAnchor(date){
+  const dateMid=new Date(date.getFullYear(),date.getMonth(),date.getDate()).getTime();
+  let best=null;
+  for(const a of HIJRI_ANCHORS){
+    const [ay,am,ad]=a.start.split('-').map(Number);
+    const astart=new Date(ay,am-1,ad).getTime();
+    if(astart<=dateMid&&(!best||astart>best.astart))best={...a,astart};
+  }
+  if(!best)return null;
+  const dayOffset=Math.round((dateMid-best.astart)/86400000)+1;
+  if(dayOffset<1||dayOffset>30)return null; // outside confirmed month's plausible range
+  return{day:dayOffset,month:HIJRI_MONTHS[best.monthIndex],year:best.year};
+}
 function gregorianToHijri(date){
+  const anchored=hijriFromAnchor(date);
+  if(anchored)return anchored;
   const offsetDays=parseInt(D.hijriOffsetDays,10)||0;
   const shifted=new Date(date.getFullYear(),date.getMonth(),date.getDate()+offsetDays);
   const y=shifted.getFullYear(),m=shifted.getMonth()+1,d=shifted.getDate();
