@@ -1101,7 +1101,57 @@ select option{background:var(--surface);color:var(--text)}
     </div>
     <div class="card">
       <input type="text" id="note-title-input" placeholder="Note title..." style="font-size:18px;font-family:'DM Serif Display',serif;margin-bottom:14px;padding:10px 4px;background:transparent;border:none;border-bottom:1px solid var(--border);border-radius:0;" oninput="scheduleNoteAutosave()">
-      <textarea id="note-content-input" placeholder="Start writing..." style="min-height:55vh;font-size:15px;line-height:1.75;border:none;background:transparent;padding:4px;resize:vertical;" oninput="scheduleNoteAutosave()"></textarea>
+      <div class="re-wrap" style="margin-top:6px;">
+        <div class="re-tools-toggle" onclick="toggleReTools('notefeature')">
+          <span class="arr" id="arr-notefeature">&#9658;</span> TOOLS
+        </div>
+        <div class="re-toolbar" id="tb-notefeature">
+          <button class="re-btn" onclick="reCmd('notefeature','bold')" title="Bold"><b>B</b></button>
+          <button class="re-btn" onclick="reCmd('notefeature','italic')" title="Italic"><i>I</i></button>
+          <button class="re-btn" onclick="reCmd('notefeature','underline')" title="Underline"><u>U</u></button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="reCmd('notefeature','justifyLeft')" title="Align left">&#8676;</button>
+          <button class="re-btn" onclick="reCmd('notefeature','justifyCenter')" title="Align centre">&#8596;</button>
+          <button class="re-btn" onclick="reCmd('notefeature','justifyRight')" title="Align right">&#8677;</button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="reCmd('notefeature','insertUnorderedList')" title="Bullet list">&#8801;</button>
+          <button class="re-btn" onclick="reCmd('notefeature','insertOrderedList')" title="Numbered list">&#9312;</button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="toggleReColorBar('notefeature','fore')" id="tcbtn-notefeature" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
+          <button class="re-btn" onclick="toggleReColorBar('notefeature','hilite')" id="hlbtn-notefeature" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="toggleNoteDraw()" id="draw-btn-notefeature" title="Freehand draw">&#9998; Draw</button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8594;')" title="Right arrow">&#8594;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8592;')" title="Left arrow">&#8592;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8593;')" title="Up arrow">&#8593;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8595;')" title="Down arrow">&#8595;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8596;')" title="Left-right arrow">&#8596;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8597;')" title="Up-down arrow">&#8597;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8599;')" title="Up-right arrow">&#8599;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8600;')" title="Down-right arrow">&#8600;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8601;')" title="Down-left arrow">&#8601;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8598;')" title="Up-left arrow">&#8598;</button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9472;')" title="Horizontal line">&#9472;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9474;')" title="Vertical line">&#9474;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','=')" title="Equals">=</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','+')" title="Plus">+</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&minus;')" title="Minus">&minus;</button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9633;')" title="Square">&#9633;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9645;')" title="Rectangle">&#9645;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9675;')" title="Circle">&#9675;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9651;')" title="Triangle">&#9651;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9671;')" title="Diamond">&#9671;</button>
+        </div>
+        <div class="re-color-bar" id="cbar-notefeature"></div>
+        <div class="re-draw" id="draw-notefeature">
+          <div class="re-draw-bar" id="dbar-notefeature"></div>
+          <canvas id="dc-notefeature" class="re-canvas" height="150"></canvas>
+        </div>
+        <div class="re-editor" id="ed-notefeature" contenteditable="true" data-ph="Start writing..." oninput="scheduleNoteAutosave()" style="min-height:50vh;"></div>
+      </div>
     </div>
   </div>
 </div>
@@ -2273,6 +2323,11 @@ function delDef(i){if(confirm('Delete this definition?')){D.definitions.splice(i
 // Follows the same storage path as every other section: mutate D, then
 // call the existing save() (localStorage + debounced Firestore sync).
 // D.notes is initialized in load(), same convention as D.definitions.
+// The content editor reuses the app's existing rich-editor toolbar
+// (toggleReTools/reCmd/toggleReColorBar/toggleReDraw etc. — all generic,
+// keyed by the id passed in, none of them modified) under a dedicated id,
+// 'notefeature', so it never touches Spiritual Intention or any other
+// section's editor/state.
 let notesEditingId=null;
 let _notesAutosaveTimer=null;
 
@@ -2281,23 +2336,47 @@ function notesFmtDate(iso){
   return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
 }
 
+// Generic symbol/shape inserter for rich editors — restores the last
+// tracked selection inside the target editor (same reSavedRange used by
+// the colour tools) then inserts the character at the cursor. New,
+// isolated function; does not alter reCmd/toggleReColorBar/etc.
+function insertReSymbol(id,sym){
+  const ed=document.getElementById('ed-'+id);
+  if(!ed)return;
+  ed.focus();
+  const saved=reSavedRange[id];
+  if(saved){
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(saved);
+  }
+  document.execCommand('insertText',false,sym);
+}
+
+// Notes content is stored as HTML (from the contenteditable). Strips tags
+// for previews/search so old plain-text notes and new rich notes both work.
+function notesPlainText(html){
+  return (html||'').replace(/<[^>]*>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();
+}
+
 function renderNotesList(){
   const el=document.getElementById('notes-list');
   if(!el)return;
   const q=(document.getElementById('notes-search-input')?document.getElementById('notes-search-input').value:'').trim().toLowerCase();
   let list=(D.notes||[]).slice().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
-  if(q)list=list.filter(n=>(n.title||'').toLowerCase().includes(q)||(n.content||'').toLowerCase().includes(q));
+  if(q)list=list.filter(n=>(n.title||'').toLowerCase().includes(q)||notesPlainText(n.content).toLowerCase().includes(q));
   if(!list.length){
     el.innerHTML=`<div style="color:var(--text3);font-size:14px;text-align:center;padding:40px 0;">${q?'No notes match your search.':'No notes yet. Create your first note.'}</div>`;
     return;
   }
   el.innerHTML=list.map(n=>{
-    const preview=(n.content||'').replace(/\s+/g,' ').trim().slice(0,140);
+    const plain=notesPlainText(n.content);
+    const preview=plain.slice(0,140);
     return `<div class="card" style="cursor:pointer;" onclick="openNoteEditor('${n.id}')">
       <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
         <div style="flex:1;min-width:0;">
-          <div style="font-family:'DM Serif Display',serif;font-size:17px;color:var(--accent);margin-bottom:4px;">${esc(n.title||'Untitled note')}</div>
-          <div style="font-size:13.5px;color:var(--text2);line-height:1.6;margin-bottom:8px;overflow-wrap:break-word;">${esc(preview)}${(n.content||'').length>140?'…':''}</div>
+          <div style="font-family:'DM Serif Display',serif;font-size:17px;color:var(--accent);margin-bottom:4px;">${esc(n.title||'Untitled note')}${n.drawing?' <span style="font-size:12px;color:var(--text3);" title="Contains a drawing">&#9998;</span>':''}</div>
+          <div style="font-size:13.5px;color:var(--text2);line-height:1.6;margin-bottom:8px;overflow-wrap:break-word;">${esc(preview)}${plain.length>140?'…':''}</div>
           <div style="font-size:11.5px;color:var(--text3);">Updated ${notesFmtDate(n.updatedAt)}</div>
         </div>
         <div style="display:flex;gap:7px;flex-shrink:0;" onclick="event.stopPropagation();">
@@ -2320,18 +2399,41 @@ function showNotesEditorView(){
   if(ev)ev.style.display='';
 }
 
+// Resets the shared 'notefeature' rich-editor DOM (title, content, colour
+// bar, draw panel/canvas) to a clean slate. Needed because the toolbar/
+// canvas are single shared DOM elements reused across every note (only one
+// note is ever open at a time) — this prevents formatting-bar state or a
+// previous note's drawing from leaking into the next note opened.
+function resetNoteEditorDom(){
+  const titleEl=document.getElementById('note-title-input');
+  const ed=document.getElementById('ed-notefeature');
+  const cbar=document.getElementById('cbar-notefeature');
+  const tb=document.getElementById('tb-notefeature');
+  const arr=document.getElementById('arr-notefeature');
+  const drawArea=document.getElementById('draw-notefeature');
+  const drawBtn=document.getElementById('draw-btn-notefeature');
+  const canvas=document.getElementById('dc-notefeature');
+  if(titleEl)titleEl.value='';
+  if(ed)ed.innerHTML='';
+  if(cbar){cbar.classList.remove('open');cbar.innerHTML='';}
+  if(tb)tb.classList.remove('open');
+  if(arr)arr.classList.remove('open');
+  if(drawArea)drawArea.classList.remove('open');
+  if(drawBtn)drawBtn.classList.remove('on');
+  if(canvas){canvas._init=false;canvas._notesAutosaveWired=false;try{canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);}catch(e){}}
+}
+
 function openNoteEditor(id){
   clearTimeout(_notesAutosaveTimer);
+  resetNoteEditorDom();
   notesEditingId=id||null;
-  const titleEl=document.getElementById('note-title-input'),contentEl=document.getElementById('note-content-input'),statusEl=document.getElementById('note-save-status'),delBtn=document.getElementById('note-delete-btn');
+  const titleEl=document.getElementById('note-title-input'),ed=document.getElementById('ed-notefeature'),statusEl=document.getElementById('note-save-status'),delBtn=document.getElementById('note-delete-btn');
   if(id){
     const n=(D.notes||[]).find(x=>x.id===id);
     if(titleEl)titleEl.value=n?(n.title||''):'';
-    if(contentEl)contentEl.value=n?(n.content||''):'';
+    if(ed)ed.innerHTML=n?(n.content||''):'';
     if(delBtn)delBtn.style.display='';
   } else {
-    if(titleEl)titleEl.value='';
-    if(contentEl)contentEl.value='';
     if(delBtn)delBtn.style.display='none';
   }
   if(statusEl){statusEl.textContent='';statusEl.style.color='var(--text3)';}
@@ -2345,6 +2447,45 @@ function closeNoteEditor(){
   showNotesListView();
 }
 
+// If the Draw panel is open for the current note, loads that note's saved
+// drawing (if any) onto the canvas. Called right after the generic
+// toggleReDraw('notefeature') opens the panel and initialises the canvas.
+function loadCurrentNoteDrawing(){
+  const canvas=document.getElementById('dc-notefeature');
+  if(!canvas)return;
+  const n=notesEditingId?(D.notes||[]).find(x=>x.id===notesEditingId):null;
+  if(!n||!n.drawing)return;
+  const img=new Image();
+  img.onload=()=>{const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);};
+  img.src=n.drawing;
+}
+// Wraps the generic toggleReDraw so opening the panel also loads this
+// note's own drawing (per-note data on top of the shared canvas DOM), and
+// wires the canvas's stroke-end events into the note's own autosave —
+// without this, a drawing-only edit (no text typed) would never trigger
+// scheduleNoteAutosave, so closing and reopening the panel could reload
+// the last-saved drawing over not-yet-saved strokes. Listeners are added
+// via addEventListener (separate from the generic onmouseup/ontouchend
+// property handlers initReDraw sets), so the generic drawing code is
+// untouched. The Notes Draw button calls this instead of toggleReDraw
+// directly.
+function toggleNoteDraw(){
+  const area=document.getElementById('draw-notefeature');
+  const wasOpen=area&&area.classList.contains('open');
+  toggleReDraw('notefeature');
+  if(!wasOpen){
+    setTimeout(()=>{
+      loadCurrentNoteDrawing();
+      const canvas=document.getElementById('dc-notefeature');
+      if(canvas&&!canvas._notesAutosaveWired){
+        canvas.addEventListener('mouseup',scheduleNoteAutosave);
+        canvas.addEventListener('touchend',scheduleNoteAutosave);
+        canvas._notesAutosaveWired=true;
+      }
+    },30);
+  }
+}
+
 function scheduleNoteAutosave(){
   const statusEl=document.getElementById('note-save-status');
   if(statusEl){statusEl.textContent='Saving...';statusEl.style.color='var(--text3)';}
@@ -2354,24 +2495,36 @@ function scheduleNoteAutosave(){
 
 // Upserts the currently-open note into D.notes and persists via the app's
 // existing save() (localStorage + debounced Firestore sync) — same path
-// every other section uses. Ignores empty title+content (nothing to save).
+// every other section uses. Ignores empty title+content+drawing (nothing
+// to save). If the Draw canvas was initialised this session, its current
+// contents are captured into note.drawing alongside the text content.
 function saveNoteNow(){
   clearTimeout(_notesAutosaveTimer);
-  const titleEl=document.getElementById('note-title-input'),contentEl=document.getElementById('note-content-input'),statusEl=document.getElementById('note-save-status'),delBtn=document.getElementById('note-delete-btn');
-  if(!titleEl||!contentEl)return;
-  const title=titleEl.value,content=contentEl.value;
+  const titleEl=document.getElementById('note-title-input'),ed=document.getElementById('ed-notefeature'),statusEl=document.getElementById('note-save-status'),delBtn=document.getElementById('note-delete-btn'),canvas=document.getElementById('dc-notefeature');
+  if(!titleEl||!ed)return;
+  const title=titleEl.value,content=ed.innerHTML;
+  const hasDrawing=canvas&&canvas._init;
   if(!D.notes)D.notes=[];
   const now=new Date().toISOString();
-  if(!title.trim()&&!content.trim()){
+  if(!title.trim()&&!notesPlainText(content)&&!hasDrawing){
     if(statusEl){statusEl.textContent='';}
     return;
   }
   if(notesEditingId){
-    const n=D.notes.find(x=>x.id===notesEditingId);
-    if(n){n.title=title;n.content=content;n.updatedAt=now;}
+    let n=D.notes.find(x=>x.id===notesEditingId);
+    if(!n){
+      // note was deleted in another tab/session — recreate it under the same id
+      n={id:notesEditingId,createdAt:now};
+      D.notes.push(n);
+      if(delBtn)delBtn.style.display='';
+    }
+    n.title=title;n.content=content;n.updatedAt=now;
+    if(hasDrawing)n.drawing=canvas.toDataURL();
   } else {
     notesEditingId='note_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
-    D.notes.push({id:notesEditingId,title,content,createdAt:now,updatedAt:now});
+    const n={id:notesEditingId,title,content,createdAt:now,updatedAt:now};
+    if(hasDrawing)n.drawing=canvas.toDataURL();
+    D.notes.push(n);
     if(delBtn)delBtn.style.display='';
   }
   save();
