@@ -415,6 +415,10 @@ select option{background:var(--surface);color:var(--text)}
 .re-color-bar input[type=color]{width:24px;height:24px;border:1px solid var(--border);border-radius:50%;padding:0;cursor:pointer;background:none;-webkit-appearance:none;}
 .re-color-bar input[type=color]::-webkit-color-swatch-wrapper{padding:0;border-radius:50%;}
 .re-color-bar input[type=color]::-webkit-color-swatch{border:none;border-radius:50%;}
+/* symbols/shapes panel — hidden by default, small buttons, wraps on mobile */
+.re-sym-panel{display:none;flex-wrap:wrap;gap:4px;padding:8px 10px;border-bottom:1px solid var(--border);background:#fff;align-items:center;max-width:100%;box-sizing:border-box;}
+.re-sym-panel.open{display:flex;}
+.re-sym-panel .re-btn{min-width:26px;height:24px;font-size:13px;}
 /* ── GOAL 1 DETAIL SUBS (keep existing) ── */
 .g1-sub{border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px;overflow:hidden;}
 .g1-sub-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);cursor:pointer;user-select:none;transition:background .15s;}
@@ -603,6 +607,36 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="toggleReColorBar('purpose','hilite')" id="hlbtn-purpose" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
         <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('purpose')" id="draw-btn-purpose" title="Draw">&#9998; Draw</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReSymbols('purpose')" id="symbtn-purpose" title="Symbols">&#8599; Symbols</button>
+      </div>
+            <div class="re-sym-panel" id="sym-purpose">
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8594;')" title="Right arrow">&#8594;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8592;')" title="Left arrow">&#8592;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8593;')" title="Up arrow">&#8593;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8595;')" title="Down arrow">&#8595;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8596;')" title="Left-right arrow">&#8596;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8597;')" title="Up-down arrow">&#8597;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8658;')" title="Double right arrow">&#8658;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8656;')" title="Double left arrow">&#8656;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8599;')" title="Up-right arrow">&#8599;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8600;')" title="Down-right arrow">&#8600;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8601;')" title="Down-left arrow">&#8601;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8598;')" title="Up-left arrow">&#8598;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','=')" title="Equals">=</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8800;')" title="Not equal">&#8800;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','+')" title="Plus">+</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&minus;')" title="Minus">&minus;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&times;')" title="Multiply">&times;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&divide;')" title="Divide">&divide;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#10003;')" title="Check">&#10003;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#10007;')" title="Cross">&#10007;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8226;')" title="Bullet">&#8226;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8212;')" title="Em dash">&#8212;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#9633;')" title="Square">&#9633;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#9675;')" title="Circle">&#9675;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#9651;')" title="Triangle">&#9651;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#9671;')" title="Diamond">&#9671;</button>
       </div>
       <div class="re-color-bar" id="cbar-purpose"></div>
       <div class="re-draw" id="draw-purpose">
@@ -708,6 +742,36 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="toggleReColorBar('mission-desc','hilite')" id="hlbtn-mission-desc" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
         <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('mission-desc')" id="draw-btn-mission-desc" title="Draw">&#9998; Draw</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReSymbols('mission-desc')" id="symbtn-mission-desc" title="Symbols">&#8599; Symbols</button>
+      </div>
+            <div class="re-sym-panel" id="sym-mission-desc">
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8594;')" title="Right arrow">&#8594;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8592;')" title="Left arrow">&#8592;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8593;')" title="Up arrow">&#8593;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8595;')" title="Down arrow">&#8595;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8596;')" title="Left-right arrow">&#8596;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8597;')" title="Up-down arrow">&#8597;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8658;')" title="Double right arrow">&#8658;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8656;')" title="Double left arrow">&#8656;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8599;')" title="Up-right arrow">&#8599;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8600;')" title="Down-right arrow">&#8600;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8601;')" title="Down-left arrow">&#8601;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8598;')" title="Up-left arrow">&#8598;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','=')" title="Equals">=</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8800;')" title="Not equal">&#8800;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','+')" title="Plus">+</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&minus;')" title="Minus">&minus;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&times;')" title="Multiply">&times;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&divide;')" title="Divide">&divide;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#10003;')" title="Check">&#10003;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#10007;')" title="Cross">&#10007;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8226;')" title="Bullet">&#8226;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8212;')" title="Em dash">&#8212;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#9633;')" title="Square">&#9633;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#9675;')" title="Circle">&#9675;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#9651;')" title="Triangle">&#9651;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#9671;')" title="Diamond">&#9671;</button>
       </div>
       <div class="re-color-bar" id="cbar-mission-desc"></div>
       <div class="re-draw" id="draw-mission-desc">
@@ -777,6 +841,36 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="toggleReColorBar('spiritual-intention','hilite')" id="hlbtn-spiritual-intention" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
         <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('spiritual-intention')" id="draw-btn-spiritual-intention">&#9998; Draw</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReSymbols('spiritual-intention')" id="symbtn-spiritual-intention" title="Symbols">&#8599; Symbols</button>
+      </div>
+            <div class="re-sym-panel" id="sym-spiritual-intention">
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8594;')" title="Right arrow">&#8594;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8592;')" title="Left arrow">&#8592;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8593;')" title="Up arrow">&#8593;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8595;')" title="Down arrow">&#8595;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8596;')" title="Left-right arrow">&#8596;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8597;')" title="Up-down arrow">&#8597;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8658;')" title="Double right arrow">&#8658;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8656;')" title="Double left arrow">&#8656;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8599;')" title="Up-right arrow">&#8599;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8600;')" title="Down-right arrow">&#8600;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8601;')" title="Down-left arrow">&#8601;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8598;')" title="Up-left arrow">&#8598;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','=')" title="Equals">=</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8800;')" title="Not equal">&#8800;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','+')" title="Plus">+</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&minus;')" title="Minus">&minus;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&times;')" title="Multiply">&times;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&divide;')" title="Divide">&divide;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#10003;')" title="Check">&#10003;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#10007;')" title="Cross">&#10007;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8226;')" title="Bullet">&#8226;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8212;')" title="Em dash">&#8212;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#9633;')" title="Square">&#9633;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#9675;')" title="Circle">&#9675;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#9651;')" title="Triangle">&#9651;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#9671;')" title="Diamond">&#9671;</button>
       </div>
       <div class="re-color-bar" id="cbar-spiritual-intention"></div>
       <div class="re-draw" id="draw-spiritual-intention">
@@ -830,6 +924,36 @@ select option{background:var(--surface);color:var(--text)}
             <div class="re-sep"></div>
             <button class="re-btn" onclick="toggleReColorBar('sp-plan-1','fore')" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
             <button class="re-btn" onclick="toggleReColorBar('sp-plan-1','hilite')" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="toggleReSymbols('sp-plan-1')" id="symbtn-sp-plan-1" title="Symbols">&#8599; Symbols</button>
+          </div>
+                    <div class="re-sym-panel" id="sym-sp-plan-1">
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8594;')" title="Right arrow">&#8594;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8592;')" title="Left arrow">&#8592;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8593;')" title="Up arrow">&#8593;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8595;')" title="Down arrow">&#8595;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8596;')" title="Left-right arrow">&#8596;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8597;')" title="Up-down arrow">&#8597;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8658;')" title="Double right arrow">&#8658;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8656;')" title="Double left arrow">&#8656;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8599;')" title="Up-right arrow">&#8599;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8600;')" title="Down-right arrow">&#8600;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8601;')" title="Down-left arrow">&#8601;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8598;')" title="Up-left arrow">&#8598;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','=')" title="Equals">=</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8800;')" title="Not equal">&#8800;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','+')" title="Plus">+</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&minus;')" title="Minus">&minus;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&times;')" title="Multiply">&times;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&divide;')" title="Divide">&divide;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#10003;')" title="Check">&#10003;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#10007;')" title="Cross">&#10007;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8226;')" title="Bullet">&#8226;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8212;')" title="Em dash">&#8212;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#9633;')" title="Square">&#9633;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#9675;')" title="Circle">&#9675;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#9651;')" title="Triangle">&#9651;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#9671;')" title="Diamond">&#9671;</button>
           </div>
           <div class="re-color-bar" id="cbar-sp-plan-1"></div>
           <div class="re-editor" id="ed-sp-plan-1" contenteditable="true" data-ph="Write your detailed plan for Spiritual Goal 1..." oninput="saveReEditor('sp-plan-1')"></div>
@@ -855,6 +979,36 @@ select option{background:var(--surface);color:var(--text)}
             <div class="re-sep"></div>
             <button class="re-btn" onclick="toggleReColorBar('sp-plan-2','fore')" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
             <button class="re-btn" onclick="toggleReColorBar('sp-plan-2','hilite')" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="toggleReSymbols('sp-plan-2')" id="symbtn-sp-plan-2" title="Symbols">&#8599; Symbols</button>
+          </div>
+                    <div class="re-sym-panel" id="sym-sp-plan-2">
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8594;')" title="Right arrow">&#8594;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8592;')" title="Left arrow">&#8592;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8593;')" title="Up arrow">&#8593;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8595;')" title="Down arrow">&#8595;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8596;')" title="Left-right arrow">&#8596;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8597;')" title="Up-down arrow">&#8597;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8658;')" title="Double right arrow">&#8658;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8656;')" title="Double left arrow">&#8656;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8599;')" title="Up-right arrow">&#8599;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8600;')" title="Down-right arrow">&#8600;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8601;')" title="Down-left arrow">&#8601;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8598;')" title="Up-left arrow">&#8598;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','=')" title="Equals">=</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8800;')" title="Not equal">&#8800;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','+')" title="Plus">+</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&minus;')" title="Minus">&minus;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&times;')" title="Multiply">&times;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&divide;')" title="Divide">&divide;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#10003;')" title="Check">&#10003;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#10007;')" title="Cross">&#10007;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8226;')" title="Bullet">&#8226;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8212;')" title="Em dash">&#8212;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#9633;')" title="Square">&#9633;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#9675;')" title="Circle">&#9675;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#9651;')" title="Triangle">&#9651;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#9671;')" title="Diamond">&#9671;</button>
           </div>
           <div class="re-color-bar" id="cbar-sp-plan-2"></div>
           <div class="re-editor" id="ed-sp-plan-2" contenteditable="true" data-ph="Write your detailed plan for Spiritual Goal 2..." oninput="saveReEditor('sp-plan-2')"></div>
@@ -880,6 +1034,36 @@ select option{background:var(--surface);color:var(--text)}
             <div class="re-sep"></div>
             <button class="re-btn" onclick="toggleReColorBar('sp-plan-3','fore')" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
             <button class="re-btn" onclick="toggleReColorBar('sp-plan-3','hilite')" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="toggleReSymbols('sp-plan-3')" id="symbtn-sp-plan-3" title="Symbols">&#8599; Symbols</button>
+          </div>
+                    <div class="re-sym-panel" id="sym-sp-plan-3">
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8594;')" title="Right arrow">&#8594;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8592;')" title="Left arrow">&#8592;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8593;')" title="Up arrow">&#8593;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8595;')" title="Down arrow">&#8595;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8596;')" title="Left-right arrow">&#8596;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8597;')" title="Up-down arrow">&#8597;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8658;')" title="Double right arrow">&#8658;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8656;')" title="Double left arrow">&#8656;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8599;')" title="Up-right arrow">&#8599;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8600;')" title="Down-right arrow">&#8600;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8601;')" title="Down-left arrow">&#8601;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8598;')" title="Up-left arrow">&#8598;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','=')" title="Equals">=</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8800;')" title="Not equal">&#8800;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','+')" title="Plus">+</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&minus;')" title="Minus">&minus;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&times;')" title="Multiply">&times;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&divide;')" title="Divide">&divide;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#10003;')" title="Check">&#10003;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#10007;')" title="Cross">&#10007;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8226;')" title="Bullet">&#8226;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8212;')" title="Em dash">&#8212;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#9633;')" title="Square">&#9633;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#9675;')" title="Circle">&#9675;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#9651;')" title="Triangle">&#9651;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#9671;')" title="Diamond">&#9671;</button>
           </div>
           <div class="re-color-bar" id="cbar-sp-plan-3"></div>
           <div class="re-editor" id="ed-sp-plan-3" contenteditable="true" data-ph="Write your detailed plan for Spiritual Goal 3..." oninput="saveReEditor('sp-plan-3')"></div>
@@ -1353,6 +1537,36 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="toggleReColorBar('defed','hilite')" id="hlbtn-defed" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
         <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('defed')" id="draw-btn-defed">&#9998; Draw</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReSymbols('defed')" id="symbtn-defed" title="Symbols">&#8599; Symbols</button>
+      </div>
+            <div class="re-sym-panel" id="sym-defed">
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8594;')" title="Right arrow">&#8594;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8592;')" title="Left arrow">&#8592;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8593;')" title="Up arrow">&#8593;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8595;')" title="Down arrow">&#8595;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8596;')" title="Left-right arrow">&#8596;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8597;')" title="Up-down arrow">&#8597;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8658;')" title="Double right arrow">&#8658;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8656;')" title="Double left arrow">&#8656;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8599;')" title="Up-right arrow">&#8599;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8600;')" title="Down-right arrow">&#8600;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8601;')" title="Down-left arrow">&#8601;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8598;')" title="Up-left arrow">&#8598;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','=')" title="Equals">=</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8800;')" title="Not equal">&#8800;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','+')" title="Plus">+</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&minus;')" title="Minus">&minus;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&times;')" title="Multiply">&times;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&divide;')" title="Divide">&divide;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#10003;')" title="Check">&#10003;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#10007;')" title="Cross">&#10007;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8226;')" title="Bullet">&#8226;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8212;')" title="Em dash">&#8212;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#9633;')" title="Square">&#9633;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#9675;')" title="Circle">&#9675;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#9651;')" title="Triangle">&#9651;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#9671;')" title="Diamond">&#9671;</button>
       </div>
       <div class="re-color-bar" id="cbar-defed"></div>
       <div class="re-draw" id="draw-defed">
@@ -1436,6 +1650,36 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="toggleReColorBar('adv','hilite')" id="hlbtn-adv" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
         <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('adv')" id="draw-btn-adv">&#9998; Draw</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReSymbols('adv')" id="symbtn-adv" title="Symbols">&#8599; Symbols</button>
+      </div>
+            <div class="re-sym-panel" id="sym-adv">
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8594;')" title="Right arrow">&#8594;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8592;')" title="Left arrow">&#8592;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8593;')" title="Up arrow">&#8593;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8595;')" title="Down arrow">&#8595;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8596;')" title="Left-right arrow">&#8596;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8597;')" title="Up-down arrow">&#8597;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8658;')" title="Double right arrow">&#8658;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8656;')" title="Double left arrow">&#8656;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8599;')" title="Up-right arrow">&#8599;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8600;')" title="Down-right arrow">&#8600;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8601;')" title="Down-left arrow">&#8601;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8598;')" title="Up-left arrow">&#8598;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','=')" title="Equals">=</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8800;')" title="Not equal">&#8800;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','+')" title="Plus">+</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&minus;')" title="Minus">&minus;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&times;')" title="Multiply">&times;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&divide;')" title="Divide">&divide;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#10003;')" title="Check">&#10003;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#10007;')" title="Cross">&#10007;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8226;')" title="Bullet">&#8226;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8212;')" title="Em dash">&#8212;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#9633;')" title="Square">&#9633;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#9675;')" title="Circle">&#9675;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#9651;')" title="Triangle">&#9651;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#9671;')" title="Diamond">&#9671;</button>
       </div>
       <div class="re-color-bar" id="cbar-adv"></div>
       <div class="re-draw" id="draw-adv">
@@ -3278,6 +3522,17 @@ function toggleReTools(id){
   if(arr)arr.classList.toggle('open',open);
 }
 
+// Toggle the compact Symbols/Shapes panel for a given rich editor (all
+// Tools sections except Notes, which already has its own symbols in its
+// toolbar). Hidden by default; reuses the existing generic insertReSymbol
+// function for the actual insert-at-cursor behaviour — nothing here
+// duplicates or touches that function or the Notes implementation.
+function toggleReSymbols(id){
+  const panel=document.getElementById('sym-'+id);
+  if(!panel)return;
+  panel.classList.toggle('open');
+}
+
 // execCommand wrapper
 function reCmd(id,cmd){
   const ed=document.getElementById('ed-'+id);
@@ -3900,7 +4155,37 @@ function buildGSubHTML(n,sub,i){
           <div class="re-sep"></div>
           <button class="re-btn" onclick="toggleReDraw('gs${n}${i}')" id="draw-btn-gs${n}${i}">&#9998; Draw</button>
           <div class="re-sep"></div>
+          <button class="re-btn" onclick="toggleReSymbols('gs${n}${i}')" id="symbtn-gs${n}${i}" title="Symbols">&#8599; Symbols</button>
+          <div class="re-sep"></div>
           <button class="re-btn" onclick="clearGSub(${n},${i})" style="color:var(--danger);width:auto;padding:0 8px;font-size:11px;">Clear</button>
+        </div>
+        <div class="re-sym-panel" id="sym-gs${n}${i}">
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8594;')" title="Right arrow">&#8594;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8592;')" title="Left arrow">&#8592;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8593;')" title="Up arrow">&#8593;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8595;')" title="Down arrow">&#8595;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8596;')" title="Left-right arrow">&#8596;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8597;')" title="Up-down arrow">&#8597;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8658;')" title="Double right arrow">&#8658;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8656;')" title="Double left arrow">&#8656;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8599;')" title="Up-right arrow">&#8599;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8600;')" title="Down-right arrow">&#8600;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8601;')" title="Down-left arrow">&#8601;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8598;')" title="Up-left arrow">&#8598;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','=')" title="Equals">=</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8800;')" title="Not equal">&#8800;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','+')" title="Plus">+</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&minus;')" title="Minus">&minus;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&times;')" title="Multiply">&times;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&divide;')" title="Divide">&divide;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#10003;')" title="Check">&#10003;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#10007;')" title="Cross">&#10007;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8226;')" title="Bullet">&#8226;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8212;')" title="Em dash">&#8212;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#9633;')" title="Square">&#9633;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#9675;')" title="Circle">&#9675;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#9651;')" title="Triangle">&#9651;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#9671;')" title="Diamond">&#9671;</button>
         </div>
         <div class="re-color-bar" id="cbar-gs${n}${i}"></div>
         <div class="re-draw" id="draw-gs${n}${i}">
