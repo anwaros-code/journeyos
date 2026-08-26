@@ -523,6 +523,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="nav-item" onclick="goto('spiritual-progress')"><span class="nav-icon">✦</span> Spiritual Progress</div>
     <div class="nav-item" onclick="goto('reviews')"><span class="nav-icon">📈</span> Reviews</div>
     <div class="nav-item" onclick="goto('search')"><span class="nav-icon">🔍</span> Search</div>
+    <div class="nav-item" onclick="goto('notes')"><span class="nav-icon">📝</span> Notes</div>
     <div class="nav-item" onclick="goto('settings')"><span class="nav-icon">⚙</span> Settings</div>
     <div class="nav-item" onclick="manualLockNow()"><span class="nav-icon">🔒</span> Lock</div>
   </div>
@@ -1075,6 +1076,34 @@ select option{background:var(--surface);color:var(--text)}
     <input type="text" id="search-input" placeholder="🔍  Type to search everything..." oninput="runSearch(this.value)" style="font-size:15px;padding:12px 16px;">
   </div>
   <div id="search-results"></div>
+</div>
+
+<!-- NOTES -->
+<div id="page-notes" class="page">
+  <div id="notes-list-view">
+    <div class="section-header">
+      <div><h1 class="page-title">📝 Notes</h1><p class="page-sub">Quick notes and things to remember</p></div>
+      <button class="btn btn-primary" onclick="openNoteEditor()">+ New note</button>
+    </div>
+    <div class="card">
+      <input type="text" id="notes-search-input" placeholder="🔍  Search notes by title or content..." oninput="renderNotesList()">
+    </div>
+    <div id="notes-list"></div>
+  </div>
+  <div id="notes-editor-view" style="display:none;">
+    <div class="section-header" style="flex-wrap:wrap;gap:10px;">
+      <button class="btn btn-ghost" onclick="closeNoteEditor()">&larr; Back to notes</button>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span id="note-save-status" style="font-size:12px;color:var(--text3);"></span>
+        <button class="btn btn-danger" id="note-delete-btn" onclick="delNoteFromEditor()" style="display:none;">Delete</button>
+        <button class="btn btn-primary" onclick="saveNoteNow()">Save</button>
+      </div>
+    </div>
+    <div class="card">
+      <input type="text" id="note-title-input" placeholder="Note title..." style="font-size:18px;font-family:'DM Serif Display',serif;margin-bottom:14px;padding:10px 4px;background:transparent;border:none;border-bottom:1px solid var(--border);border-radius:0;" oninput="scheduleNoteAutosave()">
+      <textarea id="note-content-input" placeholder="Start writing..." style="min-height:55vh;font-size:15px;line-height:1.75;border:none;background:transparent;padding:4px;resize:vertical;" oninput="scheduleNoteAutosave()"></textarea>
+    </div>
+  </div>
 </div>
 
 <!-- SETTINGS -->
@@ -1751,6 +1780,7 @@ function load(){
   if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
   if(!D.reContent)D.reContent={};
   if(!D.definitions)D.definitions=[];
+  if(!D.notes)D.notes=[];
   if(!D.milestones)D.milestones=[];
   D.milestones.forEach(m=>{if(m.goalNum===undefined)m.goalNum=1;});
   if(!D.weeklyReviews)D.weeklyReviews=[];
@@ -2174,7 +2204,7 @@ function goto(pg){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+pg).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const map={home:0,definitions:1,goals:2,'current-mission':3,spiritual:4,adventure:5,schedule:6,progress:7,'spiritual-progress':8,reviews:9,search:10,settings:11};
+  const map={home:0,definitions:1,goals:2,'current-mission':3,spiritual:4,adventure:5,schedule:6,progress:7,'spiritual-progress':8,reviews:9,search:10,notes:11,settings:12};
   const items=document.querySelectorAll('.nav-item');
   if(items[map[pg]])items[map[pg]].classList.add('active');
   document.querySelectorAll('.mobile-nav-item').forEach(n=>n.classList.remove('active'));
@@ -2190,6 +2220,7 @@ function goto(pg){
   if(pg==='spiritual-progress')renderSpiritualProgressPage();
   if(pg==='reviews')renderReviews();
   if(pg==='search'){setTimeout(()=>{const si=document.getElementById('search-input');if(si)si.focus();},80);}
+  if(pg==='notes'){closeNoteEditor();renderNotesList();}
   if(pg==='settings'){updateLastBackupDisplay();renderStorageStatus();renderAutoLockSetting();renderHijriOffsetSetting();}
 }
 
@@ -2237,6 +2268,131 @@ function renderDefs(){
   el.innerHTML=D.definitions.map((d,i)=>`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;"><div style="flex:1"><div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--accent);margin-bottom:6px;">${esc(d.word)}</div><div style="font-size:14px;color:var(--text2);line-height:1.75;">${d.meaningRich||esc(d.meaning||'')}</div></div><div style="display:flex;gap:7px;flex-shrink:0;"><button class="btn btn-ghost" onclick="openDefModal(${i})" style="font-size:12px;padding:5px 12px;">Edit</button><button class="btn btn-danger" onclick="delDef(${i})" style="font-size:12px;padding:5px 12px;">Del</button></div></div></div>`).join('');
 }
 function delDef(i){if(confirm('Delete this definition?')){D.definitions.splice(i,1);save();renderDefs();}}
+
+// ── NOTES (isolated feature — reads/writes D.notes only) ──────
+// Follows the same storage path as every other section: mutate D, then
+// call the existing save() (localStorage + debounced Firestore sync).
+// D.notes is initialized in load(), same convention as D.definitions.
+let notesEditingId=null;
+let _notesAutosaveTimer=null;
+
+function notesFmtDate(iso){
+  const d=new Date(iso);
+  return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+
+function renderNotesList(){
+  const el=document.getElementById('notes-list');
+  if(!el)return;
+  const q=(document.getElementById('notes-search-input')?document.getElementById('notes-search-input').value:'').trim().toLowerCase();
+  let list=(D.notes||[]).slice().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
+  if(q)list=list.filter(n=>(n.title||'').toLowerCase().includes(q)||(n.content||'').toLowerCase().includes(q));
+  if(!list.length){
+    el.innerHTML=`<div style="color:var(--text3);font-size:14px;text-align:center;padding:40px 0;">${q?'No notes match your search.':'No notes yet. Create your first note.'}</div>`;
+    return;
+  }
+  el.innerHTML=list.map(n=>{
+    const preview=(n.content||'').replace(/\s+/g,' ').trim().slice(0,140);
+    return `<div class="card" style="cursor:pointer;" onclick="openNoteEditor('${n.id}')">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'DM Serif Display',serif;font-size:17px;color:var(--accent);margin-bottom:4px;">${esc(n.title||'Untitled note')}</div>
+          <div style="font-size:13.5px;color:var(--text2);line-height:1.6;margin-bottom:8px;overflow-wrap:break-word;">${esc(preview)}${(n.content||'').length>140?'…':''}</div>
+          <div style="font-size:11.5px;color:var(--text3);">Updated ${notesFmtDate(n.updatedAt)}</div>
+        </div>
+        <div style="display:flex;gap:7px;flex-shrink:0;" onclick="event.stopPropagation();">
+          <button class="btn btn-ghost" onclick="openNoteEditor('${n.id}')" style="font-size:12px;padding:5px 12px;">Edit</button>
+          <button class="btn btn-danger" onclick="delNoteFromList('${n.id}')" style="font-size:12px;padding:5px 12px;">Del</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showNotesListView(){
+  const lv=document.getElementById('notes-list-view'),ev=document.getElementById('notes-editor-view');
+  if(lv)lv.style.display='';
+  if(ev)ev.style.display='none';
+}
+function showNotesEditorView(){
+  const lv=document.getElementById('notes-list-view'),ev=document.getElementById('notes-editor-view');
+  if(lv)lv.style.display='none';
+  if(ev)ev.style.display='';
+}
+
+function openNoteEditor(id){
+  clearTimeout(_notesAutosaveTimer);
+  notesEditingId=id||null;
+  const titleEl=document.getElementById('note-title-input'),contentEl=document.getElementById('note-content-input'),statusEl=document.getElementById('note-save-status'),delBtn=document.getElementById('note-delete-btn');
+  if(id){
+    const n=(D.notes||[]).find(x=>x.id===id);
+    if(titleEl)titleEl.value=n?(n.title||''):'';
+    if(contentEl)contentEl.value=n?(n.content||''):'';
+    if(delBtn)delBtn.style.display='';
+  } else {
+    if(titleEl)titleEl.value='';
+    if(contentEl)contentEl.value='';
+    if(delBtn)delBtn.style.display='none';
+  }
+  if(statusEl){statusEl.textContent='';statusEl.style.color='var(--text3)';}
+  showNotesEditorView();
+  setTimeout(()=>{if(titleEl)titleEl.focus();},20);
+}
+
+function closeNoteEditor(){
+  clearTimeout(_notesAutosaveTimer);
+  notesEditingId=null;
+  showNotesListView();
+}
+
+function scheduleNoteAutosave(){
+  const statusEl=document.getElementById('note-save-status');
+  if(statusEl){statusEl.textContent='Saving...';statusEl.style.color='var(--text3)';}
+  clearTimeout(_notesAutosaveTimer);
+  _notesAutosaveTimer=setTimeout(()=>saveNoteNow(),900);
+}
+
+// Upserts the currently-open note into D.notes and persists via the app's
+// existing save() (localStorage + debounced Firestore sync) — same path
+// every other section uses. Ignores empty title+content (nothing to save).
+function saveNoteNow(){
+  clearTimeout(_notesAutosaveTimer);
+  const titleEl=document.getElementById('note-title-input'),contentEl=document.getElementById('note-content-input'),statusEl=document.getElementById('note-save-status'),delBtn=document.getElementById('note-delete-btn');
+  if(!titleEl||!contentEl)return;
+  const title=titleEl.value,content=contentEl.value;
+  if(!D.notes)D.notes=[];
+  const now=new Date().toISOString();
+  if(!title.trim()&&!content.trim()){
+    if(statusEl){statusEl.textContent='';}
+    return;
+  }
+  if(notesEditingId){
+    const n=D.notes.find(x=>x.id===notesEditingId);
+    if(n){n.title=title;n.content=content;n.updatedAt=now;}
+  } else {
+    notesEditingId='note_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+    D.notes.push({id:notesEditingId,title,content,createdAt:now,updatedAt:now});
+    if(delBtn)delBtn.style.display='';
+  }
+  save();
+  if(statusEl){statusEl.textContent='Saved ✓';statusEl.style.color='var(--success)';}
+}
+
+function delNoteFromList(id){
+  if(!confirm('Delete this note? This cannot be undone.'))return;
+  D.notes=(D.notes||[]).filter(n=>n.id!==id);
+  save();
+  renderNotesList();
+}
+
+function delNoteFromEditor(){
+  if(!notesEditingId)return;
+  if(!confirm('Delete this note? This cannot be undone.'))return;
+  D.notes=(D.notes||[]).filter(n=>n.id!==notesEditingId);
+  save();
+  closeNoteEditor();
+  renderNotesList();
+}
 
 function renderGoals(){['purpose','g1','g2','g3'].forEach(k=>{const el=document.getElementById('goals-'+k);el.value=D.goals[k]||'';el.oninput=()=>{D.goals[k]=el.value;save();};});const el=document.getElementById('milestone-list');if(!D.milestones.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No milestones yet. Add your first step.</div>';return;}el.innerHTML=D.milestones.map((m,i)=>`<div class="item-row"><div class="check ${m.done?'checked':''}" onclick="toggleMs(${i})">${m.done?'✓':''}</div><div class="item-body"><div class="item-title" style="${m.done?'text-decoration:line-through;color:var(--text3)':''}">${esc(m.title)}</div><div class="item-meta">${m.cat?esc(m.cat)+' · ':''} ${m.date||'No target date'}</div></div><span class="badge ${m.done?'badge-done':'badge-pending'}">${m.done?'Done':'Pending'}</span><button class="btn btn-danger" onclick="delMs(${i})" style="font-size:11px;padding:4px 10px;">✕</button></div>`).join('');}
 function openMilestoneModal(){document.getElementById('ms-title').value='';document.getElementById('ms-cat').value='';document.getElementById('ms-date').value='';const mg=document.getElementById('ms-goal');if(mg)mg.value='1';document.getElementById('modal-milestone').classList.add('open');}
@@ -4427,3 +4583,5 @@ function updateHijriOffsetSetting(val){
 
 </script>
 </html>
+
+      
