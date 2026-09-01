@@ -283,6 +283,7 @@ select option{background:var(--surface);color:var(--text)}
 .day-dot.partial .dd-num{color:#fff;font-weight:600}
 .day-dot.partial .dd-mark{opacity:1;color:#fff}
 .day-dot.past-empty{}
+.day-dot.untouched-resolved{border-style:dashed;border-color:var(--text3);}
 .day-dot.today{background:var(--accent);border-color:var(--accent);font-weight:600}
 .day-dot.today .dd-num{color:#fff}
 .day-dot.today .dd-mark{opacity:1;color:#fff}
@@ -1086,6 +1087,11 @@ select option{background:var(--surface);color:var(--text)}
 <div id="page-adventure" class="page">
   <h1 class="page-title">Adventure Log</h1>
   <p class="page-sub" id="adventure-sub">Your 1825-day journey — click any day dot to log it</p>
+  <div class="card" id="untouched-banner-card" style="display:none;border-color:var(--warning);">
+    <div class="card-title"><span>⏳</span> Untouched days waiting for a reason</div>
+    <div id="untouched-banner-text" style="font-size:13px;color:var(--text2);margin-bottom:10px;"></div>
+    <button class="btn btn-primary" onclick="maybeOpenUntouchedCatchup(true)" style="font-size:13px;padding:8px 16px;">Resolve now</button>
+  </div>
   <div class="card">
     <div class="card-title"><span>⚔</span> Day map</div>
     <div class="day-grid" id="day-grid"></div>
@@ -1095,16 +1101,21 @@ select option{background:var(--surface);color:var(--text)}
       <span style="color:var(--danger);">■ No Effort</span>
       <span style="color:var(--accent);">■ Today</span>
       <span style="border:1.5px solid var(--accent);border-radius:2px;padding:0 2px;color:var(--text2);">■ Past (empty)</span>
-      <span style="color:var(--text3);">■ Untouched / no log</span>
+      <span style="border:1.5px dashed var(--text3);border-radius:2px;padding:0 2px;color:var(--text2);">■ Untouched (resolved)</span>
     </div>
   </div>
   <div class="card" id="adventure-perf-card">
     <div class="card-title"><span>📈</span> Journey performance</div>
     <div id="adventure-perf-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;"></div>
     <div style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.5;">
-      <b>Effort Performance</b> = % of logged days rated Strong Effort — this is your primary journey metric.<br>
-      <b>Target Achievement</b> = average actual/target across numeric tasks — a secondary planning signal only. It does not affect your day's Effort rating.
+      <b>Effort Performance</b> = % of logged days rated Strong/Very Strong Effort — this is your primary journey metric.<br>
+      <b>Target Achievement</b> = average actual/target across numeric tasks — a secondary planning signal only. It does not affect your day's Effort rating.<br>
+      <b>Day Performance</b> = a blended, non-gameable score combining Effort and objective Achievement/Completion for each logged day — see Progress for details.
     </div>
+  </div>
+  <div class="card" id="adventure-reasons-card">
+    <div class="card-title"><span>🔎</span> What's slowing you down</div>
+    <div id="adventure-reasons-list" style="font-size:13px;color:var(--text2);"></div>
   </div>
 </div>
 
@@ -1176,6 +1187,7 @@ select option{background:var(--surface);color:var(--text)}
   <p class="page-sub">Your journey at a glance</p>
   <div class="grid3" id="progress-stats" style="margin-bottom:20px;"></div>
   <div class="card"><div class="card-title"><span>📊</span> Adventure log — last 30 days</div><div class="chart-box"><canvas id="chart-adventure"></canvas></div></div>
+  <div class="card"><div class="card-title"><span>⚔</span> Adventure Log — detailed progress</div><div id="progress-adventure-insights"></div></div>
   <div class="card">
     <div class="card-title"><span>🎯</span> Milestones</div>
     <div id="progress-milestones"></div>
@@ -1218,6 +1230,11 @@ select option{background:var(--surface);color:var(--text)}
 <div id="page-reviews" class="page">
   <h1 class="page-title">Reviews</h1>
   <p class="page-sub">Weekly, monthly, and quarterly reflections on your journey</p>
+
+  <div class="card" id="reviews-adventure-snapshot-card">
+    <div class="card-title"><span>⚔</span> Adventure Log snapshot — last 7 / 30 / 90 days</div>
+    <div id="reviews-adventure-snapshot"></div>
+  </div>
 
   <!-- Review type tabs -->
   <div class="tabs" id="review-tabs">
@@ -1701,12 +1718,32 @@ select option{background:var(--surface);color:var(--text)}
       <div class="re-editor" id="ed-adv" contenteditable="true" data-ph="Write your adventure for today — goals, intentions, plans..." style="min-height:80px;"></div>
     </div>
 
-    <div class="label mt16">Effort — how well did you show up today?</div>
+    <div class="label mt16">Completed — was today's Adventure completed?</div>
     <div style="display:flex;gap:10px;margin-top:6px;">
-      <button class="btn btn-ghost" id="btn-effort-strong" onclick="setDayEffort('strong')" style="flex:1;">🟢 Strong Effort</button>
-      <button class="btn btn-ghost" id="btn-effort-some" onclick="setDayEffort('some')" style="flex:1;">🟡 Some Effort</button>
-      <button class="btn btn-ghost" id="btn-effort-none" onclick="setDayEffort('none')" style="flex:1;">🔴 No Effort</button>
+      <button class="btn btn-ghost" id="btn-completed-y" onclick="setDayCompleted(true)" style="flex:1;">✔ Completed</button>
+      <button class="btn btn-ghost" id="btn-completed-n" onclick="setDayCompleted(false)" style="flex:1;">✕ Not Completed</button>
     </div>
+
+    <div class="label mt16">Effort — how strongly did you work toward it?</div>
+    <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+      <button class="btn btn-ghost" id="btn-effort-vstrong" onclick="setDayEffort('vstrong')" style="flex:1;min-width:120px;">🟢🟢 Very Strong</button>
+      <button class="btn btn-ghost" id="btn-effort-strong" onclick="setDayEffort('strong')" style="flex:1;min-width:120px;">🟢 Strong</button>
+      <button class="btn btn-ghost" id="btn-effort-some" onclick="setDayEffort('some')" style="flex:1;min-width:120px;">🟡 Some</button>
+      <button class="btn btn-ghost" id="btn-effort-normal" onclick="setDayEffort('normal')" style="flex:1;min-width:120px;">🟠 Normal</button>
+      <button class="btn btn-ghost" id="btn-effort-none" onclick="setDayEffort('none')" style="flex:1;min-width:120px;">🔴 No Effort</button>
+    </div>
+
+    <div id="day-effort-reason-row" style="margin-top:14px;display:none;">
+      <div class="label">What affected your effort today? (select any that apply)</div>
+      <div id="day-effort-reason-chips" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;"></div>
+      <div id="day-effort-other-row" style="display:none;margin-top:8px;">
+        <input type="text" id="day-effort-other-note" placeholder="Please describe (required for &quot;Other&quot;)">
+      </div>
+      <div style="margin-top:8px;">
+        <textarea id="day-effort-note" rows="2" placeholder="Optional note about the reason(s) above..."></textarea>
+      </div>
+    </div>
+
     <div id="day-target-toggle-row" style="margin-top:14px;">
       <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);cursor:pointer;">
         <input type="checkbox" id="day-has-target" onchange="toggleDayTarget()" style="width:16px;height:16px;">
@@ -1720,7 +1757,7 @@ select option{background:var(--surface);color:var(--text)}
           <input type="number" id="day-target" placeholder="e.g. 20" oninput="updateDayUI()" style="margin-top:4px;">
         </div>
         <div style="flex:1;">
-          <div class="label">Actual</div>
+          <div class="label">Actual completed</div>
           <input type="number" id="day-actual" placeholder="e.g. 15" oninput="updateDayUI()" style="margin-top:4px;">
         </div>
       </div>
@@ -1735,6 +1772,7 @@ select option{background:var(--surface);color:var(--text)}
         <option value="easy">Target was too easy</option>
       </select>
     </div>
+    <div id="day-performance-badge" style="margin-top:14px;font-size:13px;color:var(--text2);display:none;padding:10px 12px;background:var(--surface2);border-radius:var(--r);"></div>
     <div id="day-happy-row" style="margin-top:14px;display:none;">
       <div class="label">Are you happy with the day?</div>
       <div style="display:flex;gap:8px;margin-top:6px;">
@@ -1744,15 +1782,15 @@ select option{background:var(--surface);color:var(--text)}
     </div>
     <div id="day-missed-row" style="display:none;">
       <div class="label mt16" id="day-reasons-label">3 reasons you couldn't follow the plan</div>
-      <input type="text" id="day-r1" placeholder="Reason 1 (optional)" style="margin-bottom:7px;">
-      <input type="text" id="day-r2" placeholder="Reason 2 (optional)" style="margin-bottom:7px;">
-      <input type="text" id="day-r3" placeholder="Reason 3 (optional)">
+      <input type="text" id="day-r1" placeholder="Reason 1 (required)" style="margin-bottom:7px;">
+      <input type="text" id="day-r2" placeholder="Reason 2 (required)" style="margin-bottom:7px;">
+      <input type="text" id="day-r3" placeholder="Reason 3 (required)">
     </div>
     <div class="label mt16">What went well? (optional)</div>
     <input type="text" id="day-f1" placeholder="What went well">
     <div class="label mt16">What could be improved? (optional)</div>
     <input type="text" id="day-f2" placeholder="What could be improved">
-    <div class="label mt16">Notes / reflections</div>
+    <div class="label mt16">Notes / reflections (required)</div>
     <div class="re-wrap" style="margin-top:6px;" id="re-notes-wrap">
       <div class="re-tools-toggle" onclick="toggleReTools('notes')">
         <span class="arr" id="arr-notes">&#9658;</span> TOOLS
@@ -1772,6 +1810,35 @@ select option{background:var(--surface);color:var(--text)}
       <div class="re-editor" id="ed-notes" contenteditable="true" data-ph="Reflections, anything else about this day..." style="min-height:70px;"></div>
     </div>
     <div class="modal-footer"><button class="btn btn-danger" onclick="clearDayLog()" style="margin-right:auto;">✕ Clear day</button><button class="btn btn-ghost" onclick="closeModal('modal-day')">Cancel</button><button class="btn btn-primary" onclick="saveDayLog()">Save day</button></div>
+  </div>
+</div>
+
+<!-- UNTOUCHED DAY CATCH-UP MODAL -->
+<div class="modal-overlay" id="modal-untouched">
+  <div class="modal">
+    <div class="modal-title" id="modal-untouched-title">Untouched Day</div>
+    <p style="font-size:13px;color:var(--text2);margin-top:-6px;margin-bottom:14px;" id="modal-untouched-sub">You didn't log an Adventure for this day. What happened?</p>
+    <div class="label">Reason</div>
+    <select id="untouched-reason" onchange="updateUntouchedUI()" style="margin-top:6px;">
+      <option value="">— select a reason —</option>
+      <option>Family responsibilities</option>
+      <option>Travel</option>
+      <option>Office/work responsibilities</option>
+      <option>Health issues</option>
+      <option>Unexpected work</option>
+      <option>Procrastination</option>
+      <option>Lack of time</option>
+      <option>Lack of focus</option>
+      <option>Low energy</option>
+      <option>Other</option>
+    </select>
+    <div class="label mt16" id="untouched-note-label">Note (optional)</div>
+    <textarea id="untouched-note" rows="2" placeholder="Add a short note..."></textarea>
+    <div style="font-size:12px;color:var(--text3);margin-top:10px;" id="untouched-queue-info"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="skipUntouchedDay()" style="margin-right:auto;">Skip for now</button>
+      <button class="btn btn-primary" onclick="saveUntouchedDay()">Save &amp; continue</button>
+    </div>
   </div>
 </div>
 
@@ -2011,7 +2078,7 @@ select option{background:var(--surface);color:var(--text)}
 <script>
 window.__mark('Classic Script Loaded');
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-08-30'; // single source of truth — Day 1 = Sun 30 Aug 2026 (16 Rabi al-Awwal), Day 2 = Mon 31 Aug 2026 (17 Rabi al-Awwal)
+const JOURNEY_START='2026-09-02'; // single source of truth — Day 1 = Wed 2 Sep 2026 (19 Rabi al-Awwal), Day 2 = Thu 3 Sep 2026 (20 Rabi al-Awwal)
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:'',currentMission:{title:'',milestones:[],skills:[]},autoLockSeconds:30};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -2089,6 +2156,22 @@ function applyFreshStartReset20260816(){
   D.freshStart_20260816=true;
 }
 
+// One-time fresh-start reset for the journey now beginning 2 September
+// 2026. Same scope as the resets above (Adventure Log + Time Schedule
+// only) — additionally zeroes journeyWorkBaselineMin (the old 21h baseline
+// from the 16 Aug reset no longer applies to this fresh start) and strips
+// any lingering August 2026 schedule month, so Productivity/Goal Work Time
+// starts completely blank for the new Day 1. Runs once via the
+// D.freshStart_20260902 flag.
+function applyFreshStartReset20260902(){
+  if(D.freshStart_20260902)return;
+  D.adventureDays={};
+  D.scheduleMonths=[];
+  D.curMonth=0;
+  D.journeyWorkBaselineMin=0;
+  D.freshStart_20260902=true;
+}
+
 function load(){
   try{const s=localStorage.getItem(KEY);if(s)D=JSON.parse(s);}catch(e){}
   // Journey start date = 29 July 2026 (Day 1)
@@ -2098,9 +2181,10 @@ function load(){
   cleanOldAdventureDays();
   applyFreshStartReset();
   applyFreshStartReset20260816();
-  // Remove any previously-saved schedule months from before the journey start (journey now starts 29 Aug 2026)
+  applyFreshStartReset20260902();
+  // Remove any previously-saved schedule months from before the journey start (journey now starts 2 Sep 2026)
   if(D.scheduleMonths&&D.scheduleMonths.length>0){
-    D.scheduleMonths=D.scheduleMonths.filter(m=>m.label!=='June 2026'&&m.label!=='July 2026');
+    D.scheduleMonths=D.scheduleMonths.filter(m=>m.label!=='June 2026'&&m.label!=='July 2026'&&m.label!=='August 2026');
     if(D.curMonth>=D.scheduleMonths.length)D.curMonth=Math.max(0,D.scheduleMonths.length-1);
   }
   // Init schedule months — use the month containing the journey start date (29 July 2026)
@@ -2323,9 +2407,10 @@ async function completeSignIn(user){
   if(loaded){
     D.startDate=JOURNEY_START; // re-enforce after cloud overwrite
     cleanOldAdventureDays();
-    const _wasFreshStart=!D.freshStart_20260716||!D.freshStart_20260816;
+    const _wasFreshStart=!D.freshStart_20260716||!D.freshStart_20260816||!D.freshStart_20260902;
     applyFreshStartReset();
     applyFreshStartReset20260816();
+    applyFreshStartReset20260902();
     // Re-init defaults
     if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
     if(!D.reContent)D.reContent={};
@@ -2336,6 +2421,11 @@ async function completeSignIn(user){
     if(D.goals&&D.goals.g1pct===undefined)D.goals.g1pct=0;
     if(D.goals&&D.goals.g2pct===undefined)D.goals.g2pct=0;
     if(D.goals&&D.goals.g3pct===undefined)D.goals.g3pct=0;
+    // Strip any lingering pre-journey schedule months (mirrors load())
+    if(D.scheduleMonths&&D.scheduleMonths.length>0){
+      D.scheduleMonths=D.scheduleMonths.filter(m=>m.label!=='June 2026'&&m.label!=='July 2026'&&m.label!=='August 2026');
+      if(D.curMonth>=D.scheduleMonths.length)D.curMonth=Math.max(0,D.scheduleMonths.length-1);
+    }
     // If the fresh-start reset just ran on this cloud data, make sure a
     // fresh schedule month exists (mirrors the same init logic in load())
     // and sync the reset back up to Firestore so it doesn't re-trigger.
@@ -3118,24 +3208,97 @@ function toggleHabit(hi,day){toggleSpiritualHabit(hi,day);}
 function delSpiritualHabit(i){D.spiritual.habits.splice(i,1);save();renderSpiritual();}
 function delHabit(i){delSpiritualHabit(i);}
 
-let selDay=null,dayEffort=null,dayHappy=null;
-// ── Adventure Log v2: Effort-based model ─────────────────
-// Effort ('strong'/'some'/'none') is the primary daily rating and is never
-// derived from numeric target achievement. `status` ('done'/'partial'/
-// 'missed') is kept alongside it purely so older Dashboard/Progress code
-// that reads d.status keeps working unchanged. Old historical entries
-// (pre-migration) only have status:'done'/'missed' with no effort field —
-// getDayEffort()/getDayStatus() transparently map those to the new model
-// without ever rewriting the stored historical data.
-function effortToStatus(e){return e==='strong'?'done':e==='some'?'partial':e==='none'?'missed':null;}
+let selDay=null,dayEffort=null,dayHappy=null,dayCompleted=null,dayEffortReasons=[];
+let untouchedQueue=[],untouchedIdx=0,untouchedThenCallback=null;
+const skippedUntouchedThisSession=new Set();
+// ── Adventure Log v3: Completion + 5-level Effort model ──────────────
+// Completion ('completed'=true/false) and Effort (5 levels) are tracked as
+// SEPARATE fields, per design. `status` ('done'/'partial'/'missed') is kept
+// alongside them purely so older Dashboard/Progress code that reads
+// d.status keeps working unchanged. Old historical entries (pre-migration)
+// only have status:'done'/'missed' (or effort:'strong'/'some'/'none' from
+// v2) with no `completed` field — getDayEffort()/getDayStatus()/
+// getDayCompleted() transparently map those to the new model without ever
+// rewriting the stored historical data.
+const REASON_LIST=['Family responsibilities','Travel','Office/work responsibilities','Health issues','Unexpected work','Procrastination','Lack of time','Lack of focus','Low energy','Other'];
+// Reasons that reflect life circumstances rather than controllable
+// behaviour — used only to label patterns in Progress, never to hide them.
+const CIRCUMSTANCE_REASONS=['Family responsibilities','Travel','Office/work responsibilities','Health issues','Unexpected work'];
+const EFFORT_META={
+  vstrong:{label:'Very Strong Effort',emoji:'🟢🟢',color:'var(--success)',score:1.0,needsReason:false},
+  strong:{label:'Strong Effort',emoji:'🟢',color:'var(--success)',score:0.8,needsReason:false},
+  some:{label:'Some Effort',emoji:'🟡',color:'var(--warning)',score:0.55,needsReason:true},
+  normal:{label:'Normal Effort',emoji:'🟠',color:'var(--warning)',score:0.4,needsReason:true},
+  none:{label:'No Effort',emoji:'🔴',color:'var(--danger)',score:0.1,needsReason:true}
+};
+// effortToStatus keeps the legacy 3-bucket status in sync so any old code
+// (charts, dashboard counts) that reads d.status continues to behave
+// sensibly with the new 5-level effort scale.
+function effortToStatus(e){
+  if(e==='vstrong'||e==='strong')return 'done';
+  if(e==='some'||e==='normal')return 'partial';
+  if(e==='none')return 'missed';
+  return null;
+}
 function getDayEffort(log){
-  if(!log)return null;
+  if(!log||log.untouched)return null;
   if(log.effort)return log.effort;
+  // v2 (3-level) or v1 (status-only) historical records
   if(log.status==='done')return 'strong';
   if(log.status==='missed')return 'none';
+  if(log.status==='partial')return 'some';
   return null;
 }
 function getDayStatus(log){return effortToStatus(getDayEffort(log));}
+// Completion is independent of Effort. Falls back to a reasonable guess
+// from legacy status for old records that never had a `completed` field
+// (v1/v2 conflated "strong effort" with "done"), without rewriting them.
+function getDayCompleted(log){
+  if(!log||log.untouched)return null;
+  if(log.completed===true||log.completed===false)return log.completed;
+  const st=getDayStatus(log);
+  if(st==='done')return true;
+  if(st==='missed')return false;
+  return null;
+}
+// ── Day Performance: a single, clearly-named, hard-to-game calculation ──
+// Blends Effort (how strongly the person showed up) with an Objective
+// factor (numeric achievement when a target exists, otherwise the
+// Completed/Not Completed flag). Neither factor alone can reach 100%:
+// Effort contributes at most 55%, so simply picking "Very Strong Effort"
+// can never produce a perfect score — objective results still matter.
+// Exceeding a numeric target gives a small bonus (capped) so ambitious
+// over-delivery is rewarded without letting the score run away, and being
+// marked Not Completed caps the objective factor so a technically-exceeded
+// but self-reported "not completed" day can't be scored as a full win.
+// Kept in one clearly named function so the formula can be retuned later
+// without touching the rest of the Adventure Log.
+function calcDayPerformance(log){
+  if(!log||log.untouched)return null;
+  const effort=getDayEffort(log);
+  if(!effort)return null;
+  const effortScore=(EFFORT_META[effort]||{}).score||0;
+  let objective;
+  if(log.hasTarget&&log.target>0&&log.actual!==null&&log.actual!==undefined&&!isNaN(log.actual)){
+    const ratio=log.actual/log.target;
+    objective=Math.min(ratio,1.15); // small, capped bonus for exceeding target
+  } else {
+    const c=getDayCompleted(log);
+    objective=c===true?1:(c===false?0:0.5);
+  }
+  const completed=getDayCompleted(log);
+  if(completed===false)objective=Math.min(objective,0.6);
+  const raw=effortScore*0.55+objective*0.45;
+  return Math.round(Math.min(Math.max(raw,0),1)*100);
+}
+function dayPerformanceLabel(pct){
+  if(pct===null||pct===undefined)return'—';
+  if(pct>=85)return'Excellent';
+  if(pct>=70)return'High';
+  if(pct>=50)return'Moderate';
+  if(pct>=30)return'Low';
+  return'Very Low';
+}
 // Single source of truth for "what journey day is today" — parses
 // D.startDate and truncates "now" to local midnight before diffing, so the
 // day number flips exactly at local midnight (avoids the UTC-parse pitfall
@@ -3168,35 +3331,86 @@ function renderAdventure(){
     const key=dy+'-'+String(dmo+1).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
     const log=D.adventureDays[key];
     const status=log?getDayStatus(log):'';
+    const isUntouchedResolved=!!(log&&log.untouched);
     const isToday=key===todayKey;
     const dCmp=new Date(dy,dmo,dd);
     const isPast=dCmp<new Date(ty,tm,td);
     const div=document.createElement('div');
-    let cls='day-dot';if(status==='done')cls+=' done';else if(status==='partial')cls+=' partial';else if(status==='missed')cls+=' missed';else if(isPast)cls+=' past-empty';if(isToday)cls+=' today';
+    let cls='day-dot';if(status==='done')cls+=' done';else if(status==='partial')cls+=' partial';else if(status==='missed')cls+=' missed';else if(isUntouchedResolved)cls+=' untouched-resolved';else if(isPast)cls+=' past-empty';if(isToday)cls+=' today';
     div.className=cls;
-    div.innerHTML='<span class="dd-num">'+dayLabel+'</span><span class="dd-mark">'+(isToday?'⭐':status==='done'?'✓':status==='partial'?'●':status==='missed'?'✕':'')+'</span>';
-    div.title='Day '+dayLabel+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy;
+    div.innerHTML='<span class="dd-num">'+dayLabel+'</span><span class="dd-mark">'+(isToday?'⭐':status==='done'?'✓':status==='partial'?'●':status==='missed'?'✕':isUntouchedResolved?'⋯':'')+'</span>';
+    div.title='Day '+dayLabel+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy+(isUntouchedResolved?' (Untouched: '+log.untouchedReason+')':'');
     div.onclick=()=>openDayModal(key,dayLabel,dd,dmo,dy);
     grid.appendChild(div);
   }
   renderAdventurePerf();
+  renderAdventureReasons();
+  renderUntouchedBanner();
+  if(!autoUntouchedPromptShown){autoUntouchedPromptShown=true;maybeOpenUntouchedCatchup();}
 }
+let autoUntouchedPromptShown=false;
 // Secondary Adventure Log stat card: Effort Performance (primary, based only
 // on Effort) shown clearly separate from Target Achievement (secondary,
-// numeric-target planning signal). Never blended into one number.
+// numeric-target planning signal) and Day Performance (blended, see
+// calcDayPerformance). None of these three is ever derived from the others.
 function renderAdventurePerf(){
   const el=document.getElementById('adventure-perf-stats');
   if(!el)return;
   const logs=Object.values(D.adventureDays||{});
   const logged=logs.filter(d=>getDayEffort(d));
-  const strong=logged.filter(d=>getDayEffort(d)==='strong').length;
+  const strong=logged.filter(d=>{const e=getDayEffort(d);return e==='strong'||e==='vstrong';}).length;
   const effortPct=logged.length>0?Math.round(strong/logged.length*100):0;
   const withTarget=logs.filter(d=>d.hasTarget&&d.target>0&&d.actual!==null&&d.actual!==undefined&&!isNaN(d.actual));
   const avgAchievement=withTarget.length>0?Math.round(withTarget.reduce((s,d)=>s+(d.actual/d.target*100),0)/withTarget.length):null;
-  el.innerHTML=`<div class="stat-card"><div class="stat-num">${effortPct}%</div><div class="stat-label">Effort Performance</div></div><div class="stat-card"><div class="stat-num">${logged.length}</div><div class="stat-label">Days logged</div></div><div class="stat-card"><div class="stat-num">${avgAchievement!==null?avgAchievement+'%':'—'}</div><div class="stat-label">Target Achievement (avg)</div></div>`;
+  const perfVals=logged.map(d=>calcDayPerformance(d)).filter(v=>v!==null);
+  const avgPerf=perfVals.length>0?Math.round(perfVals.reduce((a,b)=>a+b,0)/perfVals.length):null;
+  const untouchedCount=logs.filter(d=>d.untouched).length;
+  const completedCount=logs.filter(d=>getDayCompleted(d)===true).length;
+  const notCompletedCount=logs.filter(d=>getDayCompleted(d)===false).length;
+  el.innerHTML=`<div class="stat-card"><div class="stat-num">${effortPct}%</div><div class="stat-label">Effort Performance</div></div><div class="stat-card"><div class="stat-num">${logged.length}</div><div class="stat-label">Days logged</div></div><div class="stat-card"><div class="stat-num">${avgAchievement!==null?avgAchievement+'%':'—'}</div><div class="stat-label">Target Achievement (avg)</div></div><div class="stat-card"><div class="stat-num">${avgPerf!==null?avgPerf+'%':'—'}</div><div class="stat-label">Day Performance (avg)</div></div><div class="stat-card"><div class="stat-num">${completedCount}</div><div class="stat-label">Completed</div></div><div class="stat-card"><div class="stat-num">${notCompletedCount}</div><div class="stat-label">Not Completed</div></div><div class="stat-card"><div class="stat-num">${untouchedCount}</div><div class="stat-label">Untouched days</div></div>`;
+}
+// Aggregates the reasons behind Some/Normal/No Effort days AND Untouched
+// days into one "what's slowing you down" pattern list. Circumstance
+// reasons (family, travel, work, health, unexpected) are labelled
+// separately from controllable-behaviour reasons (procrastination, lack of
+// focus/time, low energy) so the person can tell the two apart — neither is
+// called a "failure".
+function computeReasonPatterns(){
+  const counts={};
+  const bump=(reason)=>{if(!reason)return;counts[reason]=(counts[reason]||0)+1;};
+  Object.values(D.adventureDays||{}).forEach(d=>{
+    if(d.untouched){bump(d.untouchedReason);return;}
+    if(d.effortReasons&&Array.isArray(d.effortReasons.items)){d.effortReasons.items.forEach(bump);}
+  });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+}
+function renderAdventureReasons(){
+  const el=document.getElementById('adventure-reasons-list');
+  if(!el)return;
+  const patterns=computeReasonPatterns();
+  if(patterns.length===0){el.innerHTML='<span style="color:var(--text3);">No recurring reasons logged yet.</span>';return;}
+  el.innerHTML=patterns.slice(0,10).map(([reason,count])=>{
+    const isCircumstance=CIRCUMSTANCE_REASONS.includes(reason);
+    const tag=isCircumstance?'<span style="font-size:10px;color:var(--text3);">circumstance</span>':'<span style="font-size:10px;color:var(--warning);">behaviour pattern</span>';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);"><span>${esc(reason)} ${tag}</span><b>${count}×</b></div>`;
+  }).join('');
 }
 function openDayModal(key,dayNum,dd,dmo,dy){
-  selDay=key;dayEffort=null;dayHappy=null;
+  // Before opening TODAY's entry, make sure earlier untouched days are
+  // resolved first (sequential catch-up). Opening a past/other day is
+  // unaffected — only today's entry point triggers the catch-up flow.
+  const todayKeyNow=(()=>{const t=new Date();return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');})();
+  if(key===todayKeyNow){
+    const pending=getPendingUntouchedDays();
+    if(pending.length>0){
+      openUntouchedCatchup(pending,()=>openDayModalNow(key,dayNum,dd,dmo,dy));
+      return;
+    }
+  }
+  openDayModalNow(key,dayNum,dd,dmo,dy);
+}
+function openDayModalNow(key,dayNum,dd,dmo,dy){
+  selDay=key;dayEffort=null;dayHappy=null;dayCompleted=null;dayEffortReasons=[];
   const log=D.adventureDays[key]||{};
   // dd, dmo, dy are local date parts computed in renderAdventure — use them directly
   // to avoid any possible UTC/timezone shift from re-parsing D.startDate
@@ -3205,12 +3419,17 @@ function openDayModal(key,dayNum,dd,dmo,dy){
   ['r1','r2','r3'].forEach((r,i)=>{const el=document.getElementById('day-'+r);if(el)el.value=(log.reasons&&log.reasons[i])||'';});
   ['f1','f2'].forEach((f,i)=>{const el=document.getElementById('day-'+f);if(el)el.value=(log.fixes&&log.fixes[i])||'';});
   dayEffort=getDayEffort(log);
+  dayCompleted=getDayCompletedRaw(log);
   dayHappy=log.happy!==undefined?log.happy:null;
+  dayEffortReasons=(log.effortReasons&&Array.isArray(log.effortReasons.items))?log.effortReasons.items.slice():[];
+  document.getElementById('day-effort-other-note').value=(log.effortReasons&&log.effortReasons.otherNote)||'';
+  document.getElementById('day-effort-note').value=(log.effortReasons&&log.effortReasons.note)||'';
   document.getElementById('day-has-target').checked=!!log.hasTarget;
   document.getElementById('day-target').value=(log.target!==undefined&&log.target!==null)?log.target:'';
   document.getElementById('day-actual').value=(log.actual!==undefined&&log.actual!==null)?log.actual:'';
   document.getElementById('day-realism').value=log.targetRealism||'';
   document.getElementById('day-target-row').style.display=log.hasTarget?'block':'none';
+  renderEffortReasonChips();
   updateDayUI();
   document.getElementById('modal-day').classList.add('open');
   // Load rich editors after modal is visible
@@ -3226,76 +3445,126 @@ function openDayModal(key,dayNum,dd,dmo,dy){
     });
   },20);
 }
+// Raw (non-fallback) completed value used only to prefill the modal, so
+// re-opening an old legacy record doesn't silently "invent" an explicit
+// Completed/Not Completed click the person never made.
+function getDayCompletedRaw(log){return (log&&(log.completed===true||log.completed===false))?log.completed:null;}
 function clearDayLog(){
   const key=selDay;
   if(!key)return;
   delete D.adventureDays[key];
-  selDay=null;dayEffort=null;dayHappy=null;
+  selDay=null;dayEffort=null;dayHappy=null;dayCompleted=null;dayEffortReasons=[];
   save();closeModal('modal-day');renderAdventure();
 }
-function setDayEffort(e){dayEffort=e;updateDayUI();}
+function setDayEffort(e){dayEffort=e;renderEffortReasonChips();updateDayUI();}
+function setDayCompleted(v){dayCompleted=v;updateDayUI();}
 function setDayHappy(v){dayHappy=v;updateDayUI();}
 function toggleDayTarget(){
   const chk=document.getElementById('day-has-target').checked;
   document.getElementById('day-target-row').style.display=chk?'block':'none';
   updateDayUI();
 }
+function renderEffortReasonChips(){
+  const wrap=document.getElementById('day-effort-reason-chips');
+  if(!wrap)return;
+  wrap.innerHTML=REASON_LIST.map(r=>{
+    const on=dayEffortReasons.includes(r);
+    return `<button type="button" class="btn btn-ghost" onclick="toggleEffortReason('${esc(r).replace(/'/g,"\\'")}')" style="font-size:12px;padding:6px 12px;${on?'background:var(--warning);color:#fff;border-color:var(--warning);':''}">${esc(r)}</button>`;
+  }).join('');
+  document.getElementById('day-effort-other-row').style.display=dayEffortReasons.includes('Other')?'block':'none';
+}
+function toggleEffortReason(r){
+  const i=dayEffortReasons.indexOf(r);
+  if(i>=0)dayEffortReasons.splice(i,1);else dayEffortReasons.push(r);
+  renderEffortReasonChips();
+}
 // Achievement % is informational only — it is never capped at 100 (an
 // exceeded target should be visible) and it never feeds back into Effort
-// or the day's status. Effort stays exactly what the person selected.
+// or Completion. Effort and Completed stay exactly what the person picked;
+// Day Performance is calculated separately by calcDayPerformance().
 function updateDayUI(){
-  const btns={strong:document.getElementById('btn-effort-strong'),some:document.getElementById('btn-effort-some'),none:document.getElementById('btn-effort-none')};
-  const colors={strong:'var(--success)',some:'var(--warning)',none:'var(--danger)'};
+  const btns={vstrong:document.getElementById('btn-effort-vstrong'),strong:document.getElementById('btn-effort-strong'),some:document.getElementById('btn-effort-some'),normal:document.getElementById('btn-effort-normal'),none:document.getElementById('btn-effort-none')};
   Object.keys(btns).forEach(k=>{
     const on=dayEffort===k;
-    btns[k].style.background=on?colors[k]:'';
+    const color=EFFORT_META[k].color;
+    btns[k].style.background=on?color:'';
     btns[k].style.color=on?'#fff':'';
-    btns[k].style.borderColor=on?colors[k]:'var(--border)';
+    btns[k].style.borderColor=on?color:'var(--border)';
   });
-  document.getElementById('day-happy-row').style.display=dayEffort?'block':'none';
+  const cy=document.getElementById('btn-completed-y'),cn=document.getElementById('btn-completed-n');
+  cy.style.background=dayCompleted===true?'var(--success)':'';cy.style.color=dayCompleted===true?'#fff':'';cy.style.borderColor=dayCompleted===true?'var(--success)':'var(--border)';
+  cn.style.background=dayCompleted===false?'var(--danger)':'';cn.style.color=dayCompleted===false?'#fff':'';cn.style.borderColor=dayCompleted===false?'var(--danger)':'var(--border)';
+
+  document.getElementById('day-effort-reason-row').style.display=(dayEffort&&EFFORT_META[dayEffort].needsReason)?'block':'none';
+
+  document.getElementById('day-happy-row').style.display=(dayCompleted!==null||dayEffort)?'block':'none';
   const by=document.getElementById('btn-happy-y'),bn=document.getElementById('btn-happy-n');
   by.style.background=dayHappy===true?'var(--success)':'';by.style.color=dayHappy===true?'#fff':'';by.style.borderColor=dayHappy===true?'var(--success)':'var(--border)';
   bn.style.background=dayHappy===false?'var(--danger)':'';bn.style.color=dayHappy===false?'#fff':'';bn.style.borderColor=dayHappy===false?'var(--danger)':'var(--border)';
+
   const hasTarget=document.getElementById('day-has-target').checked;
   const targetVal=parseFloat(document.getElementById('day-target').value);
   const actualRaw=document.getElementById('day-actual').value;
   const actualVal=parseFloat(actualRaw);
   const badge=document.getElementById('day-achievement-badge');
-  let incomplete=false;
   if(hasTarget&&!isNaN(targetVal)&&targetVal>0){
     const a=(actualRaw!==''&&!isNaN(actualVal))?actualVal:0;
     const pct=Math.round(a/targetVal*100); // uncapped on purpose — exceeding target should be visible
-    incomplete=a<targetVal;
     let msg=a+' / '+targetVal+' — '+pct+'% achievement (target achievement only, not your day rating)';
     if(pct>100)msg+=' · Target exceeded 🎉';
-    else if(incomplete&&dayEffort==='strong')msg+=' · Strong Effort — target may need calibration, not a failure.';
     badge.textContent=msg;
   } else {
     badge.textContent='';
   }
-  document.getElementById('day-realism-row').style.display=(hasTarget&&incomplete)?'block':'none';
-  const showReasons=dayEffort==='none'||dayEffort==='some'||(dayEffort==='strong'&&hasTarget&&incomplete);
-  document.getElementById('day-missed-row').style.display=showReasons?'block':'none';
-  document.getElementById('day-reasons-label').textContent=dayEffort==='none'?"3 reasons you couldn't follow the plan":'What got in the way of hitting the full target?';
+  document.getElementById('day-realism-row').style.display=hasTarget?'block':'none';
+
+  // 3 existing Not Completed questions remain mandatory ONLY when
+  // Not Completed is selected — preserved exactly as before otherwise.
+  document.getElementById('day-missed-row').style.display=(dayCompleted===false)?'block':'none';
+
+  // Live Day Performance preview using the values currently in the form,
+  // built from the same object shape saveDayLog() will persist.
+  const previewLog={
+    effort:dayEffort,completed:dayCompleted,
+    hasTarget:hasTarget,target:hasTarget&&!isNaN(targetVal)?targetVal:null,
+    actual:hasTarget&&actualRaw!==''&&!isNaN(actualVal)?actualVal:null
+  };
+  const perfBadge=document.getElementById('day-performance-badge');
+  if(dayEffort){
+    const perf=calcDayPerformance(previewLog);
+    perfBadge.style.display='block';
+    perfBadge.innerHTML='<b>Day Performance: '+perf+'% ('+dayPerformanceLabel(perf)+')</b> — a blended score of Effort + objective achievement/completion, never a manually-entered number.';
+  } else {
+    perfBadge.style.display='none';
+  }
 }
 function saveDayLog(){
   if(!selDay)return;
-  if(!dayEffort){alert('Please choose an Effort level for today — Strong, Some, or No Effort.');return;}
+  if(dayCompleted===null){alert('Please mark today as Completed or Not Completed.');return;}
+  if(!dayEffort){alert('Please choose an Effort level for today.');return;}
+  if(EFFORT_META[dayEffort].needsReason&&dayEffortReasons.length===0){alert('Please select at least one reason that affected your effort today.');return;}
+  if(dayEffortReasons.includes('Other')&&!document.getElementById('day-effort-other-note').value.trim()){alert('Please add a short note for "Other".');return;}
+  if(dayCompleted===false){
+    const r1=document.getElementById('day-r1').value.trim(),r2=document.getElementById('day-r2').value.trim(),r3=document.getElementById('day-r3').value.trim();
+    if(!r1||!r2||!r3){alert("Since today was Not Completed, please fill in all 3 reasons you couldn't follow the plan.");return;}
+  }
   const edAdv=document.getElementById('ed-adv');
   const edNotes=document.getElementById('ed-notes');
   const advRich=edAdv?edAdv.innerHTML:'';
   const notesRich=edNotes?edNotes.innerHTML:'';
   const advPlain=edAdv?(edAdv.textContent||edAdv.innerText||'').trim():'';
   const notesPlain=edNotes?(edNotes.textContent||edNotes.innerText||'').trim():'';
+  if(!notesPlain){alert('Notes / reflections are required before saving.');return;}
   const hasTarget=document.getElementById('day-has-target').checked;
   const targetRaw=document.getElementById('day-target').value;
   const actualRaw=document.getElementById('day-actual').value;
   const target=(hasTarget&&targetRaw!=='')?parseFloat(targetRaw):null;
   const actual=(hasTarget&&actualRaw!=='')?parseFloat(actualRaw):null;
   const achievementPct=(hasTarget&&target>0&&actual!==null&&!isNaN(actual))?Math.round(actual/target*100):null; // secondary info only, uncapped
-  D.adventureDays[selDay]={
+  const logObj={
     effort:dayEffort,
     status:effortToStatus(dayEffort), // kept in sync so existing Dashboard/Progress reads of d.status still work
+    completed:dayCompleted,
     happy:dayHappy,
     goals:advPlain,
     advRich:advRich,
@@ -3306,10 +3575,103 @@ function saveDayLog(){
     actual:actual,
     achievementPct:achievementPct,
     targetRealism:document.getElementById('day-realism').value||null,
+    effortReasons:EFFORT_META[dayEffort].needsReason?{items:dayEffortReasons.slice(),otherNote:document.getElementById('day-effort-other-note').value.trim(),note:document.getElementById('day-effort-note').value.trim()}:null,
     reasons:['r1','r2','r3'].map(r=>{const el=document.getElementById('day-'+r);return el?el.value:'';}),
     fixes:['f1','f2'].map(f=>{const el=document.getElementById('day-'+f);return el?el.value:'';})
   };
+  logObj.dayPerformance=calcDayPerformance(logObj);
+  D.adventureDays[selDay]=logObj;
   save();closeModal('modal-day');renderAdventure();
+}
+
+// ── Untouched Days ─────────────────────────────────────────────────────
+// A day is "untouched" when the person never opened/logged the Adventure
+// Log for it — distinct from Completed, Not Completed, or No Effort. It is
+// NEVER auto-classified as a failure. Detected days are resolved one at a
+// time via a short catch-up prompt (reason + optional note) before the
+// person reaches Today's Adventure, without permanently blocking access —
+// "Skip for now" always lets them continue and try again later.
+function getPendingUntouchedDays(){
+  const [sy,sm,sd]=D.startDate.split('-').map(Number);
+  const start=new Date(sy,sm-1,sd);
+  const todayDate=new Date();
+  const ty=todayDate.getFullYear(),tm=todayDate.getMonth(),td=todayDate.getDate();
+  const todayLocal=new Date(ty,tm,td);
+  const dayNum=getCurrentJourneyDay();
+  const pending=[];
+  // Cap the scan to the most recent 90 journey days for performance/UX —
+  // older gaps remain in the data as simply "no entry" (still correctly
+  // excluded from Completed/Not Completed/Effort stats) and can still be
+  // resolved manually by clicking the day dot.
+  const scanStart=Math.max(1,dayNum-90);
+  for(let i=scanStart;i<dayNum;i++){
+    const d=new Date(sy,sm-1,sd+(i-1));
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if(d>=todayLocal)continue;
+    if(D.adventureDays[key])continue; // already logged or already resolved as untouched
+    if(skippedUntouchedThisSession.has(key))continue;
+    pending.push({key,dayNum:i,dd:d.getDate(),dmo:d.getMonth(),dy:d.getFullYear()});
+  }
+  return pending;
+}
+function renderUntouchedBanner(){
+  const card=document.getElementById('untouched-banner-card');
+  const text=document.getElementById('untouched-banner-text');
+  if(!card||!text)return;
+  const pending=getPendingUntouchedDays();
+  if(pending.length===0){card.style.display='none';return;}
+  card.style.display='block';
+  const list=pending.slice(0,5).map(p=>'Day '+p.dayNum).join(', ')+(pending.length>5?' and '+(pending.length-5)+' more':'');
+  text.textContent=pending.length+' day(s) were never logged: '+list+'. This is not automatically a failure — add a quick reason so your patterns stay accurate.';
+}
+function maybeOpenUntouchedCatchup(force){
+  const pending=getPendingUntouchedDays();
+  if(pending.length===0)return;
+  openUntouchedCatchup(pending,null);
+}
+function openUntouchedCatchup(pending,thenCallback){
+  untouchedQueue=pending;untouchedIdx=0;untouchedThenCallback=thenCallback||null;
+  showUntouchedStep();
+}
+function showUntouchedStep(){
+  if(untouchedIdx>=untouchedQueue.length){
+    closeModal('modal-untouched');
+    if(untouchedThenCallback){const cb=untouchedThenCallback;untouchedThenCallback=null;cb();}
+    return;
+  }
+  const item=untouchedQueue[untouchedIdx];
+  const prettyDate=item.dd+' '+MONTH_NAMES[item.dmo]+' '+item.dy;
+  document.getElementById('modal-untouched-title').textContent='Day '+item.dayNum+' — '+prettyDate+' was Untouched';
+  document.getElementById('modal-untouched-sub').textContent="You didn't log an Adventure for this day. What happened?";
+  document.getElementById('untouched-reason').value='';
+  document.getElementById('untouched-note').value='';
+  document.getElementById('untouched-queue-info').textContent=(untouchedIdx+1)+' of '+untouchedQueue.length+' untouched day(s) to resolve';
+  updateUntouchedUI();
+  document.getElementById('modal-untouched').classList.add('open');
+}
+function updateUntouchedUI(){
+  const reason=document.getElementById('untouched-reason').value;
+  document.getElementById('untouched-note-label').textContent=reason==='Other'?'Note (required for "Other")':'Note (optional)';
+}
+function saveUntouchedDay(){
+  const item=untouchedQueue[untouchedIdx];
+  if(!item)return;
+  const reason=document.getElementById('untouched-reason').value;
+  const note=document.getElementById('untouched-note').value.trim();
+  if(!reason){alert('Please select a reason.');return;}
+  if(reason==='Other'&&!note){alert('Please add a short note for "Other".');return;}
+  D.adventureDays[item.key]={untouched:true,untouchedReason:reason,untouchedNote:note,resolvedAt:new Date().toISOString()};
+  save();
+  untouchedIdx++;
+  showUntouchedStep();
+  renderAdventure();
+}
+function skipUntouchedDay(){
+  const item=untouchedQueue[untouchedIdx];
+  if(item)skippedUntouchedThisSession.add(item.key);
+  untouchedIdx++;
+  showUntouchedStep();
+  renderAdventure();
 }
 
 let curDayIdx=0;
@@ -3638,6 +4000,64 @@ function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>ge
     const missionTitle=(D.currentMission&&D.currentMission.title)||'';
     pmEl.innerHTML=`<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;"><span style="color:var(--text);">${missionTitle?esc(missionTitle):'No current mission set'}</span><span style="color:var(--accent);font-weight:600;">${missionPct}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${missionPct}%"></div></div>`;
   }
+  renderAdventureInsights();
+}
+// ── Adventure Log → Progress integration ─────────────────────────────
+// Minimal, additive card (does not alter the existing progress-stats /
+// chart-adventure / progress-reviews / progress-mission blocks above).
+// Works at ANY point in the 1825-day journey — it simply summarises
+// whatever has been recorded in D.adventureDays up to now, so it reads
+// correctly whether the person is on Day 20, Day 300, or Day 1500.
+function renderAdventureInsights(){
+  const el=document.getElementById('progress-adventure-insights');
+  if(!el)return;
+  const dayNum=getCurrentJourneyDay();
+  const logs=Object.values(D.adventureDays||{});
+  const logged=logs.filter(d=>!d.untouched);
+  const untouched=logs.filter(d=>d.untouched);
+  const completed=logs.filter(d=>getDayCompleted(d)===true).length;
+  const notCompleted=logs.filter(d=>getDayCompleted(d)===false).length;
+  const effortCounts={vstrong:0,strong:0,some:0,normal:0,none:0};
+  logged.forEach(d=>{const e=getDayEffort(d);if(e&&effortCounts[e]!==undefined)effortCounts[e]++;});
+  const withTarget=logs.filter(d=>d.hasTarget&&d.target>0&&d.actual!==null&&d.actual!==undefined&&!isNaN(d.actual));
+  const avgAchievement=withTarget.length>0?Math.round(withTarget.reduce((s,d)=>s+(d.actual/d.target*100),0)/withTarget.length):null;
+  const perfVals=logged.map(d=>calcDayPerformance(d)).filter(v=>v!==null);
+  const avgPerf=perfVals.length>0?Math.round(perfVals.reduce((a,b)=>a+b,0)/perfVals.length):null;
+  const completionRate=(completed+notCompleted)>0?Math.round(completed/(completed+notCompleted)*100):null;
+  const realismCounts={realistic:0,ambitious:0,easy:0};
+  withTarget.forEach(d=>{if(d.targetRealism&&realismCounts[d.targetRealism]!==undefined)realismCounts[d.targetRealism]++;});
+
+  const statRow=(label,val)=>`<div class="stat-card" style="padding:12px 10px;"><div class="stat-num" style="font-size:20px;">${val}</div><div class="stat-label" style="font-size:10px;">${label}</div></div>`;
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;">
+      ${statRow('Journey Day',dayNum+' / 1825')}
+      ${statRow('Adventures Logged',logged.length)}
+      ${statRow('Untouched Days',untouched.length)}
+      ${statRow('Completed Days',completed)}
+      ${statRow('Not Completed Days',notCompleted)}
+      ${statRow('Completion Rate',completionRate!==null?completionRate+'%':'—')}
+      ${statRow('Avg Target Achievement',avgAchievement!==null?avgAchievement+'%':'—')}
+      ${statRow('Avg Day Performance',avgPerf!==null?avgPerf+'%':'—')}
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:var(--text2);">
+      <b>Effort distribution</b> — Very Strong: ${effortCounts.vstrong} · Strong: ${effortCounts.strong} · Some: ${effortCounts.some} · Normal: ${effortCounts.normal} · No Effort: ${effortCounts.none}
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text2);">
+      <b>Target realism (numeric tasks)</b> — Realistic: ${realismCounts.realistic} · Too Ambitious: ${realismCounts.ambitious} · Too Easy: ${realismCounts.easy}
+    </div>
+    <div style="margin-top:14px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;">What's repeatedly slowing you down</div>
+      <div id="progress-reason-patterns" style="font-size:12px;color:var(--text2);"></div>
+    </div>
+  `;
+  const patterns=computeReasonPatterns();
+  const prEl2=document.getElementById('progress-reason-patterns');
+  if(prEl2){
+    prEl2.innerHTML=patterns.length===0?'<span style="color:var(--text3);">No recurring reasons logged yet.</span>':patterns.slice(0,10).map(([reason,count])=>{
+      const isCircumstance=CIRCUMSTANCE_REASONS.includes(reason);
+      return `<div style="display:flex;justify-content:space-between;padding:4px 0;"><span>${esc(reason)}${isCircumstance?' <span style="color:var(--text3);font-size:10px;">(circumstance)</span>':' <span style="color:var(--warning);font-size:10px;">(behaviour pattern)</span>'}</span><b>${count}×</b></div>`;
+    }).join('');
+  }
 }
 load();renderHome();renderScheduleNav();
 window.__mark('App Rendered');
@@ -3906,6 +4326,33 @@ function renderReviews(){
   if(!D.quarterlyReviews)D.quarterlyReviews=[];
   if(!D.annualReviews)D.annualReviews=[];
   renderWeeklyList();renderMonthlyList();renderQuarterlyList();renderAnnualList();
+  renderAdventureReviewSnapshot();
+}
+// Lightweight, read-only Adventure Log summary shown above the manual
+// Weekly/Monthly/Quarterly/Annual review forms below — does not alter how
+// those reviews are written or stored, just gives useful patterns
+// (recurring reasons, effort/completion mix, target realism) to reference
+// while writing them, over rolling 7/30/90-day windows.
+function renderAdventureReviewSnapshot(){
+  const el=document.getElementById('reviews-adventure-snapshot');
+  if(!el)return;
+  const windowStats=(days)=>{
+    const cutoff=new Date();cutoff.setDate(cutoff.getDate()-days);
+    const entries=Object.entries(D.adventureDays||{}).filter(([k])=>new Date(k)>=cutoff&&new Date(k)<=new Date());
+    const logs=entries.map(([,v])=>v);
+    const logged=logs.filter(d=>!d.untouched);
+    const untouched=logs.filter(d=>d.untouched).length;
+    const completed=logs.filter(d=>getDayCompleted(d)===true).length;
+    const notCompleted=logs.filter(d=>getDayCompleted(d)===false).length;
+    const perfVals=logged.map(d=>calcDayPerformance(d)).filter(v=>v!==null);
+    const avgPerf=perfVals.length>0?Math.round(perfVals.reduce((a,b)=>a+b,0)/perfVals.length):null;
+    return {logged:logged.length,untouched,completed,notCompleted,avgPerf};
+  };
+  const w7=windowStats(7),w30=windowStats(30),w90=windowStats(90);
+  const row=(label,s)=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;"><span style="color:var(--text2);">${label}</span><span>Logged ${s.logged} · Untouched ${s.untouched} · Completed ${s.completed} · Not Completed ${s.notCompleted} · Avg Day Performance ${s.avgPerf!==null?s.avgPerf+'%':'—'}</span></div>`;
+  const patterns=computeReasonPatterns().slice(0,5);
+  el.innerHTML=row('Last 7 days',w7)+row('Last 30 days',w30)+row('Last 90 days',w90)+
+    `<div style="margin-top:10px;font-size:12px;"><b>Top recurring reasons:</b> ${patterns.length?patterns.map(([r,c])=>esc(r)+' ('+c+'×)').join(', '):'none logged yet'}</div>`;
 }
 
 // ── RATING BADGE helper ──────────────────────────────────────
