@@ -285,7 +285,7 @@ select option{background:var(--surface);color:var(--text)}
 .day-dot.past-empty{}
 .day-dot.untouched-resolved{border-style:dashed;border-color:var(--text3);}
 .day-dot.planned{border-style:dashed;border-color:var(--accent);}
-.day-dot.future-locked{opacity:.45;cursor:not-allowed;}
+.day-dot.future-locked{opacity:.55;}
 .day-dot.today{background:var(--accent);border-color:var(--accent);font-weight:600}
 .day-dot.today .dd-num{color:#fff}
 .day-dot.today .dd-mark{opacity:1;color:#fff}
@@ -1107,8 +1107,8 @@ select option{background:var(--surface);color:var(--text)}
       <span style="color:var(--accent);">■ Today</span>
       <span style="border:1.5px solid var(--accent);border-radius:2px;padding:0 2px;color:var(--text2);">■ Past (empty)</span>
       <span style="border:1.5px dashed var(--text3);border-radius:2px;padding:0 2px;color:var(--text2);">■ Untouched (resolved)</span>
-      <span style="border:1.5px dashed var(--accent);border-radius:2px;padding:0 2px;color:var(--text2);">■ Tomorrow (planned)</span>
-      <span style="opacity:.5;">■ Future (locked)</span>
+      <span style="border:1.5px dashed var(--accent);border-radius:2px;padding:0 2px;color:var(--text2);">■ Planned (future)</span>
+      <span style="opacity:.5;">■ Future (click to plan)</span>
     </div>
   </div>
   <div class="card" id="adventure-perf-card">
@@ -1899,7 +1899,7 @@ select option{background:var(--surface);color:var(--text)}
 <div class="modal-overlay" id="modal-tomorrow">
   <div class="modal">
     <div class="modal-title" id="modal-tomorrow-title">Plan Tomorrow's Adventure</div>
-    <p style="font-size:13px;color:var(--text2);margin-top:-6px;margin-bottom:14px;">You can prepare tomorrow's Adventure now. Completed/Not Completed, Effort, achievement and reasons stay locked until that day actually arrives.</p>
+    <p style="font-size:13px;color:var(--text2);margin-top:-6px;margin-bottom:14px;">You can prepare any future day's Adventure now. Completed/Not Completed, Effort, Actual, Achievement %, reasons and reflection Notes stay locked until that day actually arrives.</p>
     <div class="label">Tomorrow's Adventure (plan)</div>
     <textarea id="tomorrow-plan-text" rows="6" placeholder="Write what you plan to do tomorrow — goals, intentions, plans..." style="margin-top:6px;"></textarea>
     <div class="modal-footer">
@@ -3410,12 +3410,12 @@ function renderAdventure(){
     const isToday=key===todayKey;
     const dCmp=new Date(dy,dmo,dd);
     const isPast=dCmp<new Date(ty,tm,td);
-    const isFutureLocked=dayLabel>dayNum+1; // beyond tomorrow — fully locked, cannot bypass chronology
+    const isFuture=dayLabel>dayNum; // tomorrow through Day 1825 — plan-only; real logging unlocks when the day arrives
     const div=document.createElement('div');
-    let cls='day-dot';if(status==='done')cls+=' done';else if(status==='partial')cls+=' partial';else if(status==='missed')cls+=' missed';else if(isUntouchedResolved)cls+=' untouched-resolved';else if(isPlannedOnly)cls+=' planned';else if(isPast)cls+=' past-empty';if(isToday)cls+=' today';if(isFutureLocked)cls+=' future-locked';
+    let cls='day-dot';if(status==='done')cls+=' done';else if(status==='partial')cls+=' partial';else if(status==='missed')cls+=' missed';else if(isUntouchedResolved)cls+=' untouched-resolved';else if(isPlannedOnly)cls+=' planned';else if(isPast)cls+=' past-empty';if(isToday)cls+=' today';if(isFuture&&!isPlannedOnly)cls+=' future-locked';
     div.className=cls;
-    div.innerHTML='<span class="dd-num">'+dayLabel+'</span><span class="dd-mark">'+(isToday?'⭐':status==='done'?'✓':status==='partial'?'●':status==='missed'?'✕':isUntouchedResolved?'⋯':isPlannedOnly?'📝':isFutureLocked?'🔒':'')+'</span>';
-    div.title='Day '+dayLabel+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy+(isUntouchedResolved?' (Untouched: '+log.untouchedReason+')':isPlannedOnly?' (Planned — logging opens on that day)':isFutureLocked?' (Locked — not yet reachable)':'');
+    div.innerHTML='<span class="dd-num">'+dayLabel+'</span><span class="dd-mark">'+(isToday?'⭐':status==='done'?'✓':status==='partial'?'●':status==='missed'?'✕':isUntouchedResolved?'⋯':isPlannedOnly?'📝':'')+'</span>';
+    div.title='Day '+dayLabel+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy+(isUntouchedResolved?' (Untouched: '+log.untouchedReason+')':isPlannedOnly?' (Planned — logging opens on that day)':isFuture?' (Future — click to plan; logging unlocks on that day)':'');
     div.onclick=()=>openDayModal(key,dayLabel,dd,dmo,dy);
     grid.appendChild(div);
   }
@@ -3473,17 +3473,15 @@ function renderAdventureReasons(){
   }).join('');
 }
 // Chronological locking: past and today's day can be logged/edited as
-// before. Exactly tomorrow can only be pre-written via the plan-only
-// "Set Tomorrow's Adventure" flow (no Completed/Effort/reasons yet).
-// Anything further out is fully locked so the person can never create
-// false historical progress by jumping ahead in the day grid.
+// before. Any FUTURE day (tomorrow through Day 1825) can only be
+// pre-written via the plan-only "Set Tomorrow's Adventure" flow — actual
+// logging (Completed/Not Completed, Effort, Actual, Achievement, reasons
+// about what actually happened, and reflection Notes) stays unavailable
+// until that day actually arrives, so the person can never create false
+// historical progress by jumping ahead in the day grid.
 function openDayModal(key,dayNum,dd,dmo,dy){
   const curDay=getCurrentJourneyDay();
-  if(dayNum>curDay+1){
-    alert("Day "+dayNum+" is locked. You can prepare only the very next day in advance with \"Set Tomorrow's Adventure\" — this day will unlock when it actually arrives.");
-    return;
-  }
-  if(dayNum===curDay+1){
+  if(dayNum>curDay){
     openTomorrowPlanModal(key,dayNum,dd,dmo,dy);
     return;
   }
@@ -3500,10 +3498,13 @@ function openDayModal(key,dayNum,dd,dmo,dy){
   }
   openDayModalNow(key,dayNum,dd,dmo,dy);
 }
-// ── Tomorrow's Adventure planning (plan-only, locked for real logging) ──
+// ── Future-day Adventure planning (plan-only, locked for real logging) ──
+// Same plan-only modal design as before, now usable for ANY future day
+// (tomorrow through Day 1825), not just the very next day.
 let tomorrowPlanKey=null;
-// Reachable both from clicking tomorrow's dot in the day grid and from the
-// explicit "Set Tomorrow's Adventure" button on the Adventure Log page.
+// Reachable both from clicking any future day's dot in the day grid and
+// from the explicit "Set Tomorrow's Adventure" button on the Adventure Log
+// page (which always targets the very next day for quick access).
 function openTomorrowPlanFromButton(){
   const [sy,sm,sd]=D.startDate.split('-').map(Number);
   const curDay=getCurrentJourneyDay();
@@ -3514,8 +3515,8 @@ function openTomorrowPlanFromButton(){
 function openTomorrowPlanModal(key,dayNum,dd,dmo,dy){
   tomorrowPlanKey=key;
   const log=D.adventureDays[key];
-  // If tomorrow already has a real (completed/not-completed) record somehow,
-  // never let the plan-only flow open on top of it.
+  // If this future day already has a real (completed/not-completed) record
+  // somehow, never let the plan-only flow open on top of it.
   if(log&&(log.completed===true||log.completed===false)){
     alert('Day '+dayNum+' already has a logged entry.');
     return;
