@@ -284,6 +284,8 @@ select option{background:var(--surface);color:var(--text)}
 .day-dot.partial .dd-mark{opacity:1;color:#fff}
 .day-dot.past-empty{}
 .day-dot.untouched-resolved{border-style:dashed;border-color:var(--text3);}
+.day-dot.planned{border-style:dashed;border-color:var(--accent);}
+.day-dot.future-locked{opacity:.45;cursor:not-allowed;}
 .day-dot.today{background:var(--accent);border-color:var(--accent);font-weight:600}
 .day-dot.today .dd-num{color:#fff}
 .day-dot.today .dd-mark{opacity:1;color:#fff}
@@ -1093,7 +1095,10 @@ select option{background:var(--surface);color:var(--text)}
     <button class="btn btn-primary" onclick="maybeOpenUntouchedCatchup(true)" style="font-size:13px;padding:8px 16px;">Resolve now</button>
   </div>
   <div class="card">
-    <div class="card-title"><span>⚔</span> Day map</div>
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span><span>⚔</span> Day map</span>
+      <button class="btn btn-ghost" onclick="openTomorrowPlanFromButton()" style="font-size:12px;padding:7px 14px;">📝 Set Tomorrow's Adventure</button>
+    </div>
     <div class="day-grid" id="day-grid"></div>
     <div style="display:flex;gap:14px;font-size:12px;color:var(--text3);margin-top:4px;flex-wrap:wrap;">
       <span style="color:var(--success);">■ Strong Effort</span>
@@ -1102,6 +1107,8 @@ select option{background:var(--surface);color:var(--text)}
       <span style="color:var(--accent);">■ Today</span>
       <span style="border:1.5px solid var(--accent);border-radius:2px;padding:0 2px;color:var(--text2);">■ Past (empty)</span>
       <span style="border:1.5px dashed var(--text3);border-radius:2px;padding:0 2px;color:var(--text2);">■ Untouched (resolved)</span>
+      <span style="border:1.5px dashed var(--accent);border-radius:2px;padding:0 2px;color:var(--text2);">■ Tomorrow (planned)</span>
+      <span style="opacity:.5;">■ Future (locked)</span>
     </div>
   </div>
   <div class="card" id="adventure-perf-card">
@@ -1188,6 +1195,36 @@ select option{background:var(--surface);color:var(--text)}
   <div class="grid3" id="progress-stats" style="margin-bottom:20px;"></div>
   <div class="card"><div class="card-title"><span>📊</span> Adventure log — last 30 days</div><div class="chart-box"><canvas id="chart-adventure"></canvas></div></div>
   <div class="card"><div class="card-title"><span>⚔</span> Adventure Log — detailed progress</div><div id="progress-adventure-insights"></div></div>
+  <div class="card">
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span><span>🗺</span> Complete 5-Year Adventure Timeline — Day 1 to 1825</span>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <select id="progress-timeline-filter" onchange="renderProgressTimeline()" style="width:auto;padding:6px 10px;font-size:12px;">
+          <option value="all">All days</option>
+          <option value="completed">Completed</option>
+          <option value="notcompleted">Not Completed</option>
+          <option value="untouched">Untouched</option>
+          <option value="planned">Planned (tomorrow)</option>
+          <option value="blank">No record (past)</option>
+          <option value="future">Future / not yet reached</option>
+        </select>
+        <input type="number" id="progress-timeline-jump" placeholder="Jump to day #" min="1" max="1825" style="width:120px;padding:6px 10px;font-size:12px;">
+        <button class="btn btn-ghost" onclick="jumpToProgressDay()" style="font-size:12px;padding:6px 12px;">Go</button>
+      </div>
+    </div>
+    <div id="progress-timeline-summary" style="font-size:12px;color:var(--text2);margin-bottom:10px;"></div>
+    <div id="progress-timeline-grid" class="day-grid" style="max-height:420px;overflow-y:auto;padding:2px;"></div>
+    <div id="progress-timeline-detail" style="margin-top:12px;font-size:13px;color:var(--text2);display:none;padding:12px;background:var(--surface2);border-radius:var(--r);"></div>
+    <div style="display:flex;gap:14px;font-size:11px;color:var(--text3);margin-top:10px;flex-wrap:wrap;">
+      <span style="color:var(--success);">■ Completed (Strong/Very Strong)</span>
+      <span style="color:var(--warning);">■ Completed (Some/Normal Effort)</span>
+      <span style="color:var(--danger);">■ Not Completed</span>
+      <span style="border:1.5px dashed var(--text3);border-radius:2px;padding:0 2px;">■ Untouched (resolved)</span>
+      <span style="border:1.5px dashed var(--accent);border-radius:2px;padding:0 2px;">■ Planned</span>
+      <span style="border:1.5px solid var(--accent);border-radius:2px;padding:0 2px;">■ No record (past)</span>
+      <span style="opacity:.5;">■ Future / not yet reached</span>
+    </div>
+  </div>
   <div class="card">
     <div class="card-title"><span>🎯</span> Milestones</div>
     <div id="progress-milestones"></div>
@@ -1724,23 +1761,27 @@ select option{background:var(--surface);color:var(--text)}
       <button class="btn btn-ghost" id="btn-completed-n" onclick="setDayCompleted(false)" style="flex:1;">✕ Not Completed</button>
     </div>
 
-    <div class="label mt16">Effort — how strongly did you work toward it?</div>
-    <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
-      <button class="btn btn-ghost" id="btn-effort-vstrong" onclick="setDayEffort('vstrong')" style="flex:1;min-width:120px;">🟢🟢 Very Strong</button>
-      <button class="btn btn-ghost" id="btn-effort-strong" onclick="setDayEffort('strong')" style="flex:1;min-width:120px;">🟢 Strong</button>
-      <button class="btn btn-ghost" id="btn-effort-some" onclick="setDayEffort('some')" style="flex:1;min-width:120px;">🟡 Some</button>
-      <button class="btn btn-ghost" id="btn-effort-normal" onclick="setDayEffort('normal')" style="flex:1;min-width:120px;">🟠 Normal</button>
-      <button class="btn btn-ghost" id="btn-effort-none" onclick="setDayEffort('none')" style="flex:1;min-width:120px;">🔴 No Effort</button>
-    </div>
-
-    <div id="day-effort-reason-row" style="margin-top:14px;display:none;">
-      <div class="label">What affected your effort today? (select any that apply)</div>
-      <div id="day-effort-reason-chips" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;"></div>
-      <div id="day-effort-other-row" style="display:none;margin-top:8px;">
-        <input type="text" id="day-effort-other-note" placeholder="Please describe (required for &quot;Other&quot;)">
+    <!-- Effort is only relevant for Completed days — Not Completed skips
+         straight to the Not Completed section below, no Effort required. -->
+    <div id="day-effort-block" style="display:none;">
+      <div class="label mt16">Effort — how strongly did you work toward it?</div>
+      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+        <button class="btn btn-ghost" id="btn-effort-vstrong" onclick="setDayEffort('vstrong')" style="flex:1;min-width:120px;">🟢🟢 Very Strong</button>
+        <button class="btn btn-ghost" id="btn-effort-strong" onclick="setDayEffort('strong')" style="flex:1;min-width:120px;">🟢 Strong</button>
+        <button class="btn btn-ghost" id="btn-effort-some" onclick="setDayEffort('some')" style="flex:1;min-width:120px;">🟡 Some</button>
+        <button class="btn btn-ghost" id="btn-effort-normal" onclick="setDayEffort('normal')" style="flex:1;min-width:120px;">🟠 Normal</button>
+        <button class="btn btn-ghost" id="btn-effort-none" onclick="setDayEffort('none')" style="flex:1;min-width:120px;">🔴 No Effort</button>
       </div>
-      <div style="margin-top:8px;">
-        <textarea id="day-effort-note" rows="2" placeholder="Optional note about the reason(s) above..."></textarea>
+
+      <div id="day-effort-reason-row" style="margin-top:14px;display:none;">
+        <div class="label">What affected your effort today? (select any that apply)</div>
+        <div id="day-effort-reason-chips" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;"></div>
+        <div id="day-effort-other-row" style="display:none;margin-top:8px;">
+          <input type="text" id="day-effort-other-note" placeholder="Please describe (required for &quot;Other&quot;)">
+        </div>
+        <div style="margin-top:8px;">
+          <textarea id="day-effort-note" rows="2" placeholder="Optional note about the reason(s) above..."></textarea>
+        </div>
       </div>
     </div>
 
@@ -1781,10 +1822,22 @@ select option{background:var(--surface);color:var(--text)}
       </div>
     </div>
     <div id="day-missed-row" style="display:none;">
-      <div class="label mt16" id="day-reasons-label">3 reasons you couldn't follow the plan</div>
-      <input type="text" id="day-r1" placeholder="Reason 1 (required)" style="margin-bottom:7px;">
-      <input type="text" id="day-r2" placeholder="Reason 2 (required)" style="margin-bottom:7px;">
-      <input type="text" id="day-r3" placeholder="Reason 3 (required)">
+      <div style="margin-top:16px;padding:12px;border:1px solid var(--warning);border-radius:var(--r);background:rgba(184,137,42,0.06);">
+        <div class="label" style="margin-top:0;">Not Completed — what happened?</div>
+        <div class="label mt16" id="day-reasons-label">3 reasons you couldn't follow the plan</div>
+        <input type="text" id="day-r1" placeholder="Reason 1 (required)" style="margin-bottom:7px;">
+        <input type="text" id="day-r2" placeholder="Reason 2 (required)" style="margin-bottom:7px;">
+        <input type="text" id="day-r3" placeholder="Reason 3 (required)">
+
+        <div class="label mt16">Which of these applied? (select one or more)</div>
+        <div id="day-notcompleted-reason-chips" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;"></div>
+        <div id="day-notcompleted-other-row" style="display:none;margin-top:8px;">
+          <input type="text" id="day-notcompleted-other-note" placeholder="Please describe (required for &quot;Other&quot;)">
+        </div>
+        <div style="margin-top:8px;">
+          <textarea id="day-notcompleted-note" rows="2" placeholder="Optional note about the reason(s) above..."></textarea>
+        </div>
+      </div>
     </div>
     <div class="label mt16">What went well? (optional)</div>
     <input type="text" id="day-f1" placeholder="What went well">
@@ -1835,9 +1888,23 @@ select option{background:var(--surface);color:var(--text)}
     <div class="label mt16" id="untouched-note-label">Note (optional)</div>
     <textarea id="untouched-note" rows="2" placeholder="Add a short note..."></textarea>
     <div style="font-size:12px;color:var(--text3);margin-top:10px;" id="untouched-queue-info"></div>
+    <p style="font-size:11px;color:var(--text3);margin-top:8px;">This day must be resolved before you can continue to today's Adventure Log — there is no way to skip it.</p>
     <div class="modal-footer">
-      <button class="btn btn-ghost" onclick="skipUntouchedDay()" style="margin-right:auto;">Skip for now</button>
       <button class="btn btn-primary" onclick="saveUntouchedDay()">Save &amp; continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOMORROW PLANNING MODAL (plan-only — locked for actual logging until that day arrives) -->
+<div class="modal-overlay" id="modal-tomorrow">
+  <div class="modal">
+    <div class="modal-title" id="modal-tomorrow-title">Plan Tomorrow's Adventure</div>
+    <p style="font-size:13px;color:var(--text2);margin-top:-6px;margin-bottom:14px;">You can prepare tomorrow's Adventure now. Completed/Not Completed, Effort, achievement and reasons stay locked until that day actually arrives.</p>
+    <div class="label">Tomorrow's Adventure (plan)</div>
+    <textarea id="tomorrow-plan-text" rows="6" placeholder="Write what you plan to do tomorrow — goals, intentions, plans..." style="margin-top:6px;"></textarea>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-tomorrow')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTomorrowPlan()">Save plan</button>
     </div>
   </div>
 </div>
@@ -3208,7 +3275,7 @@ function toggleHabit(hi,day){toggleSpiritualHabit(hi,day);}
 function delSpiritualHabit(i){D.spiritual.habits.splice(i,1);save();renderSpiritual();}
 function delHabit(i){delSpiritualHabit(i);}
 
-let selDay=null,dayEffort=null,dayHappy=null,dayCompleted=null,dayEffortReasons=[];
+let selDay=null,dayEffort=null,dayHappy=null,dayCompleted=null,dayEffortReasons=[],dayNotCompletedReasons=[];
 let untouchedQueue=[],untouchedIdx=0,untouchedThenCallback=null;
 const skippedUntouchedThisSession=new Set();
 // ── Adventure Log v3: Completion + 5-level Effort model ──────────────
@@ -3276,18 +3343,25 @@ function getDayCompleted(log){
 function calcDayPerformance(log){
   if(!log||log.untouched)return null;
   const effort=getDayEffort(log);
-  if(!effort)return null;
-  const effortScore=(EFFORT_META[effort]||{}).score||0;
+  const completed=getDayCompleted(log);
+  if(!effort&&completed===null)return null; // nothing recorded yet (e.g. a plan-only "Set Tomorrow's Adventure" entry)
   let objective;
   if(log.hasTarget&&log.target>0&&log.actual!==null&&log.actual!==undefined&&!isNaN(log.actual)){
     const ratio=log.actual/log.target;
     objective=Math.min(ratio,1.15); // small, capped bonus for exceeding target
   } else {
-    const c=getDayCompleted(log);
-    objective=c===true?1:(c===false?0:0.5);
+    objective=completed===true?1:(completed===false?0:0.5);
   }
-  const completed=getDayCompleted(log);
   if(completed===false)objective=Math.min(objective,0.6);
+  // Not Completed days no longer require an Effort selection — without one,
+  // Day Performance is based purely on the objective factor (Target
+  // Achievement, or the Completed/Not Completed flag), scaled down the same
+  // way Effort's 45% share would otherwise contribute.
+  if(!effort){
+    const raw=objective*0.45;
+    return Math.round(Math.min(Math.max(raw,0),1)*100);
+  }
+  const effortScore=(EFFORT_META[effort]||{}).score||0;
   const raw=effortScore*0.55+objective*0.45;
   return Math.round(Math.min(Math.max(raw,0),1)*100);
 }
@@ -3332,14 +3406,16 @@ function renderAdventure(){
     const log=D.adventureDays[key];
     const status=log?getDayStatus(log):'';
     const isUntouchedResolved=!!(log&&log.untouched);
+    const isPlannedOnly=!!(log&&log.plannedOnly);
     const isToday=key===todayKey;
     const dCmp=new Date(dy,dmo,dd);
     const isPast=dCmp<new Date(ty,tm,td);
+    const isFutureLocked=dayLabel>dayNum+1; // beyond tomorrow — fully locked, cannot bypass chronology
     const div=document.createElement('div');
-    let cls='day-dot';if(status==='done')cls+=' done';else if(status==='partial')cls+=' partial';else if(status==='missed')cls+=' missed';else if(isUntouchedResolved)cls+=' untouched-resolved';else if(isPast)cls+=' past-empty';if(isToday)cls+=' today';
+    let cls='day-dot';if(status==='done')cls+=' done';else if(status==='partial')cls+=' partial';else if(status==='missed')cls+=' missed';else if(isUntouchedResolved)cls+=' untouched-resolved';else if(isPlannedOnly)cls+=' planned';else if(isPast)cls+=' past-empty';if(isToday)cls+=' today';if(isFutureLocked)cls+=' future-locked';
     div.className=cls;
-    div.innerHTML='<span class="dd-num">'+dayLabel+'</span><span class="dd-mark">'+(isToday?'⭐':status==='done'?'✓':status==='partial'?'●':status==='missed'?'✕':isUntouchedResolved?'⋯':'')+'</span>';
-    div.title='Day '+dayLabel+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy+(isUntouchedResolved?' (Untouched: '+log.untouchedReason+')':'');
+    div.innerHTML='<span class="dd-num">'+dayLabel+'</span><span class="dd-mark">'+(isToday?'⭐':status==='done'?'✓':status==='partial'?'●':status==='missed'?'✕':isUntouchedResolved?'⋯':isPlannedOnly?'📝':isFutureLocked?'🔒':'')+'</span>';
+    div.title='Day '+dayLabel+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy+(isUntouchedResolved?' (Untouched: '+log.untouchedReason+')':isPlannedOnly?' (Planned — logging opens on that day)':isFutureLocked?' (Locked — not yet reachable)':'');
     div.onclick=()=>openDayModal(key,dayLabel,dd,dmo,dy);
     grid.appendChild(div);
   }
@@ -3381,6 +3457,7 @@ function computeReasonPatterns(){
   Object.values(D.adventureDays||{}).forEach(d=>{
     if(d.untouched){bump(d.untouchedReason);return;}
     if(d.effortReasons&&Array.isArray(d.effortReasons.items)){d.effortReasons.items.forEach(bump);}
+    if(getDayCompleted(d)===false&&d.notCompletedReasons&&Array.isArray(d.notCompletedReasons.items)){d.notCompletedReasons.items.forEach(bump);}
   });
   return Object.entries(counts).sort((a,b)=>b[1]-a[1]);
 }
@@ -3395,7 +3472,21 @@ function renderAdventureReasons(){
     return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);"><span>${esc(reason)} ${tag}</span><b>${count}×</b></div>`;
   }).join('');
 }
+// Chronological locking: past and today's day can be logged/edited as
+// before. Exactly tomorrow can only be pre-written via the plan-only
+// "Set Tomorrow's Adventure" flow (no Completed/Effort/reasons yet).
+// Anything further out is fully locked so the person can never create
+// false historical progress by jumping ahead in the day grid.
 function openDayModal(key,dayNum,dd,dmo,dy){
+  const curDay=getCurrentJourneyDay();
+  if(dayNum>curDay+1){
+    alert("Day "+dayNum+" is locked. You can prepare only the very next day in advance with \"Set Tomorrow's Adventure\" — this day will unlock when it actually arrives.");
+    return;
+  }
+  if(dayNum===curDay+1){
+    openTomorrowPlanModal(key,dayNum,dd,dmo,dy);
+    return;
+  }
   // Before opening TODAY's entry, make sure earlier untouched days are
   // resolved first (sequential catch-up). Opening a past/other day is
   // unaffected — only today's entry point triggers the catch-up flow.
@@ -3409,8 +3500,44 @@ function openDayModal(key,dayNum,dd,dmo,dy){
   }
   openDayModalNow(key,dayNum,dd,dmo,dy);
 }
+// ── Tomorrow's Adventure planning (plan-only, locked for real logging) ──
+let tomorrowPlanKey=null;
+// Reachable both from clicking tomorrow's dot in the day grid and from the
+// explicit "Set Tomorrow's Adventure" button on the Adventure Log page.
+function openTomorrowPlanFromButton(){
+  const [sy,sm,sd]=D.startDate.split('-').map(Number);
+  const curDay=getCurrentJourneyDay();
+  const d=new Date(sy,sm-1,sd+curDay); // curDay is 1-based "today"; +curDay lands on tomorrow
+  const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  openTomorrowPlanModal(key,curDay+1,d.getDate(),d.getMonth(),d.getFullYear());
+}
+function openTomorrowPlanModal(key,dayNum,dd,dmo,dy){
+  tomorrowPlanKey=key;
+  const log=D.adventureDays[key];
+  // If tomorrow already has a real (completed/not-completed) record somehow,
+  // never let the plan-only flow open on top of it.
+  if(log&&(log.completed===true||log.completed===false)){
+    alert('Day '+dayNum+' already has a logged entry.');
+    return;
+  }
+  document.getElementById('modal-tomorrow-title').textContent="Plan Day "+dayNum+" — "+dd+' '+MONTH_NAMES[dmo]+' '+dy;
+  document.getElementById('tomorrow-plan-text').value=(log&&log.goals)||'';
+  document.getElementById('modal-tomorrow').classList.add('open');
+}
+function saveTomorrowPlan(){
+  if(!tomorrowPlanKey)return;
+  const text=document.getElementById('tomorrow-plan-text').value.trim();
+  const existing=D.adventureDays[tomorrowPlanKey];
+  if(existing&&(existing.completed===true||existing.completed===false)){closeModal('modal-tomorrow');return;}
+  if(!text){
+    if(existing&&existing.plannedOnly)delete D.adventureDays[tomorrowPlanKey];
+  } else {
+    D.adventureDays[tomorrowPlanKey]={plannedOnly:true,goals:text,advRich:esc(text).replace(/\n/g,'<br>'),plannedAt:new Date().toISOString()};
+  }
+  save();closeModal('modal-tomorrow');renderAdventure();
+}
 function openDayModalNow(key,dayNum,dd,dmo,dy){
-  selDay=key;dayEffort=null;dayHappy=null;dayCompleted=null;dayEffortReasons=[];
+  selDay=key;dayEffort=null;dayHappy=null;dayCompleted=null;dayEffortReasons=[];dayNotCompletedReasons=[];
   const log=D.adventureDays[key]||{};
   // dd, dmo, dy are local date parts computed in renderAdventure — use them directly
   // to avoid any possible UTC/timezone shift from re-parsing D.startDate
@@ -3424,12 +3551,16 @@ function openDayModalNow(key,dayNum,dd,dmo,dy){
   dayEffortReasons=(log.effortReasons&&Array.isArray(log.effortReasons.items))?log.effortReasons.items.slice():[];
   document.getElementById('day-effort-other-note').value=(log.effortReasons&&log.effortReasons.otherNote)||'';
   document.getElementById('day-effort-note').value=(log.effortReasons&&log.effortReasons.note)||'';
+  dayNotCompletedReasons=(log.notCompletedReasons&&Array.isArray(log.notCompletedReasons.items))?log.notCompletedReasons.items.slice():[];
+  document.getElementById('day-notcompleted-other-note').value=(log.notCompletedReasons&&log.notCompletedReasons.otherNote)||'';
+  document.getElementById('day-notcompleted-note').value=(log.notCompletedReasons&&log.notCompletedReasons.note)||'';
   document.getElementById('day-has-target').checked=!!log.hasTarget;
   document.getElementById('day-target').value=(log.target!==undefined&&log.target!==null)?log.target:'';
   document.getElementById('day-actual').value=(log.actual!==undefined&&log.actual!==null)?log.actual:'';
   document.getElementById('day-realism').value=log.targetRealism||'';
   document.getElementById('day-target-row').style.display=log.hasTarget?'block':'none';
   renderEffortReasonChips();
+  renderNotCompletedReasonChips();
   updateDayUI();
   document.getElementById('modal-day').classList.add('open');
   // Load rich editors after modal is visible
@@ -3453,11 +3584,21 @@ function clearDayLog(){
   const key=selDay;
   if(!key)return;
   delete D.adventureDays[key];
-  selDay=null;dayEffort=null;dayHappy=null;dayCompleted=null;dayEffortReasons=[];
+  selDay=null;dayEffort=null;dayHappy=null;dayCompleted=null;dayEffortReasons=[];dayNotCompletedReasons=[];
   save();closeModal('modal-day');renderAdventure();
 }
 function setDayEffort(e){dayEffort=e;renderEffortReasonChips();updateDayUI();}
-function setDayCompleted(v){dayCompleted=v;updateDayUI();}
+// Completed and Not Completed are mutually exclusive entry points into two
+// different flows: Completed shows Effort; Not Completed skips Effort
+// entirely and goes straight to its own reasons/notes. Switching between
+// them clears whichever flow's fields no longer apply so a stray earlier
+// selection can never get silently saved into the wrong flow.
+function setDayCompleted(v){
+  dayCompleted=v;
+  if(v===false){dayEffort=null;dayEffortReasons=[];}
+  if(v===true){dayNotCompletedReasons=[];}
+  updateDayUI();
+}
 function setDayHappy(v){dayHappy=v;updateDayUI();}
 function toggleDayTarget(){
   const chk=document.getElementById('day-has-target').checked;
@@ -3478,6 +3619,23 @@ function toggleEffortReason(r){
   if(i>=0)dayEffortReasons.splice(i,1);else dayEffortReasons.push(r);
   renderEffortReasonChips();
 }
+// Same standardized reason list, reused for the Not Completed flow — kept
+// as a separate chip set/state array from the Effort reasons so the two
+// contexts (lower Effort vs Not Completed) never overwrite each other.
+function renderNotCompletedReasonChips(){
+  const wrap=document.getElementById('day-notcompleted-reason-chips');
+  if(!wrap)return;
+  wrap.innerHTML=REASON_LIST.map(r=>{
+    const on=dayNotCompletedReasons.includes(r);
+    return `<button type="button" class="btn btn-ghost" onclick="toggleNotCompletedReason('${esc(r).replace(/'/g,"\\'")}')" style="font-size:12px;padding:6px 12px;${on?'background:var(--danger);color:#fff;border-color:var(--danger);':''}">${esc(r)}</button>`;
+  }).join('');
+  document.getElementById('day-notcompleted-other-row').style.display=dayNotCompletedReasons.includes('Other')?'block':'none';
+}
+function toggleNotCompletedReason(r){
+  const i=dayNotCompletedReasons.indexOf(r);
+  if(i>=0)dayNotCompletedReasons.splice(i,1);else dayNotCompletedReasons.push(r);
+  renderNotCompletedReasonChips();
+}
 // Achievement % is informational only — it is never capped at 100 (an
 // exceeded target should be visible) and it never feeds back into Effort
 // or Completion. Effort and Completed stay exactly what the person picked;
@@ -3495,7 +3653,10 @@ function updateDayUI(){
   cy.style.background=dayCompleted===true?'var(--success)':'';cy.style.color=dayCompleted===true?'#fff':'';cy.style.borderColor=dayCompleted===true?'var(--success)':'var(--border)';
   cn.style.background=dayCompleted===false?'var(--danger)':'';cn.style.color=dayCompleted===false?'#fff':'';cn.style.borderColor=dayCompleted===false?'var(--danger)':'var(--border)';
 
-  document.getElementById('day-effort-reason-row').style.display=(dayEffort&&EFFORT_META[dayEffort].needsReason)?'block':'none';
+  // Effort only applies to Completed days — Not Completed bypasses it
+  // entirely and goes straight to the Not Completed section below.
+  document.getElementById('day-effort-block').style.display=(dayCompleted===true)?'block':'none';
+  document.getElementById('day-effort-reason-row').style.display=(dayCompleted===true&&dayEffort&&EFFORT_META[dayEffort].needsReason)?'block':'none';
 
   document.getElementById('day-happy-row').style.display=(dayCompleted!==null||dayEffort)?'block':'none';
   const by=document.getElementById('btn-happy-y'),bn=document.getElementById('btn-happy-n');
@@ -3518,22 +3679,25 @@ function updateDayUI(){
   }
   document.getElementById('day-realism-row').style.display=hasTarget?'block':'none';
 
-  // 3 existing Not Completed questions remain mandatory ONLY when
-  // Not Completed is selected — preserved exactly as before otherwise.
+  // 3 existing Not Completed questions + standardized reasons remain
+  // mandatory ONLY when Not Completed is selected — no Effort step required
+  // to get here.
   document.getElementById('day-missed-row').style.display=(dayCompleted===false)?'block':'none';
+  if(dayCompleted===false)renderNotCompletedReasonChips();
 
   // Live Day Performance preview using the values currently in the form,
-  // built from the same object shape saveDayLog() will persist.
+  // built from the same object shape saveDayLog() will persist. Works with
+  // or without an Effort value, since Not Completed no longer requires one.
   const previewLog={
-    effort:dayEffort,completed:dayCompleted,
+    effort:dayCompleted===true?dayEffort:null,completed:dayCompleted,
     hasTarget:hasTarget,target:hasTarget&&!isNaN(targetVal)?targetVal:null,
     actual:hasTarget&&actualRaw!==''&&!isNaN(actualVal)?actualVal:null
   };
   const perfBadge=document.getElementById('day-performance-badge');
-  if(dayEffort){
+  if(dayCompleted!==null){
     const perf=calcDayPerformance(previewLog);
     perfBadge.style.display='block';
-    perfBadge.innerHTML='<b>Day Performance: '+perf+'% ('+dayPerformanceLabel(perf)+')</b> — a blended score of Effort + objective achievement/completion, never a manually-entered number.';
+    perfBadge.innerHTML='<b>Day Performance: '+perf+'% ('+dayPerformanceLabel(perf)+')</b> — a blended, automatically calculated score, never a manually-entered number.';
   } else {
     perfBadge.style.display='none';
   }
@@ -3541,12 +3705,19 @@ function updateDayUI(){
 function saveDayLog(){
   if(!selDay)return;
   if(dayCompleted===null){alert('Please mark today as Completed or Not Completed.');return;}
-  if(!dayEffort){alert('Please choose an Effort level for today.');return;}
-  if(EFFORT_META[dayEffort].needsReason&&dayEffortReasons.length===0){alert('Please select at least one reason that affected your effort today.');return;}
-  if(dayEffortReasons.includes('Other')&&!document.getElementById('day-effort-other-note').value.trim()){alert('Please add a short note for "Other".');return;}
+  if(dayCompleted===true){
+    // Effort is required ONLY for Completed days.
+    if(!dayEffort){alert('Please choose an Effort level for today.');return;}
+    if(EFFORT_META[dayEffort].needsReason&&dayEffortReasons.length===0){alert('Please select at least one reason that affected your effort today.');return;}
+    if(dayEffortReasons.includes('Other')&&!document.getElementById('day-effort-other-note').value.trim()){alert('Please add a short note for "Other".');return;}
+  }
   if(dayCompleted===false){
+    // Not Completed skips Effort entirely — it uses its own 3 questions +
+    // standardized reasons instead. No Effort selection is required here.
     const r1=document.getElementById('day-r1').value.trim(),r2=document.getElementById('day-r2').value.trim(),r3=document.getElementById('day-r3').value.trim();
     if(!r1||!r2||!r3){alert("Since today was Not Completed, please fill in all 3 reasons you couldn't follow the plan.");return;}
+    if(dayNotCompletedReasons.length===0){alert('Please select at least one reason that applied.');return;}
+    if(dayNotCompletedReasons.includes('Other')&&!document.getElementById('day-notcompleted-other-note').value.trim()){alert('Please add a short note for "Other".');return;}
   }
   const edAdv=document.getElementById('ed-adv');
   const edNotes=document.getElementById('ed-notes');
@@ -3561,9 +3732,12 @@ function saveDayLog(){
   const target=(hasTarget&&targetRaw!=='')?parseFloat(targetRaw):null;
   const actual=(hasTarget&&actualRaw!=='')?parseFloat(actualRaw):null;
   const achievementPct=(hasTarget&&target>0&&actual!==null&&!isNaN(actual))?Math.round(actual/target*100):null; // secondary info only, uncapped
+  // Not Completed days carry no Effort at all (status maps straight to
+  // 'missed'); Completed days keep the existing Effort→status mapping.
+  const finalEffort=dayCompleted===true?dayEffort:null;
   const logObj={
-    effort:dayEffort,
-    status:effortToStatus(dayEffort), // kept in sync so existing Dashboard/Progress reads of d.status still work
+    effort:finalEffort,
+    status:dayCompleted===false?'missed':effortToStatus(finalEffort), // kept in sync so existing Dashboard/Progress reads of d.status still work
     completed:dayCompleted,
     happy:dayHappy,
     goals:advPlain,
@@ -3575,7 +3749,8 @@ function saveDayLog(){
     actual:actual,
     achievementPct:achievementPct,
     targetRealism:document.getElementById('day-realism').value||null,
-    effortReasons:EFFORT_META[dayEffort].needsReason?{items:dayEffortReasons.slice(),otherNote:document.getElementById('day-effort-other-note').value.trim(),note:document.getElementById('day-effort-note').value.trim()}:null,
+    effortReasons:(finalEffort&&EFFORT_META[finalEffort].needsReason)?{items:dayEffortReasons.slice(),otherNote:document.getElementById('day-effort-other-note').value.trim(),note:document.getElementById('day-effort-note').value.trim()}:null,
+    notCompletedReasons:dayCompleted===false?{items:dayNotCompletedReasons.slice(),otherNote:document.getElementById('day-notcompleted-other-note').value.trim(),note:document.getElementById('day-notcompleted-note').value.trim()}:null,
     reasons:['r1','r2','r3'].map(r=>{const el=document.getElementById('day-'+r);return el?el.value:'';}),
     fixes:['f1','f2'].map(f=>{const el=document.getElementById('day-'+f);return el?el.value:'';})
   };
@@ -3666,14 +3841,6 @@ function saveUntouchedDay(){
   showUntouchedStep();
   renderAdventure();
 }
-function skipUntouchedDay(){
-  const item=untouchedQueue[untouchedIdx];
-  if(item)skippedUntouchedThisSession.add(item.key);
-  untouchedIdx++;
-  showUntouchedStep();
-  renderAdventure();
-}
-
 let curDayIdx=0;
 let curDayIdxAutoSet=false; // ensures the very first render of the Schedule page jumps to TODAY instead of Day 1; later navigation (selectDay/prevDay/nextDay) is left alone
 // Given a schedule month object, returns the array index that corresponds to
@@ -4001,6 +4168,7 @@ function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>ge
     pmEl.innerHTML=`<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;"><span style="color:var(--text);">${missionTitle?esc(missionTitle):'No current mission set'}</span><span style="color:var(--accent);font-weight:600;">${missionPct}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${missionPct}%"></div></div>`;
   }
   renderAdventureInsights();
+  renderProgressTimeline();
 }
 // ── Adventure Log → Progress integration ─────────────────────────────
 // Minimal, additive card (does not alter the existing progress-stats /
@@ -4058,6 +4226,136 @@ function renderAdventureInsights(){
       return `<div style="display:flex;justify-content:space-between;padding:4px 0;"><span>${esc(reason)}${isCircumstance?' <span style="color:var(--text3);font-size:10px;">(circumstance)</span>':' <span style="color:var(--warning);font-size:10px;">(behaviour pattern)</span>'}</span><b>${count}×</b></div>`;
     }).join('');
   }
+}
+// ── 18A: Complete 5-Year Adventure Timeline (Day 1 → 1825) ────────────
+// Purely a read-only, auto-generated view over D.adventureDays — it never
+// stores anything of its own and never needs manual maintenance. Every one
+// of the 1825 days is classified into exactly one category:
+//   'future'      — day number > current journey day: NOT a failure, NOT
+//                    Untouched, NOT zero-performance — simply not reached yet.
+//   'planned'     — a future day (normally just tomorrow) that has a
+//                    plan-only "Set Tomorrow's Adventure" entry.
+//   'untouched'   — resolved Untouched-day record (reason + optional note).
+//   'completed'   — Completed=true, with Effort/Achievement/Performance/
+//                    reasons shown when present.
+//   'notcompleted'— Completed=false, with the same detail fields shown.
+//   'blank'       — a past/today day with no record at all (never logged
+//                    and never resolved as Untouched) — distinct from both
+//                    a failure and a future day.
+// The whole 1825-day range is always generated fresh from D.adventureDays,
+// so it stays correct and complete whether the person is on Day 20, Day
+// 300, Day 900, or Day 1825 — nothing here is hand-maintained.
+function classifyProgressDay(dayLabel,curDay,log){
+  const isFuture=dayLabel>curDay;
+  if(isFuture)return (log&&log.plannedOnly)?'planned':'future';
+  if(log&&log.untouched)return 'untouched';
+  if(log){
+    const c=getDayCompleted(log);
+    if(c===true)return 'completed';
+    if(c===false)return 'notcompleted';
+  }
+  return 'blank';
+}
+function renderProgressTimeline(){
+  const grid=document.getElementById('progress-timeline-grid');
+  if(!grid)return;
+  const filterEl=document.getElementById('progress-timeline-filter');
+  const filter=filterEl?filterEl.value:'all';
+  const [sy,sm,sd]=D.startDate.split('-').map(Number);
+  const curDay=getCurrentJourneyDay();
+  const counts={future:0,planned:0,untouched:0,completed:0,notcompleted:0,blank:0};
+  const frag=document.createDocumentFragment();
+  for(let i=0;i<=1824;i++){
+    const dayLabel=i+1;
+    const d=new Date(sy,sm-1,sd+i);
+    const dy=d.getFullYear(),dmo=d.getMonth(),dd=d.getDate();
+    const key=dy+'-'+String(dmo+1).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
+    const log=D.adventureDays[key];
+    const cat=classifyProgressDay(dayLabel,curDay,log);
+    counts[cat]++;
+    if(filter!=='all'&&filter!==cat)continue;
+    const div=document.createElement('div');
+    let cls='day-dot';
+    if(cat==='completed'){const st=getDayStatus(log);cls+=(st==='partial'?' partial':' done');}
+    else if(cat==='notcompleted')cls+=' missed';
+    else if(cat==='untouched')cls+=' untouched-resolved';
+    else if(cat==='planned')cls+=' planned';
+    else if(cat==='future')cls+=' future-locked';
+    else if(cat==='blank')cls+=' past-empty';
+    if(dayLabel===curDay)cls+=' today';
+    div.className=cls;
+    const mark=dayLabel===curDay?'⭐':cat==='completed'?'✓':cat==='notcompleted'?'✕':cat==='untouched'?'⋯':cat==='planned'?'📝':'';
+    div.innerHTML='<span class="dd-num">'+dayLabel+'</span><span class="dd-mark">'+mark+'</span>';
+    div.title='Day '+dayLabel+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy;
+    div.onclick=()=>showProgressDayDetail(dayLabel,dd,dmo,dy,log,cat);
+    frag.appendChild(div);
+  }
+  grid.innerHTML='';
+  grid.appendChild(frag);
+  const sumEl=document.getElementById('progress-timeline-summary');
+  if(sumEl){
+    sumEl.innerHTML='Journey Day '+curDay+' / 1825 · Completed '+counts.completed+' · Not Completed '+counts.notcompleted+
+      ' · Untouched '+counts.untouched+' · No record '+counts.blank+' · Planned '+counts.planned+' · Future (not yet reached) '+counts.future;
+  }
+}
+// Read-only detail panel for a single day in the 1825-day timeline —
+// shows exactly the fields relevant to that day's category, never
+// fabricating data for a future/unreached day.
+function showProgressDayDetail(dayLabel,dd,dmo,dy,log,cat){
+  const el=document.getElementById('progress-timeline-detail');
+  if(!el)return;
+  el.style.display='block';
+  const dateStr=dd+' '+MONTH_NAMES[dmo]+' '+dy;
+  let html='<div style="font-weight:600;margin-bottom:6px;color:var(--text);">Day '+dayLabel+' — '+dateStr+'</div>';
+  if(cat==='future'){
+    html+='<div style="color:var(--text3);">This day has not been reached yet. It is simply Future / Not Yet Reached — not a failure, not Untouched, and not a zero-performance day.</div>';
+  } else if(cat==='planned'){
+    html+='<div>Planned in advance via "Set Tomorrow\'s Adventure". Completed/Not Completed, Effort, Achievement and reasons remain locked until this day actually arrives.</div>';
+    if(log&&log.goals)html+='<div style="margin-top:8px;white-space:pre-wrap;">'+esc(log.goals)+'</div>';
+  } else if(cat==='untouched'){
+    html+='<div><b>Status:</b> Untouched — never logged, resolved with a reason</div>';
+    html+='<div style="margin-top:4px;"><b>Reason:</b> '+esc((log&&log.untouchedReason)||'—')+'</div>';
+    if(log&&log.untouchedNote)html+='<div style="margin-top:4px;"><b>Note:</b> '+esc(log.untouchedNote)+'</div>';
+  } else if(cat==='blank'){
+    html+='<div style="color:var(--text3);">No Adventure Log record exists for this day.</div>';
+  } else {
+    const completed=getDayCompleted(log);
+    html+='<div><b>Status:</b> '+(completed?'✔ Completed':'✕ Not Completed')+'</div>';
+    const effort=getDayEffort(log);
+    if(effort)html+='<div style="margin-top:4px;"><b>Effort:</b> '+EFFORT_META[effort].emoji+' '+EFFORT_META[effort].label+'</div>';
+    if(log.hasTarget&&log.target){
+      const pct=(log.achievementPct!==undefined&&log.achievementPct!==null)?log.achievementPct:((log.actual!==undefined&&log.actual!==null)?Math.round(log.actual/log.target*100):null);
+      html+='<div style="margin-top:4px;"><b>Target Achievement:</b> '+(pct!==null?pct+'%':'—')+' ('+(log.actual!==null&&log.actual!==undefined?log.actual:'—')+' / '+log.target+')</div>';
+    }
+    const perf=(log.dayPerformance!==undefined&&log.dayPerformance!==null)?log.dayPerformance:calcDayPerformance(log);
+    html+='<div style="margin-top:4px;"><b>Day Performance:</b> '+(perf!==null?perf+'% ('+dayPerformanceLabel(perf)+')':'—')+'</div>';
+    let reasonItems=[];
+    if(log.effortReasons&&Array.isArray(log.effortReasons.items))reasonItems=reasonItems.concat(log.effortReasons.items);
+    if(log.notCompletedReasons&&Array.isArray(log.notCompletedReasons.items))reasonItems=reasonItems.concat(log.notCompletedReasons.items);
+    if(reasonItems.length)html+='<div style="margin-top:4px;"><b>Reason(s):</b> '+reasonItems.map(esc).join(', ')+'</div>';
+    if(log.reasons&&log.reasons.some(r=>r))html+='<div style="margin-top:4px;"><b>Plan notes:</b> '+log.reasons.filter(r=>r).map(esc).join(' · ')+'</div>';
+    if(log.notes)html+='<div style="margin-top:8px;"><b>Notes:</b> '+esc(log.notes)+'</div>';
+  }
+  el.innerHTML=html;
+}
+// Jumps to a specific day number by switching the filter back to "all"
+// (so every day is rendered in order) then scrolling that day into view.
+function jumpToProgressDay(){
+  const input=document.getElementById('progress-timeline-jump');
+  const val=parseInt(input&&input.value);
+  if(!val||val<1||val>1825){alert('Enter a day number between 1 and 1825.');return;}
+  const filterEl=document.getElementById('progress-timeline-filter');
+  if(filterEl)filterEl.value='all';
+  renderProgressTimeline();
+  setTimeout(()=>{
+    const grid=document.getElementById('progress-timeline-grid');
+    const target=grid&&grid.children[val-1];
+    if(target){
+      target.scrollIntoView({block:'center'});
+      target.style.outline='2px solid var(--accent)';
+      setTimeout(()=>{target.style.outline='';},1500);
+    }
+  },30);
 }
 load();renderHome();renderScheduleNav();
 window.__mark('App Rendered');
