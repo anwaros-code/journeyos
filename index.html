@@ -1204,9 +1204,9 @@ select option{background:var(--surface);color:var(--text)}
           <option value="completed">Completed</option>
           <option value="notcompleted">Not Completed</option>
           <option value="untouched">Untouched</option>
-          <option value="planned">Planned (tomorrow)</option>
+          <option value="planned">Planned</option>
           <option value="blank">No record (past)</option>
-          <option value="future">Future / not yet reached</option>
+          <option value="future">Future / Not Yet Reached</option>
         </select>
         <input type="number" id="progress-timeline-jump" placeholder="Jump to day #" min="1" max="1825" style="width:120px;padding:6px 10px;font-size:12px;">
         <button class="btn btn-ghost" onclick="jumpToProgressDay()" style="font-size:12px;padding:6px 12px;">Go</button>
@@ -3277,7 +3277,6 @@ function delHabit(i){delSpiritualHabit(i);}
 
 let selDay=null,dayEffort=null,dayHappy=null,dayCompleted=null,dayEffortReasons=[],dayNotCompletedReasons=[];
 let untouchedQueue=[],untouchedIdx=0,untouchedThenCallback=null;
-const skippedUntouchedThisSession=new Set();
 // ── Adventure Log v3: Completion + 5-level Effort model ──────────────
 // Completion ('completed'=true/false) and Effort (5 levels) are tracked as
 // SEPARATE fields, per design. `status` ('done'/'partial'/'missed') is kept
@@ -3763,10 +3762,12 @@ function saveDayLog(){
 // ── Untouched Days ─────────────────────────────────────────────────────
 // A day is "untouched" when the person never opened/logged the Adventure
 // Log for it — distinct from Completed, Not Completed, or No Effort. It is
-// NEVER auto-classified as a failure. Detected days are resolved one at a
-// time via a short catch-up prompt (reason + optional note) before the
-// person reaches Today's Adventure, without permanently blocking access —
-// "Skip for now" always lets them continue and try again later.
+// NEVER auto-classified as a failure. Detected days are a HARD GATE: they
+// must be resolved one at a time (reason + optional note) via
+// showUntouchedStep()/saveUntouchedDay() before the person can open today's
+// Adventure entry — there is no "Skip for now" escape hatch. The scan below
+// covers the ENTIRE journey history (Day 1 through yesterday), not just a
+// recent window, so an old unresolved gap can never quietly bypass the gate.
 function getPendingUntouchedDays(){
   const [sy,sm,sd]=D.startDate.split('-').map(Number);
   const start=new Date(sy,sm-1,sd);
@@ -3775,17 +3776,13 @@ function getPendingUntouchedDays(){
   const todayLocal=new Date(ty,tm,td);
   const dayNum=getCurrentJourneyDay();
   const pending=[];
-  // Cap the scan to the most recent 90 journey days for performance/UX —
-  // older gaps remain in the data as simply "no entry" (still correctly
-  // excluded from Completed/Not Completed/Effort stats) and can still be
-  // resolved manually by clicking the day dot.
-  const scanStart=Math.max(1,dayNum-90);
-  for(let i=scanStart;i<dayNum;i++){
+  // Scans the full history from Day 1 up to (not including) today — every
+  // past day must be accounted for, however far back the gap is.
+  for(let i=1;i<dayNum;i++){
     const d=new Date(sy,sm-1,sd+(i-1));
     const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
     if(d>=todayLocal)continue;
     if(D.adventureDays[key])continue; // already logged or already resolved as untouched
-    if(skippedUntouchedThisSession.has(key))continue;
     pending.push({key,dayNum:i,dd:d.getDate(),dmo:d.getMonth(),dy:d.getFullYear()});
   }
   return pending;
@@ -4182,7 +4179,7 @@ function renderAdventureInsights(){
   if(!el)return;
   const dayNum=getCurrentJourneyDay();
   const logs=Object.values(D.adventureDays||{});
-  const logged=logs.filter(d=>!d.untouched);
+  const logged=logs.filter(d=>!d.untouched&&!d.plannedOnly); // plannedOnly future entries are a plan, not an actual logged Adventure — must never inflate this count
   const untouched=logs.filter(d=>d.untouched);
   const completed=logs.filter(d=>getDayCompleted(d)===true).length;
   const notCompleted=logs.filter(d=>getDayCompleted(d)===false).length;
@@ -4334,7 +4331,10 @@ function showProgressDayDetail(dayLabel,dd,dmo,dy,log,cat){
     if(log.effortReasons&&Array.isArray(log.effortReasons.items))reasonItems=reasonItems.concat(log.effortReasons.items);
     if(log.notCompletedReasons&&Array.isArray(log.notCompletedReasons.items))reasonItems=reasonItems.concat(log.notCompletedReasons.items);
     if(reasonItems.length)html+='<div style="margin-top:4px;"><b>Reason(s):</b> '+reasonItems.map(esc).join(', ')+'</div>';
-    if(log.reasons&&log.reasons.some(r=>r))html+='<div style="margin-top:4px;"><b>Plan notes:</b> '+log.reasons.filter(r=>r).map(esc).join(' · ')+'</div>';
+    if(log.reasons&&log.reasons.some(r=>r)){
+      const label=cat==='notcompleted'?'3 Not Completed answers':'Additional notes';
+      html+='<div style="margin-top:4px;"><b>'+label+':</b> '+log.reasons.filter(r=>r).map(esc).join(' · ')+'</div>';
+    }
     if(log.notes)html+='<div style="margin-top:8px;"><b>Notes:</b> '+esc(log.notes)+'</div>';
   }
   el.innerHTML=html;
