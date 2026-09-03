@@ -279,12 +279,18 @@ select option{background:var(--surface);color:var(--text)}
 .day-dot.missed{background:var(--danger);border-color:var(--danger)}
 .day-dot.missed .dd-num{color:#fff;font-weight:600}
 .day-dot.missed .dd-mark{opacity:1;color:#fff}
+.day-dot.partial{background:var(--warning);border-color:var(--warning)}
+.day-dot.partial .dd-num{color:#fff;font-weight:600}
+.day-dot.partial .dd-mark{opacity:1;color:#fff}
 .day-dot.past-empty{}
+.day-dot.untouched-resolved{border-style:dashed;border-color:var(--text3);}
+.day-dot.planned{border-style:dashed;border-color:var(--accent);}
+.day-dot.future-locked{opacity:.55;}
 .day-dot.today{background:var(--accent);border-color:var(--accent);font-weight:600}
 .day-dot.today .dd-num{color:#fff}
 .day-dot.today .dd-mark{opacity:1;color:#fff}
-.day-dot.done.today,.day-dot.missed.today{border:2px solid var(--text)}
-.day-dot.done.today .dd-num,.day-dot.missed.today .dd-num{color:#fff}
+.day-dot.done.today,.day-dot.missed.today,.day-dot.partial.today{border:2px solid var(--text)}
+.day-dot.done.today .dd-num,.day-dot.missed.today .dd-num,.day-dot.partial.today .dd-num{color:#fff}
 .time-table{width:100%;border-collapse:collapse;font-size:13px}
 .time-table th{background:var(--surface2);color:var(--text3);font-weight:500;font-size:11px;text-transform:uppercase;letter-spacing:.07em;padding:8px 10px;border:1px solid var(--border);text-align:left}
 .time-table td{padding:7px 10px;border:1px solid var(--border);vertical-align:top}
@@ -415,6 +421,10 @@ select option{background:var(--surface);color:var(--text)}
 .re-color-bar input[type=color]{width:24px;height:24px;border:1px solid var(--border);border-radius:50%;padding:0;cursor:pointer;background:none;-webkit-appearance:none;}
 .re-color-bar input[type=color]::-webkit-color-swatch-wrapper{padding:0;border-radius:50%;}
 .re-color-bar input[type=color]::-webkit-color-swatch{border:none;border-radius:50%;}
+/* symbols/shapes panel — hidden by default, small buttons, wraps on mobile */
+.re-sym-panel{display:none;flex-wrap:wrap;gap:4px;padding:8px 10px;border-bottom:1px solid var(--border);background:#fff;align-items:center;max-width:100%;box-sizing:border-box;}
+.re-sym-panel.open{display:flex;}
+.re-sym-panel .re-btn{min-width:26px;height:24px;font-size:13px;}
 /* ── GOAL 1 DETAIL SUBS (keep existing) ── */
 .g1-sub{border:1px solid var(--border);border-radius:var(--rs);margin-bottom:10px;overflow:hidden;}
 .g1-sub-header{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface2);cursor:pointer;user-select:none;transition:background .15s;}
@@ -523,6 +533,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="nav-item" onclick="goto('spiritual-progress')"><span class="nav-icon">✦</span> Spiritual Progress</div>
     <div class="nav-item" onclick="goto('reviews')"><span class="nav-icon">📈</span> Reviews</div>
     <div class="nav-item" onclick="goto('search')"><span class="nav-icon">🔍</span> Search</div>
+    <div class="nav-item" onclick="goto('notes')"><span class="nav-icon">📝</span> Notes</div>
     <div class="nav-item" onclick="goto('settings')"><span class="nav-icon">⚙</span> Settings</div>
     <div class="nav-item" onclick="manualLockNow()"><span class="nav-icon">🔒</span> Lock</div>
   </div>
@@ -602,6 +613,36 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="toggleReColorBar('purpose','hilite')" id="hlbtn-purpose" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
         <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('purpose')" id="draw-btn-purpose" title="Draw">&#9998; Draw</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReSymbols('purpose')" id="symbtn-purpose" title="Symbols">&#8599; Symbols</button>
+      </div>
+            <div class="re-sym-panel" id="sym-purpose">
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8594;')" title="Right arrow">&#8594;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8592;')" title="Left arrow">&#8592;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8593;')" title="Up arrow">&#8593;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8595;')" title="Down arrow">&#8595;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8596;')" title="Left-right arrow">&#8596;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8597;')" title="Up-down arrow">&#8597;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8658;')" title="Double right arrow">&#8658;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8656;')" title="Double left arrow">&#8656;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8599;')" title="Up-right arrow">&#8599;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8600;')" title="Down-right arrow">&#8600;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8601;')" title="Down-left arrow">&#8601;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8598;')" title="Up-left arrow">&#8598;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','=')" title="Equals">=</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8800;')" title="Not equal">&#8800;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','+')" title="Plus">+</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&minus;')" title="Minus">&minus;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&times;')" title="Multiply">&times;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&divide;')" title="Divide">&divide;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#10003;')" title="Check">&#10003;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#10007;')" title="Cross">&#10007;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8226;')" title="Bullet">&#8226;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#8212;')" title="Em dash">&#8212;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#9633;')" title="Square">&#9633;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#9675;')" title="Circle">&#9675;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#9651;')" title="Triangle">&#9651;</button>
+        <button class="re-btn" onclick="insertReSymbol('purpose','&#9671;')" title="Diamond">&#9671;</button>
       </div>
       <div class="re-color-bar" id="cbar-purpose"></div>
       <div class="re-draw" id="draw-purpose">
@@ -707,6 +748,36 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="toggleReColorBar('mission-desc','hilite')" id="hlbtn-mission-desc" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
         <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('mission-desc')" id="draw-btn-mission-desc" title="Draw">&#9998; Draw</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReSymbols('mission-desc')" id="symbtn-mission-desc" title="Symbols">&#8599; Symbols</button>
+      </div>
+            <div class="re-sym-panel" id="sym-mission-desc">
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8594;')" title="Right arrow">&#8594;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8592;')" title="Left arrow">&#8592;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8593;')" title="Up arrow">&#8593;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8595;')" title="Down arrow">&#8595;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8596;')" title="Left-right arrow">&#8596;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8597;')" title="Up-down arrow">&#8597;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8658;')" title="Double right arrow">&#8658;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8656;')" title="Double left arrow">&#8656;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8599;')" title="Up-right arrow">&#8599;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8600;')" title="Down-right arrow">&#8600;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8601;')" title="Down-left arrow">&#8601;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8598;')" title="Up-left arrow">&#8598;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','=')" title="Equals">=</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8800;')" title="Not equal">&#8800;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','+')" title="Plus">+</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&minus;')" title="Minus">&minus;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&times;')" title="Multiply">&times;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&divide;')" title="Divide">&divide;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#10003;')" title="Check">&#10003;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#10007;')" title="Cross">&#10007;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8226;')" title="Bullet">&#8226;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#8212;')" title="Em dash">&#8212;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#9633;')" title="Square">&#9633;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#9675;')" title="Circle">&#9675;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#9651;')" title="Triangle">&#9651;</button>
+        <button class="re-btn" onclick="insertReSymbol('mission-desc','&#9671;')" title="Diamond">&#9671;</button>
       </div>
       <div class="re-color-bar" id="cbar-mission-desc"></div>
       <div class="re-draw" id="draw-mission-desc">
@@ -776,6 +847,36 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="toggleReColorBar('spiritual-intention','hilite')" id="hlbtn-spiritual-intention" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
         <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('spiritual-intention')" id="draw-btn-spiritual-intention">&#9998; Draw</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReSymbols('spiritual-intention')" id="symbtn-spiritual-intention" title="Symbols">&#8599; Symbols</button>
+      </div>
+            <div class="re-sym-panel" id="sym-spiritual-intention">
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8594;')" title="Right arrow">&#8594;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8592;')" title="Left arrow">&#8592;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8593;')" title="Up arrow">&#8593;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8595;')" title="Down arrow">&#8595;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8596;')" title="Left-right arrow">&#8596;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8597;')" title="Up-down arrow">&#8597;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8658;')" title="Double right arrow">&#8658;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8656;')" title="Double left arrow">&#8656;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8599;')" title="Up-right arrow">&#8599;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8600;')" title="Down-right arrow">&#8600;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8601;')" title="Down-left arrow">&#8601;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8598;')" title="Up-left arrow">&#8598;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','=')" title="Equals">=</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8800;')" title="Not equal">&#8800;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','+')" title="Plus">+</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&minus;')" title="Minus">&minus;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&times;')" title="Multiply">&times;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&divide;')" title="Divide">&divide;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#10003;')" title="Check">&#10003;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#10007;')" title="Cross">&#10007;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8226;')" title="Bullet">&#8226;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#8212;')" title="Em dash">&#8212;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#9633;')" title="Square">&#9633;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#9675;')" title="Circle">&#9675;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#9651;')" title="Triangle">&#9651;</button>
+        <button class="re-btn" onclick="insertReSymbol('spiritual-intention','&#9671;')" title="Diamond">&#9671;</button>
       </div>
       <div class="re-color-bar" id="cbar-spiritual-intention"></div>
       <div class="re-draw" id="draw-spiritual-intention">
@@ -829,6 +930,36 @@ select option{background:var(--surface);color:var(--text)}
             <div class="re-sep"></div>
             <button class="re-btn" onclick="toggleReColorBar('sp-plan-1','fore')" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
             <button class="re-btn" onclick="toggleReColorBar('sp-plan-1','hilite')" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="toggleReSymbols('sp-plan-1')" id="symbtn-sp-plan-1" title="Symbols">&#8599; Symbols</button>
+          </div>
+                    <div class="re-sym-panel" id="sym-sp-plan-1">
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8594;')" title="Right arrow">&#8594;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8592;')" title="Left arrow">&#8592;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8593;')" title="Up arrow">&#8593;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8595;')" title="Down arrow">&#8595;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8596;')" title="Left-right arrow">&#8596;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8597;')" title="Up-down arrow">&#8597;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8658;')" title="Double right arrow">&#8658;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8656;')" title="Double left arrow">&#8656;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8599;')" title="Up-right arrow">&#8599;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8600;')" title="Down-right arrow">&#8600;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8601;')" title="Down-left arrow">&#8601;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8598;')" title="Up-left arrow">&#8598;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','=')" title="Equals">=</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8800;')" title="Not equal">&#8800;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','+')" title="Plus">+</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&minus;')" title="Minus">&minus;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&times;')" title="Multiply">&times;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&divide;')" title="Divide">&divide;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#10003;')" title="Check">&#10003;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#10007;')" title="Cross">&#10007;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8226;')" title="Bullet">&#8226;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#8212;')" title="Em dash">&#8212;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#9633;')" title="Square">&#9633;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#9675;')" title="Circle">&#9675;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#9651;')" title="Triangle">&#9651;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-1','&#9671;')" title="Diamond">&#9671;</button>
           </div>
           <div class="re-color-bar" id="cbar-sp-plan-1"></div>
           <div class="re-editor" id="ed-sp-plan-1" contenteditable="true" data-ph="Write your detailed plan for Spiritual Goal 1..." oninput="saveReEditor('sp-plan-1')"></div>
@@ -854,6 +985,36 @@ select option{background:var(--surface);color:var(--text)}
             <div class="re-sep"></div>
             <button class="re-btn" onclick="toggleReColorBar('sp-plan-2','fore')" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
             <button class="re-btn" onclick="toggleReColorBar('sp-plan-2','hilite')" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="toggleReSymbols('sp-plan-2')" id="symbtn-sp-plan-2" title="Symbols">&#8599; Symbols</button>
+          </div>
+                    <div class="re-sym-panel" id="sym-sp-plan-2">
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8594;')" title="Right arrow">&#8594;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8592;')" title="Left arrow">&#8592;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8593;')" title="Up arrow">&#8593;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8595;')" title="Down arrow">&#8595;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8596;')" title="Left-right arrow">&#8596;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8597;')" title="Up-down arrow">&#8597;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8658;')" title="Double right arrow">&#8658;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8656;')" title="Double left arrow">&#8656;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8599;')" title="Up-right arrow">&#8599;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8600;')" title="Down-right arrow">&#8600;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8601;')" title="Down-left arrow">&#8601;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8598;')" title="Up-left arrow">&#8598;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','=')" title="Equals">=</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8800;')" title="Not equal">&#8800;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','+')" title="Plus">+</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&minus;')" title="Minus">&minus;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&times;')" title="Multiply">&times;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&divide;')" title="Divide">&divide;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#10003;')" title="Check">&#10003;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#10007;')" title="Cross">&#10007;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8226;')" title="Bullet">&#8226;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#8212;')" title="Em dash">&#8212;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#9633;')" title="Square">&#9633;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#9675;')" title="Circle">&#9675;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#9651;')" title="Triangle">&#9651;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-2','&#9671;')" title="Diamond">&#9671;</button>
           </div>
           <div class="re-color-bar" id="cbar-sp-plan-2"></div>
           <div class="re-editor" id="ed-sp-plan-2" contenteditable="true" data-ph="Write your detailed plan for Spiritual Goal 2..." oninput="saveReEditor('sp-plan-2')"></div>
@@ -879,6 +1040,36 @@ select option{background:var(--surface);color:var(--text)}
             <div class="re-sep"></div>
             <button class="re-btn" onclick="toggleReColorBar('sp-plan-3','fore')" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
             <button class="re-btn" onclick="toggleReColorBar('sp-plan-3','hilite')" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+            <div class="re-sep"></div>
+            <button class="re-btn" onclick="toggleReSymbols('sp-plan-3')" id="symbtn-sp-plan-3" title="Symbols">&#8599; Symbols</button>
+          </div>
+                    <div class="re-sym-panel" id="sym-sp-plan-3">
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8594;')" title="Right arrow">&#8594;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8592;')" title="Left arrow">&#8592;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8593;')" title="Up arrow">&#8593;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8595;')" title="Down arrow">&#8595;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8596;')" title="Left-right arrow">&#8596;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8597;')" title="Up-down arrow">&#8597;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8658;')" title="Double right arrow">&#8658;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8656;')" title="Double left arrow">&#8656;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8599;')" title="Up-right arrow">&#8599;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8600;')" title="Down-right arrow">&#8600;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8601;')" title="Down-left arrow">&#8601;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8598;')" title="Up-left arrow">&#8598;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','=')" title="Equals">=</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8800;')" title="Not equal">&#8800;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','+')" title="Plus">+</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&minus;')" title="Minus">&minus;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&times;')" title="Multiply">&times;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&divide;')" title="Divide">&divide;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#10003;')" title="Check">&#10003;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#10007;')" title="Cross">&#10007;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8226;')" title="Bullet">&#8226;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#8212;')" title="Em dash">&#8212;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#9633;')" title="Square">&#9633;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#9675;')" title="Circle">&#9675;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#9651;')" title="Triangle">&#9651;</button>
+            <button class="re-btn" onclick="insertReSymbol('sp-plan-3','&#9671;')" title="Diamond">&#9671;</button>
           </div>
           <div class="re-color-bar" id="cbar-sp-plan-3"></div>
           <div class="re-editor" id="ed-sp-plan-3" contenteditable="true" data-ph="Write your detailed plan for Spiritual Goal 3..." oninput="saveReEditor('sp-plan-3')"></div>
@@ -898,16 +1089,40 @@ select option{background:var(--surface);color:var(--text)}
 <div id="page-adventure" class="page">
   <h1 class="page-title">Adventure Log</h1>
   <p class="page-sub" id="adventure-sub">Your 1825-day journey — click any day dot to log it</p>
+  <div class="card" id="untouched-banner-card" style="display:none;border-color:var(--warning);">
+    <div class="card-title"><span>⏳</span> Untouched days waiting for a reason</div>
+    <div id="untouched-banner-text" style="font-size:13px;color:var(--text2);margin-bottom:10px;"></div>
+    <button class="btn btn-primary" onclick="maybeOpenUntouchedCatchup(true)" style="font-size:13px;padding:8px 16px;">Resolve now</button>
+  </div>
   <div class="card">
-    <div class="card-title"><span>⚔</span> Day map</div>
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span><span>⚔</span> Day map</span>
+      <button class="btn btn-ghost" onclick="openTomorrowPlanFromButton()" style="font-size:12px;padding:7px 14px;">📝 Set Tomorrow's Adventure</button>
+    </div>
     <div class="day-grid" id="day-grid"></div>
     <div style="display:flex;gap:14px;font-size:12px;color:var(--text3);margin-top:4px;flex-wrap:wrap;">
-      <span style="color:var(--success);">■ Done</span>
-      <span style="color:var(--danger);">■ Missed</span>
+      <span style="color:var(--success);">■ Strong Effort</span>
+      <span style="color:var(--warning);">■ Some Effort</span>
+      <span style="color:var(--danger);">■ No Effort</span>
       <span style="color:var(--accent);">■ Today</span>
       <span style="border:1.5px solid var(--accent);border-radius:2px;padding:0 2px;color:var(--text2);">■ Past (empty)</span>
-      <span style="color:var(--text3);">■ Not logged</span>
+      <span style="border:1.5px dashed var(--text3);border-radius:2px;padding:0 2px;color:var(--text2);">■ Untouched (resolved)</span>
+      <span style="border:1.5px dashed var(--accent);border-radius:2px;padding:0 2px;color:var(--text2);">■ Planned (future)</span>
+      <span style="opacity:.5;">■ Future (click to plan)</span>
     </div>
+  </div>
+  <div class="card" id="adventure-perf-card">
+    <div class="card-title"><span>📈</span> Journey performance</div>
+    <div id="adventure-perf-stats" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;"></div>
+    <div style="font-size:11px;color:var(--text3);margin-top:10px;line-height:1.5;">
+      <b>Effort Performance</b> = % of logged days rated Strong/Very Strong Effort — this is your primary journey metric.<br>
+      <b>Target Achievement</b> = average actual/target across numeric tasks — a secondary planning signal only. It does not affect your day's Effort rating.<br>
+      <b>Day Performance</b> = a blended, non-gameable score combining Effort and objective Achievement/Completion for each logged day — see Progress for details.
+    </div>
+  </div>
+  <div class="card" id="adventure-reasons-card">
+    <div class="card-title"><span>🔎</span> What's slowing you down</div>
+    <div id="adventure-reasons-list" style="font-size:13px;color:var(--text2);"></div>
   </div>
 </div>
 
@@ -979,6 +1194,37 @@ select option{background:var(--surface);color:var(--text)}
   <p class="page-sub">Your journey at a glance</p>
   <div class="grid3" id="progress-stats" style="margin-bottom:20px;"></div>
   <div class="card"><div class="card-title"><span>📊</span> Adventure log — last 30 days</div><div class="chart-box"><canvas id="chart-adventure"></canvas></div></div>
+  <div class="card"><div class="card-title"><span>⚔</span> Adventure Log — detailed progress</div><div id="progress-adventure-insights"></div></div>
+  <div class="card">
+    <div class="card-title" style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+      <span><span>🗺</span> Complete 5-Year Adventure Timeline — Day 1 to 1825</span>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+        <select id="progress-timeline-filter" onchange="renderProgressTimeline()" style="width:auto;padding:6px 10px;font-size:12px;">
+          <option value="all">All days</option>
+          <option value="completed">Completed</option>
+          <option value="notcompleted">Not Completed</option>
+          <option value="untouched">Untouched</option>
+          <option value="planned">Planned</option>
+          <option value="blank">No record (past)</option>
+          <option value="future">Future / Not Yet Reached</option>
+        </select>
+        <input type="number" id="progress-timeline-jump" placeholder="Jump to day #" min="1" max="1825" style="width:120px;padding:6px 10px;font-size:12px;">
+        <button class="btn btn-ghost" onclick="jumpToProgressDay()" style="font-size:12px;padding:6px 12px;">Go</button>
+      </div>
+    </div>
+    <div id="progress-timeline-summary" style="font-size:12px;color:var(--text2);margin-bottom:10px;"></div>
+    <div id="progress-timeline-grid" class="day-grid" style="max-height:420px;overflow-y:auto;padding:2px;"></div>
+    <div id="progress-timeline-detail" style="margin-top:12px;font-size:13px;color:var(--text2);display:none;padding:12px;background:var(--surface2);border-radius:var(--r);"></div>
+    <div style="display:flex;gap:14px;font-size:11px;color:var(--text3);margin-top:10px;flex-wrap:wrap;">
+      <span style="color:var(--success);">■ Completed (Strong/Very Strong)</span>
+      <span style="color:var(--warning);">■ Completed (Some/Normal Effort)</span>
+      <span style="color:var(--danger);">■ Not Completed</span>
+      <span style="border:1.5px dashed var(--text3);border-radius:2px;padding:0 2px;">■ Untouched (resolved)</span>
+      <span style="border:1.5px dashed var(--accent);border-radius:2px;padding:0 2px;">■ Planned</span>
+      <span style="border:1.5px solid var(--accent);border-radius:2px;padding:0 2px;">■ No record (past)</span>
+      <span style="opacity:.5;">■ Future / not yet reached</span>
+    </div>
+  </div>
   <div class="card">
     <div class="card-title"><span>🎯</span> Milestones</div>
     <div id="progress-milestones"></div>
@@ -1021,6 +1267,11 @@ select option{background:var(--surface);color:var(--text)}
 <div id="page-reviews" class="page">
   <h1 class="page-title">Reviews</h1>
   <p class="page-sub">Weekly, monthly, and quarterly reflections on your journey</p>
+
+  <div class="card" id="reviews-adventure-snapshot-card">
+    <div class="card-title"><span>⚔</span> Adventure Log snapshot — last 7 / 30 / 90 days</div>
+    <div id="reviews-adventure-snapshot"></div>
+  </div>
 
   <!-- Review type tabs -->
   <div class="tabs" id="review-tabs">
@@ -1075,6 +1326,84 @@ select option{background:var(--surface);color:var(--text)}
     <input type="text" id="search-input" placeholder="🔍  Type to search everything..." oninput="runSearch(this.value)" style="font-size:15px;padding:12px 16px;">
   </div>
   <div id="search-results"></div>
+</div>
+
+<!-- NOTES -->
+<div id="page-notes" class="page">
+  <div id="notes-list-view">
+    <div class="section-header">
+      <div><h1 class="page-title">📝 Notes</h1><p class="page-sub">Quick notes and things to remember</p></div>
+      <button class="btn btn-primary" onclick="openNoteEditor()">+ New note</button>
+    </div>
+    <div class="card">
+      <input type="text" id="notes-search-input" placeholder="🔍  Search notes by title or content..." oninput="renderNotesList()">
+    </div>
+    <div id="notes-list"></div>
+  </div>
+  <div id="notes-editor-view" style="display:none;">
+    <div class="section-header" style="flex-wrap:wrap;gap:10px;">
+      <button class="btn btn-ghost" onclick="closeNoteEditor()">&larr; Back to notes</button>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span id="note-save-status" style="font-size:12px;color:var(--text3);"></span>
+        <button class="btn btn-danger" id="note-delete-btn" onclick="delNoteFromEditor()" style="display:none;">Delete</button>
+        <button class="btn btn-primary" onclick="saveNoteNow()">Save</button>
+      </div>
+    </div>
+    <div class="card">
+      <input type="text" id="note-title-input" placeholder="Note title..." style="font-size:18px;font-family:'DM Serif Display',serif;margin-bottom:14px;padding:10px 4px;background:transparent;border:none;border-bottom:1px solid var(--border);border-radius:0;" oninput="scheduleNoteAutosave()">
+      <div class="re-wrap" style="margin-top:6px;">
+        <div class="re-tools-toggle" onclick="toggleReTools('notefeature')">
+          <span class="arr" id="arr-notefeature">&#9658;</span> TOOLS
+        </div>
+        <div class="re-toolbar" id="tb-notefeature">
+          <button class="re-btn" onclick="reCmd('notefeature','bold')" title="Bold"><b>B</b></button>
+          <button class="re-btn" onclick="reCmd('notefeature','italic')" title="Italic"><i>I</i></button>
+          <button class="re-btn" onclick="reCmd('notefeature','underline')" title="Underline"><u>U</u></button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="reCmd('notefeature','justifyLeft')" title="Align left">&#8676;</button>
+          <button class="re-btn" onclick="reCmd('notefeature','justifyCenter')" title="Align centre">&#8596;</button>
+          <button class="re-btn" onclick="reCmd('notefeature','justifyRight')" title="Align right">&#8677;</button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="reCmd('notefeature','insertUnorderedList')" title="Bullet list">&#8801;</button>
+          <button class="re-btn" onclick="reCmd('notefeature','insertOrderedList')" title="Numbered list">&#9312;</button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="toggleReColorBar('notefeature','fore')" id="tcbtn-notefeature" title="Text colour"><span style="font-weight:700;border-bottom:2px solid #b85a5a;">A</span></button>
+          <button class="re-btn" onclick="toggleReColorBar('notefeature','hilite')" id="hlbtn-notefeature" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="toggleNoteDraw()" id="draw-btn-notefeature" title="Freehand draw">&#9998; Draw</button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8594;')" title="Right arrow">&#8594;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8592;')" title="Left arrow">&#8592;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8593;')" title="Up arrow">&#8593;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8595;')" title="Down arrow">&#8595;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8596;')" title="Left-right arrow">&#8596;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8597;')" title="Up-down arrow">&#8597;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8599;')" title="Up-right arrow">&#8599;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8600;')" title="Down-right arrow">&#8600;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8601;')" title="Down-left arrow">&#8601;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#8598;')" title="Up-left arrow">&#8598;</button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9472;')" title="Horizontal line">&#9472;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9474;')" title="Vertical line">&#9474;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','=')" title="Equals">=</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','+')" title="Plus">+</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&minus;')" title="Minus">&minus;</button>
+          <div class="re-sep"></div>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9633;')" title="Square">&#9633;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9645;')" title="Rectangle">&#9645;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9675;')" title="Circle">&#9675;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9651;')" title="Triangle">&#9651;</button>
+          <button class="re-btn" onclick="insertReSymbol('notefeature','&#9671;')" title="Diamond">&#9671;</button>
+        </div>
+        <div class="re-color-bar" id="cbar-notefeature"></div>
+        <div class="re-draw" id="draw-notefeature">
+          <div class="re-draw-bar" id="dbar-notefeature"></div>
+          <canvas id="dc-notefeature" class="re-canvas" height="150"></canvas>
+        </div>
+        <div class="re-editor" id="ed-notefeature" contenteditable="true" data-ph="Start writing..." oninput="scheduleNoteAutosave()" style="min-height:50vh;"></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- SETTINGS -->
@@ -1184,12 +1513,36 @@ select option{background:var(--surface);color:var(--text)}
     </div>
   </div>
 
+  <!-- HIJRI CALENDAR CARD -->
+  <div class="card">
+    <div class="card-title"><span>🌙</span> Hijri Calendar</div>
+    <p style="font-size:13px;color:var(--text2);margin-bottom:18px;line-height:1.6;">
+      The Hijri date shown on your Dashboard is calculated, not based on moon sighting — so it can be a day or two off from what's announced locally in India. Use this to nudge it to match.
+    </p>
+    <div style="border:1px solid var(--border);border-radius:var(--rs);padding:18px 20px;background:var(--surface2);">
+      <div style="display:flex;align-items:flex-start;gap:14px;">
+        <div style="font-size:28px;line-height:1;">🌙</div>
+        <div style="flex:1;">
+          <div style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;">Date Adjustment</div>
+          <div style="font-size:12px;color:var(--text3);margin-bottom:14px;">Set this to whatever shifts today's Hijri date to match what's being observed in India. This preference syncs across your devices.</div>
+          <select id="hijri-offset-select" style="max-width:220px;" onchange="updateHijriOffsetSetting(this.value)">
+            <option value="-2">2 days earlier</option>
+            <option value="-1">1 day earlier</option>
+            <option value="0">No adjustment</option>
+            <option value="1">1 day later</option>
+            <option value="2">2 days later</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- ABOUT CARD -->
   <div class="card">
     <div class="card-title"><span>ℹ</span> About</div>
     <div style="font-size:13px;color:var(--text2);line-height:1.8;">
       <div><span style="color:var(--text3);">App:</span> My Life OS · JourneyOS</div>
-      <div><span style="color:var(--text3);">Journey Start:</span> 29 July 2026</div>
+      <div><span style="color:var(--text3);">Journey Start:</span> 30 August 2026</div>
       <div><span style="color:var(--text3);">Duration:</span> 5 Years · 1825 Days</div>
       <div><span style="color:var(--text3);">Storage:</span> localStorage + Firestore sync</div>
     </div>
@@ -1250,6 +1603,36 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="toggleReColorBar('defed','hilite')" id="hlbtn-defed" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
         <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('defed')" id="draw-btn-defed">&#9998; Draw</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReSymbols('defed')" id="symbtn-defed" title="Symbols">&#8599; Symbols</button>
+      </div>
+            <div class="re-sym-panel" id="sym-defed">
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8594;')" title="Right arrow">&#8594;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8592;')" title="Left arrow">&#8592;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8593;')" title="Up arrow">&#8593;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8595;')" title="Down arrow">&#8595;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8596;')" title="Left-right arrow">&#8596;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8597;')" title="Up-down arrow">&#8597;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8658;')" title="Double right arrow">&#8658;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8656;')" title="Double left arrow">&#8656;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8599;')" title="Up-right arrow">&#8599;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8600;')" title="Down-right arrow">&#8600;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8601;')" title="Down-left arrow">&#8601;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8598;')" title="Up-left arrow">&#8598;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','=')" title="Equals">=</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8800;')" title="Not equal">&#8800;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','+')" title="Plus">+</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&minus;')" title="Minus">&minus;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&times;')" title="Multiply">&times;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&divide;')" title="Divide">&divide;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#10003;')" title="Check">&#10003;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#10007;')" title="Cross">&#10007;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8226;')" title="Bullet">&#8226;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#8212;')" title="Em dash">&#8212;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#9633;')" title="Square">&#9633;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#9675;')" title="Circle">&#9675;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#9651;')" title="Triangle">&#9651;</button>
+        <button class="re-btn" onclick="insertReSymbol('defed','&#9671;')" title="Diamond">&#9671;</button>
       </div>
       <div class="re-color-bar" id="cbar-defed"></div>
       <div class="re-draw" id="draw-defed">
@@ -1333,6 +1716,36 @@ select option{background:var(--surface);color:var(--text)}
         <button class="re-btn" onclick="toggleReColorBar('adv','hilite')" id="hlbtn-adv" title="Highlight"><span style="background:#fff3a0;padding:0 4px;border-radius:2px;">H</span></button>
         <div class="re-sep"></div>
         <button class="re-btn" onclick="toggleReDraw('adv')" id="draw-btn-adv">&#9998; Draw</button>
+        <div class="re-sep"></div>
+        <button class="re-btn" onclick="toggleReSymbols('adv')" id="symbtn-adv" title="Symbols">&#8599; Symbols</button>
+      </div>
+            <div class="re-sym-panel" id="sym-adv">
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8594;')" title="Right arrow">&#8594;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8592;')" title="Left arrow">&#8592;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8593;')" title="Up arrow">&#8593;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8595;')" title="Down arrow">&#8595;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8596;')" title="Left-right arrow">&#8596;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8597;')" title="Up-down arrow">&#8597;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8658;')" title="Double right arrow">&#8658;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8656;')" title="Double left arrow">&#8656;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8599;')" title="Up-right arrow">&#8599;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8600;')" title="Down-right arrow">&#8600;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8601;')" title="Down-left arrow">&#8601;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8598;')" title="Up-left arrow">&#8598;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','=')" title="Equals">=</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8800;')" title="Not equal">&#8800;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','+')" title="Plus">+</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&minus;')" title="Minus">&minus;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&times;')" title="Multiply">&times;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&divide;')" title="Divide">&divide;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#10003;')" title="Check">&#10003;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#10007;')" title="Cross">&#10007;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8226;')" title="Bullet">&#8226;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#8212;')" title="Em dash">&#8212;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#9633;')" title="Square">&#9633;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#9675;')" title="Circle">&#9675;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#9651;')" title="Triangle">&#9651;</button>
+        <button class="re-btn" onclick="insertReSymbol('adv','&#9671;')" title="Diamond">&#9671;</button>
       </div>
       <div class="re-color-bar" id="cbar-adv"></div>
       <div class="re-draw" id="draw-adv">
@@ -1342,11 +1755,65 @@ select option{background:var(--surface);color:var(--text)}
       <div class="re-editor" id="ed-adv" contenteditable="true" data-ph="Write your adventure for today — goals, intentions, plans..." style="min-height:80px;"></div>
     </div>
 
-    <div class="label mt16">Did you complete your plan?</div>
+    <div class="label mt16">Completed — was today's Adventure completed?</div>
     <div style="display:flex;gap:10px;margin-top:6px;">
-      <button class="btn btn-ghost" id="btn-complete" onclick="setDayStatus('done')" style="flex:1;">✓ Yes, completed</button>
-      <button class="btn btn-ghost" id="btn-missed" onclick="setDayStatus('missed')" style="flex:1;">✗ No, missed</button>
+      <button class="btn btn-ghost" id="btn-completed-y" onclick="setDayCompleted(true)" style="flex:1;">✔ Completed</button>
+      <button class="btn btn-ghost" id="btn-completed-n" onclick="setDayCompleted(false)" style="flex:1;">✕ Not Completed</button>
     </div>
+
+    <!-- Effort is only relevant for Completed days — Not Completed skips
+         straight to the Not Completed section below, no Effort required. -->
+    <div id="day-effort-block" style="display:none;">
+      <div class="label mt16">Effort — how strongly did you work toward it?</div>
+      <div style="display:flex;gap:8px;margin-top:6px;flex-wrap:wrap;">
+        <button class="btn btn-ghost" id="btn-effort-vstrong" onclick="setDayEffort('vstrong')" style="flex:1;min-width:120px;">🟢🟢 Very Strong</button>
+        <button class="btn btn-ghost" id="btn-effort-strong" onclick="setDayEffort('strong')" style="flex:1;min-width:120px;">🟢 Strong</button>
+        <button class="btn btn-ghost" id="btn-effort-some" onclick="setDayEffort('some')" style="flex:1;min-width:120px;">🟡 Some</button>
+        <button class="btn btn-ghost" id="btn-effort-normal" onclick="setDayEffort('normal')" style="flex:1;min-width:120px;">🟠 Normal</button>
+        <button class="btn btn-ghost" id="btn-effort-none" onclick="setDayEffort('none')" style="flex:1;min-width:120px;">🔴 No Effort</button>
+      </div>
+
+      <div id="day-effort-reason-row" style="margin-top:14px;display:none;">
+        <div class="label">What affected your effort today? (select any that apply)</div>
+        <div id="day-effort-reason-chips" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;"></div>
+        <div id="day-effort-other-row" style="display:none;margin-top:8px;">
+          <input type="text" id="day-effort-other-note" placeholder="Please describe (required for &quot;Other&quot;)">
+        </div>
+        <div style="margin-top:8px;">
+          <textarea id="day-effort-note" rows="2" placeholder="Optional note about the reason(s) above..."></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div id="day-target-toggle-row" style="margin-top:14px;">
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);cursor:pointer;">
+        <input type="checkbox" id="day-has-target" onchange="toggleDayTarget()" style="width:16px;height:16px;">
+        This task has a numeric target
+      </label>
+    </div>
+    <div id="day-target-row" style="margin-top:10px;display:none;">
+      <div style="display:flex;gap:10px;">
+        <div style="flex:1;">
+          <div class="label">Target</div>
+          <input type="number" id="day-target" placeholder="e.g. 20" oninput="updateDayUI()" style="margin-top:4px;">
+        </div>
+        <div style="flex:1;">
+          <div class="label">Actual completed</div>
+          <input type="number" id="day-actual" placeholder="e.g. 15" oninput="updateDayUI()" style="margin-top:4px;">
+        </div>
+      </div>
+      <div id="day-achievement-badge" style="margin-top:8px;font-size:13px;color:var(--text2);"></div>
+    </div>
+    <div id="day-realism-row" style="margin-top:14px;display:none;">
+      <div class="label">How realistic was today's target?</div>
+      <select id="day-realism" style="margin-top:6px;">
+        <option value="">— optional —</option>
+        <option value="realistic">Target was realistic</option>
+        <option value="ambitious">Target was too ambitious</option>
+        <option value="easy">Target was too easy</option>
+      </select>
+    </div>
+    <div id="day-performance-badge" style="margin-top:14px;font-size:13px;color:var(--text2);display:none;padding:10px 12px;background:var(--surface2);border-radius:var(--r);"></div>
     <div id="day-happy-row" style="margin-top:14px;display:none;">
       <div class="label">Are you happy with the day?</div>
       <div style="display:flex;gap:8px;margin-top:6px;">
@@ -1355,16 +1822,28 @@ select option{background:var(--surface);color:var(--text)}
       </div>
     </div>
     <div id="day-missed-row" style="display:none;">
-      <div class="label mt16">3 reasons you couldn't follow the plan</div>
-      <input type="text" id="day-r1" placeholder="Reason 1" style="margin-bottom:7px;">
-      <input type="text" id="day-r2" placeholder="Reason 2" style="margin-bottom:7px;">
-      <input type="text" id="day-r3" placeholder="Reason 3">
-      <div class="label mt16">3 reasons the plan might not work</div>
-      <input type="text" id="day-f1" placeholder="Insight 1" style="margin-bottom:7px;">
-      <input type="text" id="day-f2" placeholder="Insight 2" style="margin-bottom:7px;">
-      <input type="text" id="day-f3" placeholder="Insight 3">
+      <div style="margin-top:16px;padding:12px;border:1px solid var(--warning);border-radius:var(--r);background:rgba(184,137,42,0.06);">
+        <div class="label" style="margin-top:0;">Not Completed — what happened?</div>
+        <div class="label mt16" id="day-reasons-label">3 reasons you couldn't follow the plan</div>
+        <input type="text" id="day-r1" placeholder="Reason 1 (required)" style="margin-bottom:7px;">
+        <input type="text" id="day-r2" placeholder="Reason 2 (required)" style="margin-bottom:7px;">
+        <input type="text" id="day-r3" placeholder="Reason 3 (required)">
+
+        <div class="label mt16">Which of these applied? (select one or more)</div>
+        <div id="day-notcompleted-reason-chips" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;"></div>
+        <div id="day-notcompleted-other-row" style="display:none;margin-top:8px;">
+          <input type="text" id="day-notcompleted-other-note" placeholder="Please describe (required for &quot;Other&quot;)">
+        </div>
+        <div style="margin-top:8px;">
+          <textarea id="day-notcompleted-note" rows="2" placeholder="Optional note about the reason(s) above..."></textarea>
+        </div>
+      </div>
     </div>
-    <div class="label mt16">Notes / reflections</div>
+    <div class="label mt16">What went well? (optional)</div>
+    <input type="text" id="day-f1" placeholder="What went well">
+    <div class="label mt16">What could be improved? (optional)</div>
+    <input type="text" id="day-f2" placeholder="What could be improved">
+    <div class="label mt16">Notes / reflections (required)</div>
     <div class="re-wrap" style="margin-top:6px;" id="re-notes-wrap">
       <div class="re-tools-toggle" onclick="toggleReTools('notes')">
         <span class="arr" id="arr-notes">&#9658;</span> TOOLS
@@ -1384,6 +1863,49 @@ select option{background:var(--surface);color:var(--text)}
       <div class="re-editor" id="ed-notes" contenteditable="true" data-ph="Reflections, anything else about this day..." style="min-height:70px;"></div>
     </div>
     <div class="modal-footer"><button class="btn btn-danger" onclick="clearDayLog()" style="margin-right:auto;">✕ Clear day</button><button class="btn btn-ghost" onclick="closeModal('modal-day')">Cancel</button><button class="btn btn-primary" onclick="saveDayLog()">Save day</button></div>
+  </div>
+</div>
+
+<!-- UNTOUCHED DAY CATCH-UP MODAL -->
+<div class="modal-overlay" id="modal-untouched">
+  <div class="modal">
+    <div class="modal-title" id="modal-untouched-title">Untouched Day</div>
+    <p style="font-size:13px;color:var(--text2);margin-top:-6px;margin-bottom:14px;" id="modal-untouched-sub">You didn't log an Adventure for this day. What happened?</p>
+    <div class="label">Reason</div>
+    <select id="untouched-reason" onchange="updateUntouchedUI()" style="margin-top:6px;">
+      <option value="">— select a reason —</option>
+      <option>Family responsibilities</option>
+      <option>Travel</option>
+      <option>Office/work responsibilities</option>
+      <option>Health issues</option>
+      <option>Unexpected work</option>
+      <option>Procrastination</option>
+      <option>Lack of time</option>
+      <option>Lack of focus</option>
+      <option>Low energy</option>
+      <option>Other</option>
+    </select>
+    <div class="label mt16" id="untouched-note-label">Note (optional)</div>
+    <textarea id="untouched-note" rows="2" placeholder="Add a short note..."></textarea>
+    <div style="font-size:12px;color:var(--text3);margin-top:10px;" id="untouched-queue-info"></div>
+    <p style="font-size:11px;color:var(--text3);margin-top:8px;">This day must be resolved before you can continue to today's Adventure Log — there is no way to skip it.</p>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveUntouchedDay()">Save &amp; continue</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOMORROW PLANNING MODAL (plan-only — locked for actual logging until that day arrives) -->
+<div class="modal-overlay" id="modal-tomorrow">
+  <div class="modal">
+    <div class="modal-title" id="modal-tomorrow-title">Plan Tomorrow's Adventure</div>
+    <p style="font-size:13px;color:var(--text2);margin-top:-6px;margin-bottom:14px;">You can prepare any future day's Adventure now. Completed/Not Completed, Effort, Actual, Achievement %, reasons and reflection Notes stay locked until that day actually arrives.</p>
+    <div class="label">Tomorrow's Adventure (plan)</div>
+    <textarea id="tomorrow-plan-text" rows="6" placeholder="Write what you plan to do tomorrow — goals, intentions, plans..." style="margin-top:6px;"></textarea>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="closeModal('modal-tomorrow')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveTomorrowPlan()">Save plan</button>
+    </div>
   </div>
 </div>
 
@@ -1623,7 +2145,7 @@ select option{background:var(--surface);color:var(--text)}
 <script>
 window.__mark('Classic Script Loaded');
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-07-29'; // single source of truth — Day 1 = Wed 29 July 2026, Day 2 = Thu 30 July 2026
+const JOURNEY_START='2026-09-04'; // single source of truth — Day 1 = Fri 4 Sep 2026, Day 2 = Sat 5 Sep 2026
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:'',currentMission:{title:'',milestones:[],skills:[]},autoLockSeconds:30};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -1684,6 +2206,39 @@ function applyFreshStartReset(){
   D.freshStart_20260716=true;
 }
 
+// One-time fresh-start reset for the new journey beginning 21 August 2026.
+// Same scope as the reset above (Adventure Log + Time Schedule only), but
+// also seeds Journey Total Goal Work Time with a fixed 21h baseline
+// (D.journeyWorkBaselineMin) representing work already done before this
+// reset, so Journey Total shows 21h even though the underlying schedule
+// rows were cleared. Today/This Week/This Month are unaffected — they're
+// always computed fresh from actual rows, so they correctly start at 0.
+// Runs once via the D.freshStart_20260816 flag.
+function applyFreshStartReset20260816(){
+  if(D.freshStart_20260816)return;
+  D.adventureDays={};
+  D.scheduleMonths=[];
+  D.curMonth=0;
+  D.journeyWorkBaselineMin=21*60;
+  D.freshStart_20260816=true;
+}
+
+// One-time fresh-start reset for the journey now beginning 2 September
+// 2026. Same scope as the resets above (Adventure Log + Time Schedule
+// only) — additionally zeroes journeyWorkBaselineMin (the old 21h baseline
+// from the 16 Aug reset no longer applies to this fresh start) and strips
+// any lingering August 2026 schedule month, so Productivity/Goal Work Time
+// starts completely blank for the new Day 1. Runs once via the
+// D.freshStart_20260902 flag.
+function applyFreshStartReset20260902(){
+  if(D.freshStart_20260902)return;
+  D.adventureDays={};
+  D.scheduleMonths=[];
+  D.curMonth=0;
+  D.journeyWorkBaselineMin=0;
+  D.freshStart_20260902=true;
+}
+
 function load(){
   try{const s=localStorage.getItem(KEY);if(s)D=JSON.parse(s);}catch(e){}
   // Journey start date = 29 July 2026 (Day 1)
@@ -1692,9 +2247,11 @@ function load(){
   D.startDate=JOURNEY_START;
   cleanOldAdventureDays();
   applyFreshStartReset();
-  // Remove any previously-saved schedule months from before the journey start (journey now starts 29 July 2026)
+  applyFreshStartReset20260816();
+  applyFreshStartReset20260902();
+  // Remove any previously-saved schedule months from before the journey start (journey now starts 2 Sep 2026)
   if(D.scheduleMonths&&D.scheduleMonths.length>0){
-    D.scheduleMonths=D.scheduleMonths.filter(m=>m.label!=='June 2026'&&m.label!=='August 2026');
+    D.scheduleMonths=D.scheduleMonths.filter(m=>m.label!=='June 2026'&&m.label!=='July 2026'&&m.label!=='August 2026');
     if(D.curMonth>=D.scheduleMonths.length)D.curMonth=Math.max(0,D.scheduleMonths.length-1);
   }
   // Init schedule months — use the month containing the journey start date (29 July 2026)
@@ -1709,6 +2266,7 @@ function load(){
   if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
   if(!D.reContent)D.reContent={};
   if(!D.definitions)D.definitions=[];
+  if(!D.notes)D.notes=[];
   if(!D.milestones)D.milestones=[];
   D.milestones.forEach(m=>{if(m.goalNum===undefined)m.goalNum=1;});
   if(!D.weeklyReviews)D.weeklyReviews=[];
@@ -1916,8 +2474,10 @@ async function completeSignIn(user){
   if(loaded){
     D.startDate=JOURNEY_START; // re-enforce after cloud overwrite
     cleanOldAdventureDays();
-    const _wasFreshStart=!D.freshStart_20260716;
+    const _wasFreshStart=!D.freshStart_20260716||!D.freshStart_20260816||!D.freshStart_20260902;
     applyFreshStartReset();
+    applyFreshStartReset20260816();
+    applyFreshStartReset20260902();
     // Re-init defaults
     if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
     if(!D.reContent)D.reContent={};
@@ -1928,6 +2488,11 @@ async function completeSignIn(user){
     if(D.goals&&D.goals.g1pct===undefined)D.goals.g1pct=0;
     if(D.goals&&D.goals.g2pct===undefined)D.goals.g2pct=0;
     if(D.goals&&D.goals.g3pct===undefined)D.goals.g3pct=0;
+    // Strip any lingering pre-journey schedule months (mirrors load())
+    if(D.scheduleMonths&&D.scheduleMonths.length>0){
+      D.scheduleMonths=D.scheduleMonths.filter(m=>m.label!=='June 2026'&&m.label!=='July 2026'&&m.label!=='August 2026');
+      if(D.curMonth>=D.scheduleMonths.length)D.curMonth=Math.max(0,D.scheduleMonths.length-1);
+    }
     // If the fresh-start reset just ran on this cloud data, make sure a
     // fresh schedule month exists (mirrors the same init logic in load())
     // and sync the reset back up to Firestore so it doesn't re-trigger.
@@ -2131,7 +2696,7 @@ function goto(pg){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+pg).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const map={home:0,definitions:1,goals:2,'current-mission':3,spiritual:4,adventure:5,schedule:6,progress:7,'spiritual-progress':8,reviews:9,search:10,settings:11};
+  const map={home:0,definitions:1,goals:2,'current-mission':3,spiritual:4,adventure:5,schedule:6,progress:7,'spiritual-progress':8,reviews:9,search:10,notes:11,settings:12};
   const items=document.querySelectorAll('.nav-item');
   if(items[map[pg]])items[map[pg]].classList.add('active');
   document.querySelectorAll('.mobile-nav-item').forEach(n=>n.classList.remove('active'));
@@ -2147,7 +2712,8 @@ function goto(pg){
   if(pg==='spiritual-progress')renderSpiritualProgressPage();
   if(pg==='reviews')renderReviews();
   if(pg==='search'){setTimeout(()=>{const si=document.getElementById('search-input');if(si)si.focus();},80);}
-  if(pg==='settings'){updateLastBackupDisplay();renderStorageStatus();renderAutoLockSetting();}
+  if(pg==='notes'){closeNoteEditor();renderNotesList();}
+  if(pg==='settings'){updateLastBackupDisplay();renderStorageStatus();renderAutoLockSetting();renderHijriOffsetSetting();}
 }
 
 function closeModal(id){document.getElementById(id).classList.remove('open');}
@@ -2194,6 +2760,234 @@ function renderDefs(){
   el.innerHTML=D.definitions.map((d,i)=>`<div class="card"><div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;"><div style="flex:1"><div style="font-family:'DM Serif Display',serif;font-size:18px;color:var(--accent);margin-bottom:6px;">${esc(d.word)}</div><div style="font-size:14px;color:var(--text2);line-height:1.75;">${d.meaningRich||esc(d.meaning||'')}</div></div><div style="display:flex;gap:7px;flex-shrink:0;"><button class="btn btn-ghost" onclick="openDefModal(${i})" style="font-size:12px;padding:5px 12px;">Edit</button><button class="btn btn-danger" onclick="delDef(${i})" style="font-size:12px;padding:5px 12px;">Del</button></div></div></div>`).join('');
 }
 function delDef(i){if(confirm('Delete this definition?')){D.definitions.splice(i,1);save();renderDefs();}}
+
+// ── NOTES (isolated feature — reads/writes D.notes only) ──────
+// Follows the same storage path as every other section: mutate D, then
+// call the existing save() (localStorage + debounced Firestore sync).
+// D.notes is initialized in load(), same convention as D.definitions.
+// The content editor reuses the app's existing rich-editor toolbar
+// (toggleReTools/reCmd/toggleReColorBar/toggleReDraw etc. — all generic,
+// keyed by the id passed in, none of them modified) under a dedicated id,
+// 'notefeature', so it never touches Spiritual Intention or any other
+// section's editor/state.
+let notesEditingId=null;
+let _notesAutosaveTimer=null;
+
+function notesFmtDate(iso){
+  const d=new Date(iso);
+  return d.toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'})+' · '+d.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit'});
+}
+
+// Generic symbol/shape inserter for rich editors — restores the last
+// tracked selection inside the target editor (same reSavedRange used by
+// the colour tools) then inserts the character at the cursor. New,
+// isolated function; does not alter reCmd/toggleReColorBar/etc.
+function insertReSymbol(id,sym){
+  const ed=document.getElementById('ed-'+id);
+  if(!ed)return;
+  ed.focus();
+  const saved=reSavedRange[id];
+  if(saved){
+    const sel=window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(saved);
+  }
+  document.execCommand('insertText',false,sym);
+}
+
+// Notes content is stored as HTML (from the contenteditable). Strips tags
+// for previews/search so old plain-text notes and new rich notes both work.
+function notesPlainText(html){
+  return (html||'').replace(/<[^>]*>/g,' ').replace(/&nbsp;/g,' ').replace(/\s+/g,' ').trim();
+}
+
+function renderNotesList(){
+  const el=document.getElementById('notes-list');
+  if(!el)return;
+  const q=(document.getElementById('notes-search-input')?document.getElementById('notes-search-input').value:'').trim().toLowerCase();
+  let list=(D.notes||[]).slice().sort((a,b)=>new Date(b.updatedAt)-new Date(a.updatedAt));
+  if(q)list=list.filter(n=>(n.title||'').toLowerCase().includes(q)||notesPlainText(n.content).toLowerCase().includes(q));
+  if(!list.length){
+    el.innerHTML=`<div style="color:var(--text3);font-size:14px;text-align:center;padding:40px 0;">${q?'No notes match your search.':'No notes yet. Create your first note.'}</div>`;
+    return;
+  }
+  el.innerHTML=list.map(n=>{
+    const plain=notesPlainText(n.content);
+    const preview=plain.slice(0,140);
+    return `<div class="card" style="cursor:pointer;" onclick="openNoteEditor('${n.id}')">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-family:'DM Serif Display',serif;font-size:17px;color:var(--accent);margin-bottom:4px;">${esc(n.title||'Untitled note')}${n.drawing?' <span style="font-size:12px;color:var(--text3);" title="Contains a drawing">&#9998;</span>':''}</div>
+          <div style="font-size:13.5px;color:var(--text2);line-height:1.6;margin-bottom:8px;overflow-wrap:break-word;">${esc(preview)}${plain.length>140?'…':''}</div>
+          <div style="font-size:11.5px;color:var(--text3);">Updated ${notesFmtDate(n.updatedAt)}</div>
+        </div>
+        <div style="display:flex;gap:7px;flex-shrink:0;" onclick="event.stopPropagation();">
+          <button class="btn btn-ghost" onclick="openNoteEditor('${n.id}')" style="font-size:12px;padding:5px 12px;">Edit</button>
+          <button class="btn btn-danger" onclick="delNoteFromList('${n.id}')" style="font-size:12px;padding:5px 12px;">Del</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function showNotesListView(){
+  const lv=document.getElementById('notes-list-view'),ev=document.getElementById('notes-editor-view');
+  if(lv)lv.style.display='';
+  if(ev)ev.style.display='none';
+}
+function showNotesEditorView(){
+  const lv=document.getElementById('notes-list-view'),ev=document.getElementById('notes-editor-view');
+  if(lv)lv.style.display='none';
+  if(ev)ev.style.display='';
+}
+
+// Resets the shared 'notefeature' rich-editor DOM (title, content, colour
+// bar, draw panel/canvas) to a clean slate. Needed because the toolbar/
+// canvas are single shared DOM elements reused across every note (only one
+// note is ever open at a time) — this prevents formatting-bar state or a
+// previous note's drawing from leaking into the next note opened.
+function resetNoteEditorDom(){
+  const titleEl=document.getElementById('note-title-input');
+  const ed=document.getElementById('ed-notefeature');
+  const cbar=document.getElementById('cbar-notefeature');
+  const tb=document.getElementById('tb-notefeature');
+  const arr=document.getElementById('arr-notefeature');
+  const drawArea=document.getElementById('draw-notefeature');
+  const drawBtn=document.getElementById('draw-btn-notefeature');
+  const canvas=document.getElementById('dc-notefeature');
+  if(titleEl)titleEl.value='';
+  if(ed)ed.innerHTML='';
+  if(cbar){cbar.classList.remove('open');cbar.innerHTML='';}
+  if(tb)tb.classList.remove('open');
+  if(arr)arr.classList.remove('open');
+  if(drawArea)drawArea.classList.remove('open');
+  if(drawBtn)drawBtn.classList.remove('on');
+  if(canvas){canvas._init=false;canvas._notesAutosaveWired=false;try{canvas.getContext('2d').clearRect(0,0,canvas.width,canvas.height);}catch(e){}}
+}
+
+function openNoteEditor(id){
+  clearTimeout(_notesAutosaveTimer);
+  resetNoteEditorDom();
+  notesEditingId=id||null;
+  const titleEl=document.getElementById('note-title-input'),ed=document.getElementById('ed-notefeature'),statusEl=document.getElementById('note-save-status'),delBtn=document.getElementById('note-delete-btn');
+  if(id){
+    const n=(D.notes||[]).find(x=>x.id===id);
+    if(titleEl)titleEl.value=n?(n.title||''):'';
+    if(ed)ed.innerHTML=n?(n.content||''):'';
+    if(delBtn)delBtn.style.display='';
+  } else {
+    if(delBtn)delBtn.style.display='none';
+  }
+  if(statusEl){statusEl.textContent='';statusEl.style.color='var(--text3)';}
+  showNotesEditorView();
+  setTimeout(()=>{if(titleEl)titleEl.focus();},20);
+}
+
+function closeNoteEditor(){
+  clearTimeout(_notesAutosaveTimer);
+  notesEditingId=null;
+  showNotesListView();
+}
+
+// If the Draw panel is open for the current note, loads that note's saved
+// drawing (if any) onto the canvas. Called right after the generic
+// toggleReDraw('notefeature') opens the panel and initialises the canvas.
+function loadCurrentNoteDrawing(){
+  const canvas=document.getElementById('dc-notefeature');
+  if(!canvas)return;
+  const n=notesEditingId?(D.notes||[]).find(x=>x.id===notesEditingId):null;
+  if(!n||!n.drawing)return;
+  const img=new Image();
+  img.onload=()=>{const ctx=canvas.getContext('2d');ctx.clearRect(0,0,canvas.width,canvas.height);ctx.drawImage(img,0,0,canvas.width,canvas.height);};
+  img.src=n.drawing;
+}
+// Wraps the generic toggleReDraw so opening the panel also loads this
+// note's own drawing (per-note data on top of the shared canvas DOM), and
+// wires the canvas's stroke-end events into the note's own autosave —
+// without this, a drawing-only edit (no text typed) would never trigger
+// scheduleNoteAutosave, so closing and reopening the panel could reload
+// the last-saved drawing over not-yet-saved strokes. Listeners are added
+// via addEventListener (separate from the generic onmouseup/ontouchend
+// property handlers initReDraw sets), so the generic drawing code is
+// untouched. The Notes Draw button calls this instead of toggleReDraw
+// directly.
+function toggleNoteDraw(){
+  const area=document.getElementById('draw-notefeature');
+  const wasOpen=area&&area.classList.contains('open');
+  toggleReDraw('notefeature');
+  if(!wasOpen){
+    setTimeout(()=>{
+      loadCurrentNoteDrawing();
+      const canvas=document.getElementById('dc-notefeature');
+      if(canvas&&!canvas._notesAutosaveWired){
+        canvas.addEventListener('mouseup',scheduleNoteAutosave);
+        canvas.addEventListener('touchend',scheduleNoteAutosave);
+        canvas._notesAutosaveWired=true;
+      }
+    },30);
+  }
+}
+
+function scheduleNoteAutosave(){
+  const statusEl=document.getElementById('note-save-status');
+  if(statusEl){statusEl.textContent='Saving...';statusEl.style.color='var(--text3)';}
+  clearTimeout(_notesAutosaveTimer);
+  _notesAutosaveTimer=setTimeout(()=>saveNoteNow(),900);
+}
+
+// Upserts the currently-open note into D.notes and persists via the app's
+// existing save() (localStorage + debounced Firestore sync) — same path
+// every other section uses. Ignores empty title+content+drawing (nothing
+// to save). If the Draw canvas was initialised this session, its current
+// contents are captured into note.drawing alongside the text content.
+function saveNoteNow(){
+  clearTimeout(_notesAutosaveTimer);
+  const titleEl=document.getElementById('note-title-input'),ed=document.getElementById('ed-notefeature'),statusEl=document.getElementById('note-save-status'),delBtn=document.getElementById('note-delete-btn'),canvas=document.getElementById('dc-notefeature');
+  if(!titleEl||!ed)return;
+  const title=titleEl.value,content=ed.innerHTML;
+  const hasDrawing=canvas&&canvas._init;
+  if(!D.notes)D.notes=[];
+  const now=new Date().toISOString();
+  if(!title.trim()&&!notesPlainText(content)&&!hasDrawing){
+    if(statusEl){statusEl.textContent='';}
+    return;
+  }
+  if(notesEditingId){
+    let n=D.notes.find(x=>x.id===notesEditingId);
+    if(!n){
+      // note was deleted in another tab/session — recreate it under the same id
+      n={id:notesEditingId,createdAt:now};
+      D.notes.push(n);
+      if(delBtn)delBtn.style.display='';
+    }
+    n.title=title;n.content=content;n.updatedAt=now;
+    if(hasDrawing)n.drawing=canvas.toDataURL();
+  } else {
+    notesEditingId='note_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+    const n={id:notesEditingId,title,content,createdAt:now,updatedAt:now};
+    if(hasDrawing)n.drawing=canvas.toDataURL();
+    D.notes.push(n);
+    if(delBtn)delBtn.style.display='';
+  }
+  save();
+  if(statusEl){statusEl.textContent='Saved ✓';statusEl.style.color='var(--success)';}
+}
+
+function delNoteFromList(id){
+  if(!confirm('Delete this note? This cannot be undone.'))return;
+  D.notes=(D.notes||[]).filter(n=>n.id!==id);
+  save();
+  renderNotesList();
+}
+
+function delNoteFromEditor(){
+  if(!notesEditingId)return;
+  if(!confirm('Delete this note? This cannot be undone.'))return;
+  D.notes=(D.notes||[]).filter(n=>n.id!==notesEditingId);
+  save();
+  closeNoteEditor();
+  renderNotesList();
+}
 
 function renderGoals(){['purpose','g1','g2','g3'].forEach(k=>{const el=document.getElementById('goals-'+k);el.value=D.goals[k]||'';el.oninput=()=>{D.goals[k]=el.value;save();};});const el=document.getElementById('milestone-list');if(!D.milestones.length){el.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No milestones yet. Add your first step.</div>';return;}el.innerHTML=D.milestones.map((m,i)=>`<div class="item-row"><div class="check ${m.done?'checked':''}" onclick="toggleMs(${i})">${m.done?'✓':''}</div><div class="item-body"><div class="item-title" style="${m.done?'text-decoration:line-through;color:var(--text3)':''}">${esc(m.title)}</div><div class="item-meta">${m.cat?esc(m.cat)+' · ':''} ${m.date||'No target date'}</div></div><span class="badge ${m.done?'badge-done':'badge-pending'}">${m.done?'Done':'Pending'}</span><button class="btn btn-danger" onclick="delMs(${i})" style="font-size:11px;padding:4px 10px;">✕</button></div>`).join('');}
 function openMilestoneModal(){document.getElementById('ms-title').value='';document.getElementById('ms-cat').value='';document.getElementById('ms-date').value='';const mg=document.getElementById('ms-goal');if(mg)mg.value='1';document.getElementById('modal-milestone').classList.add('open');}
@@ -2481,7 +3275,103 @@ function toggleHabit(hi,day){toggleSpiritualHabit(hi,day);}
 function delSpiritualHabit(i){D.spiritual.habits.splice(i,1);save();renderSpiritual();}
 function delHabit(i){delSpiritualHabit(i);}
 
-let selDay=null,dayStatus=null,dayHappy=null;
+let selDay=null,dayEffort=null,dayHappy=null,dayCompleted=null,dayEffortReasons=[],dayNotCompletedReasons=[];
+let untouchedQueue=[],untouchedIdx=0,untouchedThenCallback=null;
+// ── Adventure Log v3: Completion + 5-level Effort model ──────────────
+// Completion ('completed'=true/false) and Effort (5 levels) are tracked as
+// SEPARATE fields, per design. `status` ('done'/'partial'/'missed') is kept
+// alongside them purely so older Dashboard/Progress code that reads
+// d.status keeps working unchanged. Old historical entries (pre-migration)
+// only have status:'done'/'missed' (or effort:'strong'/'some'/'none' from
+// v2) with no `completed` field — getDayEffort()/getDayStatus()/
+// getDayCompleted() transparently map those to the new model without ever
+// rewriting the stored historical data.
+const REASON_LIST=['Family responsibilities','Travel','Office/work responsibilities','Health issues','Unexpected work','Procrastination','Lack of time','Lack of focus','Low energy','Other'];
+// Reasons that reflect life circumstances rather than controllable
+// behaviour — used only to label patterns in Progress, never to hide them.
+const CIRCUMSTANCE_REASONS=['Family responsibilities','Travel','Office/work responsibilities','Health issues','Unexpected work'];
+const EFFORT_META={
+  vstrong:{label:'Very Strong Effort',emoji:'🟢🟢',color:'var(--success)',score:1.0,needsReason:false},
+  strong:{label:'Strong Effort',emoji:'🟢',color:'var(--success)',score:0.8,needsReason:false},
+  some:{label:'Some Effort',emoji:'🟡',color:'var(--warning)',score:0.55,needsReason:true},
+  normal:{label:'Normal Effort',emoji:'🟠',color:'var(--warning)',score:0.4,needsReason:true},
+  none:{label:'No Effort',emoji:'🔴',color:'var(--danger)',score:0.1,needsReason:true}
+};
+// effortToStatus keeps the legacy 3-bucket status in sync so any old code
+// (charts, dashboard counts) that reads d.status continues to behave
+// sensibly with the new 5-level effort scale.
+function effortToStatus(e){
+  if(e==='vstrong'||e==='strong')return 'done';
+  if(e==='some'||e==='normal')return 'partial';
+  if(e==='none')return 'missed';
+  return null;
+}
+function getDayEffort(log){
+  if(!log||log.untouched)return null;
+  if(log.effort)return log.effort;
+  // v2 (3-level) or v1 (status-only) historical records
+  if(log.status==='done')return 'strong';
+  if(log.status==='missed')return 'none';
+  if(log.status==='partial')return 'some';
+  return null;
+}
+function getDayStatus(log){return effortToStatus(getDayEffort(log));}
+// Completion is independent of Effort. Falls back to a reasonable guess
+// from legacy status for old records that never had a `completed` field
+// (v1/v2 conflated "strong effort" with "done"), without rewriting them.
+function getDayCompleted(log){
+  if(!log||log.untouched)return null;
+  if(log.completed===true||log.completed===false)return log.completed;
+  const st=getDayStatus(log);
+  if(st==='done')return true;
+  if(st==='missed')return false;
+  return null;
+}
+// ── Day Performance: a single, clearly-named, hard-to-game calculation ──
+// Blends Effort (how strongly the person showed up) with an Objective
+// factor (numeric achievement when a target exists, otherwise the
+// Completed/Not Completed flag). Neither factor alone can reach 100%:
+// Effort contributes at most 55%, so simply picking "Very Strong Effort"
+// can never produce a perfect score — objective results still matter.
+// Exceeding a numeric target gives a small bonus (capped) so ambitious
+// over-delivery is rewarded without letting the score run away, and being
+// marked Not Completed caps the objective factor so a technically-exceeded
+// but self-reported "not completed" day can't be scored as a full win.
+// Kept in one clearly named function so the formula can be retuned later
+// without touching the rest of the Adventure Log.
+function calcDayPerformance(log){
+  if(!log||log.untouched)return null;
+  const effort=getDayEffort(log);
+  const completed=getDayCompleted(log);
+  if(!effort&&completed===null)return null; // nothing recorded yet (e.g. a plan-only "Set Tomorrow's Adventure" entry)
+  let objective;
+  if(log.hasTarget&&log.target>0&&log.actual!==null&&log.actual!==undefined&&!isNaN(log.actual)){
+    const ratio=log.actual/log.target;
+    objective=Math.min(ratio,1.15); // small, capped bonus for exceeding target
+  } else {
+    objective=completed===true?1:(completed===false?0:0.5);
+  }
+  if(completed===false)objective=Math.min(objective,0.6);
+  // Not Completed days no longer require an Effort selection — without one,
+  // Day Performance is based purely on the objective factor (Target
+  // Achievement, or the Completed/Not Completed flag), scaled down the same
+  // way Effort's 45% share would otherwise contribute.
+  if(!effort){
+    const raw=objective*0.45;
+    return Math.round(Math.min(Math.max(raw,0),1)*100);
+  }
+  const effortScore=(EFFORT_META[effort]||{}).score||0;
+  const raw=effortScore*0.55+objective*0.45;
+  return Math.round(Math.min(Math.max(raw,0),1)*100);
+}
+function dayPerformanceLabel(pct){
+  if(pct===null||pct===undefined)return'—';
+  if(pct>=85)return'Excellent';
+  if(pct>=70)return'High';
+  if(pct>=50)return'Moderate';
+  if(pct>=30)return'Low';
+  return'Very Low';
+}
 // Single source of truth for "what journey day is today" — parses
 // D.startDate and truncates "now" to local midnight before diffing, so the
 // day number flips exactly at local midnight (avoids the UTC-parse pitfall
@@ -2513,30 +3403,164 @@ function renderAdventure(){
     const dy=d.getFullYear(),dmo=d.getMonth(),dd=d.getDate();
     const key=dy+'-'+String(dmo+1).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
     const log=D.adventureDays[key];
-    const status=log?log.status:'';
+    const status=log?getDayStatus(log):'';
+    const isUntouchedResolved=!!(log&&log.untouched);
+    const isPlannedOnly=!!(log&&log.plannedOnly);
     const isToday=key===todayKey;
     const dCmp=new Date(dy,dmo,dd);
     const isPast=dCmp<new Date(ty,tm,td);
+    const isFuture=dayLabel>dayNum; // tomorrow through Day 1825 — plan-only; real logging unlocks when the day arrives
     const div=document.createElement('div');
-    let cls='day-dot';if(status==='done')cls+=' done';else if(status==='missed')cls+=' missed';else if(isPast)cls+=' past-empty';if(isToday)cls+=' today';
+    let cls='day-dot';if(status==='done')cls+=' done';else if(status==='partial')cls+=' partial';else if(status==='missed')cls+=' missed';else if(isUntouchedResolved)cls+=' untouched-resolved';else if(isPlannedOnly)cls+=' planned';else if(isPast)cls+=' past-empty';if(isToday)cls+=' today';if(isFuture&&!isPlannedOnly)cls+=' future-locked';
     div.className=cls;
-    div.innerHTML='<span class="dd-num">'+dayLabel+'</span><span class="dd-mark">'+(isToday?'⭐':status==='done'?'✓':status==='missed'?'✕':'')+'</span>';
-    div.title='Day '+dayLabel+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy;
+    div.innerHTML='<span class="dd-num">'+dayLabel+'</span><span class="dd-mark">'+(isToday?'⭐':status==='done'?'✓':status==='partial'?'●':status==='missed'?'✕':isUntouchedResolved?'⋯':isPlannedOnly?'📝':'')+'</span>';
+    div.title='Day '+dayLabel+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy+(isUntouchedResolved?' (Untouched: '+log.untouchedReason+')':isPlannedOnly?' (Planned — logging opens on that day)':isFuture?' (Future — click to plan; logging unlocks on that day)':'');
     div.onclick=()=>openDayModal(key,dayLabel,dd,dmo,dy);
     grid.appendChild(div);
   }
+  renderAdventurePerf();
+  renderAdventureReasons();
+  renderUntouchedBanner();
+  if(!autoUntouchedPromptShown){autoUntouchedPromptShown=true;maybeOpenUntouchedCatchup();}
 }
+let autoUntouchedPromptShown=false;
+// Secondary Adventure Log stat card: Effort Performance (primary, based only
+// on Effort) shown clearly separate from Target Achievement (secondary,
+// numeric-target planning signal) and Day Performance (blended, see
+// calcDayPerformance). None of these three is ever derived from the others.
+function renderAdventurePerf(){
+  const el=document.getElementById('adventure-perf-stats');
+  if(!el)return;
+  const logs=Object.values(D.adventureDays||{});
+  const logged=logs.filter(d=>getDayEffort(d));
+  const strong=logged.filter(d=>{const e=getDayEffort(d);return e==='strong'||e==='vstrong';}).length;
+  const effortPct=logged.length>0?Math.round(strong/logged.length*100):0;
+  const withTarget=logs.filter(d=>d.hasTarget&&d.target>0&&d.actual!==null&&d.actual!==undefined&&!isNaN(d.actual));
+  const avgAchievement=withTarget.length>0?Math.round(withTarget.reduce((s,d)=>s+(d.actual/d.target*100),0)/withTarget.length):null;
+  const perfVals=logged.map(d=>calcDayPerformance(d)).filter(v=>v!==null);
+  const avgPerf=perfVals.length>0?Math.round(perfVals.reduce((a,b)=>a+b,0)/perfVals.length):null;
+  const untouchedCount=logs.filter(d=>d.untouched).length;
+  const completedCount=logs.filter(d=>getDayCompleted(d)===true).length;
+  const notCompletedCount=logs.filter(d=>getDayCompleted(d)===false).length;
+  el.innerHTML=`<div class="stat-card"><div class="stat-num">${effortPct}%</div><div class="stat-label">Effort Performance</div></div><div class="stat-card"><div class="stat-num">${logged.length}</div><div class="stat-label">Days logged</div></div><div class="stat-card"><div class="stat-num">${avgAchievement!==null?avgAchievement+'%':'—'}</div><div class="stat-label">Target Achievement (avg)</div></div><div class="stat-card"><div class="stat-num">${avgPerf!==null?avgPerf+'%':'—'}</div><div class="stat-label">Day Performance (avg)</div></div><div class="stat-card"><div class="stat-num">${completedCount}</div><div class="stat-label">Completed</div></div><div class="stat-card"><div class="stat-num">${notCompletedCount}</div><div class="stat-label">Not Completed</div></div><div class="stat-card"><div class="stat-num">${untouchedCount}</div><div class="stat-label">Untouched days</div></div>`;
+}
+// Aggregates the reasons behind Some/Normal/No Effort days AND Untouched
+// days into one "what's slowing you down" pattern list. Circumstance
+// reasons (family, travel, work, health, unexpected) are labelled
+// separately from controllable-behaviour reasons (procrastination, lack of
+// focus/time, low energy) so the person can tell the two apart — neither is
+// called a "failure".
+function computeReasonPatterns(){
+  const counts={};
+  const bump=(reason)=>{if(!reason)return;counts[reason]=(counts[reason]||0)+1;};
+  Object.values(D.adventureDays||{}).forEach(d=>{
+    if(d.untouched){bump(d.untouchedReason);return;}
+    if(d.effortReasons&&Array.isArray(d.effortReasons.items)){d.effortReasons.items.forEach(bump);}
+    if(getDayCompleted(d)===false&&d.notCompletedReasons&&Array.isArray(d.notCompletedReasons.items)){d.notCompletedReasons.items.forEach(bump);}
+  });
+  return Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+}
+function renderAdventureReasons(){
+  const el=document.getElementById('adventure-reasons-list');
+  if(!el)return;
+  const patterns=computeReasonPatterns();
+  if(patterns.length===0){el.innerHTML='<span style="color:var(--text3);">No recurring reasons logged yet.</span>';return;}
+  el.innerHTML=patterns.slice(0,10).map(([reason,count])=>{
+    const isCircumstance=CIRCUMSTANCE_REASONS.includes(reason);
+    const tag=isCircumstance?'<span style="font-size:10px;color:var(--text3);">circumstance</span>':'<span style="font-size:10px;color:var(--warning);">behaviour pattern</span>';
+    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);"><span>${esc(reason)} ${tag}</span><b>${count}×</b></div>`;
+  }).join('');
+}
+// Chronological locking: past and today's day can be logged/edited as
+// before. Any FUTURE day (tomorrow through Day 1825) can only be
+// pre-written via the plan-only "Set Tomorrow's Adventure" flow — actual
+// logging (Completed/Not Completed, Effort, Actual, Achievement, reasons
+// about what actually happened, and reflection Notes) stays unavailable
+// until that day actually arrives, so the person can never create false
+// historical progress by jumping ahead in the day grid.
 function openDayModal(key,dayNum,dd,dmo,dy){
-  selDay=key;dayStatus=null;dayHappy=null;
+  const curDay=getCurrentJourneyDay();
+  if(dayNum>curDay){
+    openTomorrowPlanModal(key,dayNum,dd,dmo,dy);
+    return;
+  }
+  // Before opening TODAY's entry, make sure earlier untouched days are
+  // resolved first (sequential catch-up). Opening a past/other day is
+  // unaffected — only today's entry point triggers the catch-up flow.
+  const todayKeyNow=(()=>{const t=new Date();return t.getFullYear()+'-'+String(t.getMonth()+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0');})();
+  if(key===todayKeyNow){
+    const pending=getPendingUntouchedDays();
+    if(pending.length>0){
+      openUntouchedCatchup(pending,()=>openDayModalNow(key,dayNum,dd,dmo,dy));
+      return;
+    }
+  }
+  openDayModalNow(key,dayNum,dd,dmo,dy);
+}
+// ── Future-day Adventure planning (plan-only, locked for real logging) ──
+// Same plan-only modal design as before, now usable for ANY future day
+// (tomorrow through Day 1825), not just the very next day.
+let tomorrowPlanKey=null;
+// Reachable both from clicking any future day's dot in the day grid and
+// from the explicit "Set Tomorrow's Adventure" button on the Adventure Log
+// page (which always targets the very next day for quick access).
+function openTomorrowPlanFromButton(){
+  const [sy,sm,sd]=D.startDate.split('-').map(Number);
+  const curDay=getCurrentJourneyDay();
+  const d=new Date(sy,sm-1,sd+curDay); // curDay is 1-based "today"; +curDay lands on tomorrow
+  const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+  openTomorrowPlanModal(key,curDay+1,d.getDate(),d.getMonth(),d.getFullYear());
+}
+function openTomorrowPlanModal(key,dayNum,dd,dmo,dy){
+  tomorrowPlanKey=key;
+  const log=D.adventureDays[key];
+  // If this future day already has a real (completed/not-completed) record
+  // somehow, never let the plan-only flow open on top of it.
+  if(log&&(log.completed===true||log.completed===false)){
+    alert('Day '+dayNum+' already has a logged entry.');
+    return;
+  }
+  document.getElementById('modal-tomorrow-title').textContent="Plan Day "+dayNum+" — "+dd+' '+MONTH_NAMES[dmo]+' '+dy;
+  document.getElementById('tomorrow-plan-text').value=(log&&log.goals)||'';
+  document.getElementById('modal-tomorrow').classList.add('open');
+}
+function saveTomorrowPlan(){
+  if(!tomorrowPlanKey)return;
+  const text=document.getElementById('tomorrow-plan-text').value.trim();
+  const existing=D.adventureDays[tomorrowPlanKey];
+  if(existing&&(existing.completed===true||existing.completed===false)){closeModal('modal-tomorrow');return;}
+  if(!text){
+    if(existing&&existing.plannedOnly)delete D.adventureDays[tomorrowPlanKey];
+  } else {
+    D.adventureDays[tomorrowPlanKey]={plannedOnly:true,goals:text,advRich:esc(text).replace(/\n/g,'<br>'),plannedAt:new Date().toISOString()};
+  }
+  save();closeModal('modal-tomorrow');renderAdventure();
+}
+function openDayModalNow(key,dayNum,dd,dmo,dy){
+  selDay=key;dayEffort=null;dayHappy=null;dayCompleted=null;dayEffortReasons=[];dayNotCompletedReasons=[];
   const log=D.adventureDays[key]||{};
   // dd, dmo, dy are local date parts computed in renderAdventure — use them directly
   // to avoid any possible UTC/timezone shift from re-parsing D.startDate
   const prettyDate=dd+' '+MONTH_NAMES[dmo]+' '+dy;
   document.getElementById('modal-day-title').textContent='Day '+dayNum+' — '+prettyDate;
   ['r1','r2','r3'].forEach((r,i)=>{const el=document.getElementById('day-'+r);if(el)el.value=(log.reasons&&log.reasons[i])||'';});
-  ['f1','f2','f3'].forEach((f,i)=>{const el=document.getElementById('day-'+f);if(el)el.value=(log.fixes&&log.fixes[i])||'';});
-  dayStatus=log.status||null;
+  ['f1','f2'].forEach((f,i)=>{const el=document.getElementById('day-'+f);if(el)el.value=(log.fixes&&log.fixes[i])||'';});
+  dayEffort=getDayEffort(log);
+  dayCompleted=getDayCompletedRaw(log);
   dayHappy=log.happy!==undefined?log.happy:null;
+  dayEffortReasons=(log.effortReasons&&Array.isArray(log.effortReasons.items))?log.effortReasons.items.slice():[];
+  document.getElementById('day-effort-other-note').value=(log.effortReasons&&log.effortReasons.otherNote)||'';
+  document.getElementById('day-effort-note').value=(log.effortReasons&&log.effortReasons.note)||'';
+  dayNotCompletedReasons=(log.notCompletedReasons&&Array.isArray(log.notCompletedReasons.items))?log.notCompletedReasons.items.slice():[];
+  document.getElementById('day-notcompleted-other-note').value=(log.notCompletedReasons&&log.notCompletedReasons.otherNote)||'';
+  document.getElementById('day-notcompleted-note').value=(log.notCompletedReasons&&log.notCompletedReasons.note)||'';
+  document.getElementById('day-has-target').checked=!!log.hasTarget;
+  document.getElementById('day-target').value=(log.target!==undefined&&log.target!==null)?log.target:'';
+  document.getElementById('day-actual').value=(log.actual!==undefined&&log.actual!==null)?log.actual:'';
+  document.getElementById('day-realism').value=log.targetRealism||'';
+  document.getElementById('day-target-row').style.display=log.hasTarget?'block':'none';
+  renderEffortReasonChips();
+  renderNotCompletedReasonChips();
   updateDayUI();
   document.getElementById('modal-day').classList.add('open');
   // Load rich editors after modal is visible
@@ -2552,37 +3576,269 @@ function openDayModal(key,dayNum,dd,dmo,dy){
     });
   },20);
 }
+// Raw (non-fallback) completed value used only to prefill the modal, so
+// re-opening an old legacy record doesn't silently "invent" an explicit
+// Completed/Not Completed click the person never made.
+function getDayCompletedRaw(log){return (log&&(log.completed===true||log.completed===false))?log.completed:null;}
 function clearDayLog(){
   const key=selDay;
   if(!key)return;
   delete D.adventureDays[key];
-  selDay=null;dayStatus=null;dayHappy=null;
+  selDay=null;dayEffort=null;dayHappy=null;dayCompleted=null;dayEffortReasons=[];dayNotCompletedReasons=[];
   save();closeModal('modal-day');renderAdventure();
 }
-function setDayStatus(s){dayStatus=s;updateDayUI();}
+function setDayEffort(e){dayEffort=e;renderEffortReasonChips();updateDayUI();}
+// Completed and Not Completed are mutually exclusive entry points into two
+// different flows: Completed shows Effort; Not Completed skips Effort
+// entirely and goes straight to its own reasons/notes. Switching between
+// them clears whichever flow's fields no longer apply so a stray earlier
+// selection can never get silently saved into the wrong flow.
+function setDayCompleted(v){
+  dayCompleted=v;
+  if(v===false){dayEffort=null;dayEffortReasons=[];}
+  if(v===true){dayNotCompletedReasons=[];}
+  updateDayUI();
+}
 function setDayHappy(v){dayHappy=v;updateDayUI();}
-function updateDayUI(){const bc=document.getElementById('btn-complete'),bm=document.getElementById('btn-missed');bc.style.background=dayStatus==='done'?'var(--success)':'';bc.style.color=dayStatus==='done'?'#fff':'';bc.style.borderColor=dayStatus==='done'?'var(--success)':'var(--border)';bm.style.background=dayStatus==='missed'?'var(--danger)':'';bm.style.color=dayStatus==='missed'?'#fff':'';bm.style.borderColor=dayStatus==='missed'?'var(--danger)':'var(--border)';document.getElementById('day-happy-row').style.display=dayStatus==='done'?'block':'none';document.getElementById('day-missed-row').style.display=dayStatus==='missed'?'block':'none';const by=document.getElementById('btn-happy-y'),bn=document.getElementById('btn-happy-n');by.style.background=dayHappy===true?'var(--success)':'';by.style.color=dayHappy===true?'#fff':'';by.style.borderColor=dayHappy===true?'var(--success)':'var(--border)';bn.style.background=dayHappy===false?'var(--danger)':'';bn.style.color=dayHappy===false?'#fff':'';bn.style.borderColor=dayHappy===false?'var(--danger)':'var(--border)';}
+function toggleDayTarget(){
+  const chk=document.getElementById('day-has-target').checked;
+  document.getElementById('day-target-row').style.display=chk?'block':'none';
+  updateDayUI();
+}
+function renderEffortReasonChips(){
+  const wrap=document.getElementById('day-effort-reason-chips');
+  if(!wrap)return;
+  wrap.innerHTML=REASON_LIST.map(r=>{
+    const on=dayEffortReasons.includes(r);
+    return `<button type="button" class="btn btn-ghost" onclick="toggleEffortReason('${esc(r).replace(/'/g,"\\'")}')" style="font-size:12px;padding:6px 12px;${on?'background:var(--warning);color:#fff;border-color:var(--warning);':''}">${esc(r)}</button>`;
+  }).join('');
+  document.getElementById('day-effort-other-row').style.display=dayEffortReasons.includes('Other')?'block':'none';
+}
+function toggleEffortReason(r){
+  const i=dayEffortReasons.indexOf(r);
+  if(i>=0)dayEffortReasons.splice(i,1);else dayEffortReasons.push(r);
+  renderEffortReasonChips();
+}
+// Same standardized reason list, reused for the Not Completed flow — kept
+// as a separate chip set/state array from the Effort reasons so the two
+// contexts (lower Effort vs Not Completed) never overwrite each other.
+function renderNotCompletedReasonChips(){
+  const wrap=document.getElementById('day-notcompleted-reason-chips');
+  if(!wrap)return;
+  wrap.innerHTML=REASON_LIST.map(r=>{
+    const on=dayNotCompletedReasons.includes(r);
+    return `<button type="button" class="btn btn-ghost" onclick="toggleNotCompletedReason('${esc(r).replace(/'/g,"\\'")}')" style="font-size:12px;padding:6px 12px;${on?'background:var(--danger);color:#fff;border-color:var(--danger);':''}">${esc(r)}</button>`;
+  }).join('');
+  document.getElementById('day-notcompleted-other-row').style.display=dayNotCompletedReasons.includes('Other')?'block':'none';
+}
+function toggleNotCompletedReason(r){
+  const i=dayNotCompletedReasons.indexOf(r);
+  if(i>=0)dayNotCompletedReasons.splice(i,1);else dayNotCompletedReasons.push(r);
+  renderNotCompletedReasonChips();
+}
+// Achievement % is informational only — it is never capped at 100 (an
+// exceeded target should be visible) and it never feeds back into Effort
+// or Completion. Effort and Completed stay exactly what the person picked;
+// Day Performance is calculated separately by calcDayPerformance().
+function updateDayUI(){
+  const btns={vstrong:document.getElementById('btn-effort-vstrong'),strong:document.getElementById('btn-effort-strong'),some:document.getElementById('btn-effort-some'),normal:document.getElementById('btn-effort-normal'),none:document.getElementById('btn-effort-none')};
+  Object.keys(btns).forEach(k=>{
+    const on=dayEffort===k;
+    const color=EFFORT_META[k].color;
+    btns[k].style.background=on?color:'';
+    btns[k].style.color=on?'#fff':'';
+    btns[k].style.borderColor=on?color:'var(--border)';
+  });
+  const cy=document.getElementById('btn-completed-y'),cn=document.getElementById('btn-completed-n');
+  cy.style.background=dayCompleted===true?'var(--success)':'';cy.style.color=dayCompleted===true?'#fff':'';cy.style.borderColor=dayCompleted===true?'var(--success)':'var(--border)';
+  cn.style.background=dayCompleted===false?'var(--danger)':'';cn.style.color=dayCompleted===false?'#fff':'';cn.style.borderColor=dayCompleted===false?'var(--danger)':'var(--border)';
+
+  // Effort only applies to Completed days — Not Completed bypasses it
+  // entirely and goes straight to the Not Completed section below.
+  document.getElementById('day-effort-block').style.display=(dayCompleted===true)?'block':'none';
+  document.getElementById('day-effort-reason-row').style.display=(dayCompleted===true&&dayEffort&&EFFORT_META[dayEffort].needsReason)?'block':'none';
+
+  document.getElementById('day-happy-row').style.display=(dayCompleted!==null||dayEffort)?'block':'none';
+  const by=document.getElementById('btn-happy-y'),bn=document.getElementById('btn-happy-n');
+  by.style.background=dayHappy===true?'var(--success)':'';by.style.color=dayHappy===true?'#fff':'';by.style.borderColor=dayHappy===true?'var(--success)':'var(--border)';
+  bn.style.background=dayHappy===false?'var(--danger)':'';bn.style.color=dayHappy===false?'#fff':'';bn.style.borderColor=dayHappy===false?'var(--danger)':'var(--border)';
+
+  const hasTarget=document.getElementById('day-has-target').checked;
+  const targetVal=parseFloat(document.getElementById('day-target').value);
+  const actualRaw=document.getElementById('day-actual').value;
+  const actualVal=parseFloat(actualRaw);
+  const badge=document.getElementById('day-achievement-badge');
+  if(hasTarget&&!isNaN(targetVal)&&targetVal>0){
+    const a=(actualRaw!==''&&!isNaN(actualVal))?actualVal:0;
+    const pct=Math.round(a/targetVal*100); // uncapped on purpose — exceeding target should be visible
+    let msg=a+' / '+targetVal+' — '+pct+'% achievement (target achievement only, not your day rating)';
+    if(pct>100)msg+=' · Target exceeded 🎉';
+    badge.textContent=msg;
+  } else {
+    badge.textContent='';
+  }
+  document.getElementById('day-realism-row').style.display=hasTarget?'block':'none';
+
+  // 3 existing Not Completed questions + standardized reasons remain
+  // mandatory ONLY when Not Completed is selected — no Effort step required
+  // to get here.
+  document.getElementById('day-missed-row').style.display=(dayCompleted===false)?'block':'none';
+  if(dayCompleted===false)renderNotCompletedReasonChips();
+
+  // Live Day Performance preview using the values currently in the form,
+  // built from the same object shape saveDayLog() will persist. Works with
+  // or without an Effort value, since Not Completed no longer requires one.
+  const previewLog={
+    effort:dayCompleted===true?dayEffort:null,completed:dayCompleted,
+    hasTarget:hasTarget,target:hasTarget&&!isNaN(targetVal)?targetVal:null,
+    actual:hasTarget&&actualRaw!==''&&!isNaN(actualVal)?actualVal:null
+  };
+  const perfBadge=document.getElementById('day-performance-badge');
+  if(dayCompleted!==null){
+    const perf=calcDayPerformance(previewLog);
+    perfBadge.style.display='block';
+    perfBadge.innerHTML='<b>Day Performance: '+perf+'% ('+dayPerformanceLabel(perf)+')</b> — a blended, automatically calculated score, never a manually-entered number.';
+  } else {
+    perfBadge.style.display='none';
+  }
+}
 function saveDayLog(){
   if(!selDay)return;
+  if(dayCompleted===null){alert('Please mark today as Completed or Not Completed.');return;}
+  if(dayCompleted===true){
+    // Effort is required ONLY for Completed days.
+    if(!dayEffort){alert('Please choose an Effort level for today.');return;}
+    if(EFFORT_META[dayEffort].needsReason&&dayEffortReasons.length===0){alert('Please select at least one reason that affected your effort today.');return;}
+    if(dayEffortReasons.includes('Other')&&!document.getElementById('day-effort-other-note').value.trim()){alert('Please add a short note for "Other".');return;}
+  }
+  if(dayCompleted===false){
+    // Not Completed skips Effort entirely — it uses its own 3 questions +
+    // standardized reasons instead. No Effort selection is required here.
+    const r1=document.getElementById('day-r1').value.trim(),r2=document.getElementById('day-r2').value.trim(),r3=document.getElementById('day-r3').value.trim();
+    if(!r1||!r2||!r3){alert("Since today was Not Completed, please fill in all 3 reasons you couldn't follow the plan.");return;}
+    if(dayNotCompletedReasons.length===0){alert('Please select at least one reason that applied.');return;}
+    if(dayNotCompletedReasons.includes('Other')&&!document.getElementById('day-notcompleted-other-note').value.trim()){alert('Please add a short note for "Other".');return;}
+  }
   const edAdv=document.getElementById('ed-adv');
   const edNotes=document.getElementById('ed-notes');
   const advRich=edAdv?edAdv.innerHTML:'';
   const notesRich=edNotes?edNotes.innerHTML:'';
   const advPlain=edAdv?(edAdv.textContent||edAdv.innerText||'').trim():'';
   const notesPlain=edNotes?(edNotes.textContent||edNotes.innerText||'').trim():'';
-  D.adventureDays[selDay]={
-    status:dayStatus,
+  if(!notesPlain){alert('Notes / reflections are required before saving.');return;}
+  const hasTarget=document.getElementById('day-has-target').checked;
+  const targetRaw=document.getElementById('day-target').value;
+  const actualRaw=document.getElementById('day-actual').value;
+  const target=(hasTarget&&targetRaw!=='')?parseFloat(targetRaw):null;
+  const actual=(hasTarget&&actualRaw!=='')?parseFloat(actualRaw):null;
+  const achievementPct=(hasTarget&&target>0&&actual!==null&&!isNaN(actual))?Math.round(actual/target*100):null; // secondary info only, uncapped
+  // Not Completed days carry no Effort at all (status maps straight to
+  // 'missed'); Completed days keep the existing Effort→status mapping.
+  const finalEffort=dayCompleted===true?dayEffort:null;
+  const logObj={
+    effort:finalEffort,
+    status:dayCompleted===false?'missed':effortToStatus(finalEffort), // kept in sync so existing Dashboard/Progress reads of d.status still work
+    completed:dayCompleted,
     happy:dayHappy,
     goals:advPlain,
     advRich:advRich,
     notes:notesPlain,
     notesRich:notesRich,
+    hasTarget:hasTarget,
+    target:target,
+    actual:actual,
+    achievementPct:achievementPct,
+    targetRealism:document.getElementById('day-realism').value||null,
+    effortReasons:(finalEffort&&EFFORT_META[finalEffort].needsReason)?{items:dayEffortReasons.slice(),otherNote:document.getElementById('day-effort-other-note').value.trim(),note:document.getElementById('day-effort-note').value.trim()}:null,
+    notCompletedReasons:dayCompleted===false?{items:dayNotCompletedReasons.slice(),otherNote:document.getElementById('day-notcompleted-other-note').value.trim(),note:document.getElementById('day-notcompleted-note').value.trim()}:null,
     reasons:['r1','r2','r3'].map(r=>{const el=document.getElementById('day-'+r);return el?el.value:'';}),
-    fixes:['f1','f2','f3'].map(f=>{const el=document.getElementById('day-'+f);return el?el.value:'';})
+    fixes:['f1','f2'].map(f=>{const el=document.getElementById('day-'+f);return el?el.value:'';})
   };
+  logObj.dayPerformance=calcDayPerformance(logObj);
+  D.adventureDays[selDay]=logObj;
   save();closeModal('modal-day');renderAdventure();
 }
 
+// ── Untouched Days ─────────────────────────────────────────────────────
+// A day is "untouched" when the person never opened/logged the Adventure
+// Log for it — distinct from Completed, Not Completed, or No Effort. It is
+// NEVER auto-classified as a failure. Detected days are a HARD GATE: they
+// must be resolved one at a time (reason + optional note) via
+// showUntouchedStep()/saveUntouchedDay() before the person can open today's
+// Adventure entry — there is no "Skip for now" escape hatch. The scan below
+// covers the ENTIRE journey history (Day 1 through yesterday), not just a
+// recent window, so an old unresolved gap can never quietly bypass the gate.
+function getPendingUntouchedDays(){
+  const [sy,sm,sd]=D.startDate.split('-').map(Number);
+  const start=new Date(sy,sm-1,sd);
+  const todayDate=new Date();
+  const ty=todayDate.getFullYear(),tm=todayDate.getMonth(),td=todayDate.getDate();
+  const todayLocal=new Date(ty,tm,td);
+  const dayNum=getCurrentJourneyDay();
+  const pending=[];
+  // Scans the full history from Day 1 up to (not including) today — every
+  // past day must be accounted for, however far back the gap is.
+  for(let i=1;i<dayNum;i++){
+    const d=new Date(sy,sm-1,sd+(i-1));
+    const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+    if(d>=todayLocal)continue;
+    if(D.adventureDays[key])continue; // already logged or already resolved as untouched
+    pending.push({key,dayNum:i,dd:d.getDate(),dmo:d.getMonth(),dy:d.getFullYear()});
+  }
+  return pending;
+}
+function renderUntouchedBanner(){
+  const card=document.getElementById('untouched-banner-card');
+  const text=document.getElementById('untouched-banner-text');
+  if(!card||!text)return;
+  const pending=getPendingUntouchedDays();
+  if(pending.length===0){card.style.display='none';return;}
+  card.style.display='block';
+  const list=pending.slice(0,5).map(p=>'Day '+p.dayNum).join(', ')+(pending.length>5?' and '+(pending.length-5)+' more':'');
+  text.textContent=pending.length+' day(s) were never logged: '+list+'. This is not automatically a failure — add a quick reason so your patterns stay accurate.';
+}
+function maybeOpenUntouchedCatchup(force){
+  const pending=getPendingUntouchedDays();
+  if(pending.length===0)return;
+  openUntouchedCatchup(pending,null);
+}
+function openUntouchedCatchup(pending,thenCallback){
+  untouchedQueue=pending;untouchedIdx=0;untouchedThenCallback=thenCallback||null;
+  showUntouchedStep();
+}
+function showUntouchedStep(){
+  if(untouchedIdx>=untouchedQueue.length){
+    closeModal('modal-untouched');
+    if(untouchedThenCallback){const cb=untouchedThenCallback;untouchedThenCallback=null;cb();}
+    return;
+  }
+  const item=untouchedQueue[untouchedIdx];
+  const prettyDate=item.dd+' '+MONTH_NAMES[item.dmo]+' '+item.dy;
+  document.getElementById('modal-untouched-title').textContent='Day '+item.dayNum+' — '+prettyDate+' was Untouched';
+  document.getElementById('modal-untouched-sub').textContent="You didn't log an Adventure for this day. What happened?";
+  document.getElementById('untouched-reason').value='';
+  document.getElementById('untouched-note').value='';
+  document.getElementById('untouched-queue-info').textContent=(untouchedIdx+1)+' of '+untouchedQueue.length+' untouched day(s) to resolve';
+  updateUntouchedUI();
+  document.getElementById('modal-untouched').classList.add('open');
+}
+function updateUntouchedUI(){
+  const reason=document.getElementById('untouched-reason').value;
+  document.getElementById('untouched-note-label').textContent=reason==='Other'?'Note (required for "Other")':'Note (optional)';
+}
+function saveUntouchedDay(){
+  const item=untouchedQueue[untouchedIdx];
+  if(!item)return;
+  const reason=document.getElementById('untouched-reason').value;
+  const note=document.getElementById('untouched-note').value.trim();
+  if(!reason){alert('Please select a reason.');return;}
+  if(reason==='Other'&&!note){alert('Please add a short note for "Other".');return;}
+  D.adventureDays[item.key]={untouched:true,untouchedReason:reason,untouchedNote:note,resolvedAt:new Date().toISOString()};
+  save();
+  untouchedIdx++;
+  showUntouchedStep();
+  renderAdventure();
+}
 let curDayIdx=0;
 let curDayIdxAutoSet=false; // ensures the very first render of the Schedule page jumps to TODAY instead of Day 1; later navigation (selectDay/prevDay/nextDay) is left alone
 // Given a schedule month object, returns the array index that corresponds to
@@ -2723,6 +3979,7 @@ function computeGoalWorkTime(refDate){
       if(dOnly>=journeyStart&&dOnly<=todayKey)journeyMin+=rowsMin;
     });
   });
+  journeyMin+=(D.journeyWorkBaselineMin||0);
   return{todayMin,weekMin,monthMin,journeyMin};
 }
 
@@ -2809,8 +4066,45 @@ function renderSchedSummary(){
 }
 
 const HIJRI_MONTHS=['Muharram','Safar','Rabi al-Awwal','Rabi al-Thani','Jumada al-Awwal','Jumada al-Thani','Rajab','Sha\'ban','Ramadan','Shawwal','Dhu al-Qidah','Dhu al-Hijjah'];
+// Hijri dates follow local moon-sighting announcements, which vary by
+// country/region (Saudi's Umm al-Qura calendar frequently runs 1 day ahead
+// of what's sighted/announced in India) — no formula can get this exactly
+// right for a specific region, and there's no public feed of moon-sighting
+// announcements to pull from automatically.
+//
+// HIJRI_ANCHORS is a small, manually-updated table of confirmed month-start
+// dates as announced by Hyderabad's Sadar Majlis-e-Ulama-e-Deccan (Central
+// Moon Sighting Committee). When today's date falls within ~30 days of the
+// most recent anchor, it's used directly — no formula, no drift, matches
+// what was actually announced locally. Add a new entry here each time the
+// committee announces the next month's start (usually monthly); until then,
+// dates outside the anchors' range fall back to the tabular calculation
+// below, shifted by D.hijriOffsetDays, the manual calibration the user can
+// still set in Settings as a fallback.
+const HIJRI_ANCHORS=[
+  // Confirmed: Rabi al-Awwal 1448 AH began Sat, 15 Aug 2026 (Hyderabad
+  // moon not sighted 13 Aug -> Safar completed 30 days).
+  {start:'2026-08-15',monthIndex:2,year:1448}
+];
+function hijriFromAnchor(date){
+  const dateMid=new Date(date.getFullYear(),date.getMonth(),date.getDate()).getTime();
+  let best=null;
+  for(const a of HIJRI_ANCHORS){
+    const [ay,am,ad]=a.start.split('-').map(Number);
+    const astart=new Date(ay,am-1,ad).getTime();
+    if(astart<=dateMid&&(!best||astart>best.astart))best={...a,astart};
+  }
+  if(!best)return null;
+  const dayOffset=Math.round((dateMid-best.astart)/86400000)+1;
+  if(dayOffset<1||dayOffset>30)return null; // outside confirmed month's plausible range
+  return{day:dayOffset,month:HIJRI_MONTHS[best.monthIndex],year:best.year};
+}
 function gregorianToHijri(date){
-  const y=date.getFullYear(),m=date.getMonth()+1,d=date.getDate();
+  const anchored=hijriFromAnchor(date);
+  if(anchored)return anchored;
+  const offsetDays=parseInt(D.hijriOffsetDays,10)||0;
+  const shifted=new Date(date.getFullYear(),date.getMonth(),date.getDate()+offsetDays);
+  const y=shifted.getFullYear(),m=shifted.getMonth()+1,d=shifted.getDate();
   const a=Math.floor((14-m)/12),y2=y+4800-a,m2=m+12*a-3;
   let jd=d+Math.floor((153*m2+2)/5)+365*y2+Math.floor(y2/4)-Math.floor(y2/100)+Math.floor(y2/400)-32045;
   jd=jd-1948440+10632+1; // +1 civil epoch offset
@@ -2821,7 +4115,7 @@ function gregorianToHijri(date){
   const hMonth=Math.floor((24*jd)/709),hDay=jd-Math.floor((709*hMonth)/24),hYear=30*n+j-30;
   return{day:hDay,month:HIJRI_MONTHS[hMonth-1],year:hYear};
 }
-function renderHome(){const _greg=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const _hij=gregorianToHijri(new Date());document.getElementById('home-date').textContent=`${_greg} (${_hij.day} ${_hij.month} ${_hij.year} AH)`;const dayNum=getCurrentJourneyDay();const pct=Math.min(100,Math.round(dayNum/1825*100));const done=Object.values(D.adventureDays).filter(d=>d.status).length;const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;const wrc=(D.weeklyReviews||[]).length,mrc=(D.monthlyReviews||[]).length,qrc=(D.quarterlyReviews||[]).length,arc=(D.annualReviews||[]).length;document.getElementById('home-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Day of journey</div></div><div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days completed</div></div><div class="stat-card"><div class="stat-num">${msDone}/${msTotal}</div><div class="stat-label">Milestones done</div></div>`;document.getElementById('home-biggoal').textContent=D.goals.g1||'No main goal set yet — go to My Goals to add one';document.getElementById('home-day-num').textContent='Day '+dayNum;document.getElementById('home-progress').style.width=pct+'%';const todayKey=new Date().toISOString().split('T')[0];document.getElementById('home-spiritual').innerHTML=D.spiritual.habits.length===0?'No spiritual habits added yet.':D.spiritual.habits.map(h=>{const d=h.log&&h.log[todayKey];return`<span style="margin-right:14px;color:${d?'var(--success)':'var(--text3)'}">${d?'✓':'○'} ${esc(h.name)}</span>`;}).join('');
+function renderHome(){const _greg=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const _hij=gregorianToHijri(new Date());document.getElementById('home-date').textContent=`${_greg} (${_hij.day} ${_hij.month} ${_hij.year} AH)`;const dayNum=getCurrentJourneyDay();const pct=Math.min(100,Math.round(dayNum/1825*100));const done=Object.values(D.adventureDays).filter(d=>getDayStatus(d)==='done').length;const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;const wrc=(D.weeklyReviews||[]).length,mrc=(D.monthlyReviews||[]).length,qrc=(D.quarterlyReviews||[]).length,arc=(D.annualReviews||[]).length;document.getElementById('home-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Day of journey</div></div><div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days completed</div></div><div class="stat-card"><div class="stat-num">${msDone}/${msTotal}</div><div class="stat-label">Milestones done</div></div>`;document.getElementById('home-biggoal').textContent=D.goals.g1||'No main goal set yet — go to My Goals to add one';document.getElementById('home-day-num').textContent='Day '+dayNum;document.getElementById('home-progress').style.width=pct+'%';const todayKey=new Date().toISOString().split('T')[0];document.getElementById('home-spiritual').innerHTML=D.spiritual.habits.length===0?'No spiritual habits added yet.':D.spiritual.habits.map(h=>{const d=h.log&&h.log[todayKey];return`<span style="margin-right:14px;color:${d?'var(--success)':'var(--text3)'}">${d?'✓':'○'} ${esc(h.name)}</span>`;}).join('');
   // Review stats card
   const homeReviewEl=document.getElementById('home-review-stats');
   const g1p=computeGoalPct(1),g2p=computeGoalPct(2),g3p=computeGoalPct(3);
@@ -2834,7 +4128,7 @@ function renderHome(){const _greg=new Date().toLocaleDateString('en-IN',{weekday
 }
 
 let advChart=null;
-function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>d.status==='done').length;const logged=Object.values(D.adventureDays).filter(d=>d.status).length;const start=new Date(D.startDate);const dayNum=Math.floor((new Date()-start)/86400000)+1;document.getElementById('progress-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days done</div></div><div class="stat-card"><div class="stat-num">${Math.round(logged>0?done/logged*100:0)}%</div><div class="stat-label">Success rate</div></div><div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Current day</div></div>`;const labels=[],doneD=[],missD=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];const l=D.adventureDays[k];labels.push(d.toLocaleDateString('en-IN',{month:'short',day:'numeric'}));doneD.push(l&&l.status==='done'?1:0);missD.push(l&&l.status==='missed'?1:0);}const ctx=document.getElementById('chart-adventure');if(advChart)advChart.destroy();advChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Done',data:doneD,backgroundColor:'rgba(58,138,110,0.7)',borderRadius:4},{label:'Missed',data:missD,backgroundColor:'rgba(184,90,90,0.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#5a5448',font:{size:11}}}},scales:{x:{stacked:true,ticks:{color:'#9a9488',font:{size:9},maxTicksLimit:10},grid:{color:'#e0ddd6'}},y:{stacked:true,ticks:{color:'#9a9488',stepSize:1},grid:{color:'#e0ddd6'},max:1}}}});const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;document.getElementById('progress-milestones').textContent=msTotal===0?'No milestones added.':`${msDone} of ${msTotal} milestones completed`;document.getElementById('milestone-bar').style.width=msTotal>0?Math.round(msDone/msTotal*100)+'%':'0%';document.getElementById('milestone-pct').textContent=msTotal>0?Math.round(msDone/msTotal*100)+'% complete':'';
+function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>getDayStatus(d)==='done').length;const logged=Object.values(D.adventureDays).filter(d=>getDayStatus(d)).length;const start=new Date(D.startDate);const dayNum=Math.floor((new Date()-start)/86400000)+1;document.getElementById('progress-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Strong Effort days</div></div><div class="stat-card"><div class="stat-num">${Math.round(logged>0?done/logged*100:0)}%</div><div class="stat-label">Effort Performance</div></div><div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Current day</div></div>`;const labels=[],doneD=[],partD=[],missD=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];const l=D.adventureDays[k];const st=l?getDayStatus(l):'';labels.push(d.toLocaleDateString('en-IN',{month:'short',day:'numeric'}));doneD.push(st==='done'?1:0);partD.push(st==='partial'?1:0);missD.push(st==='missed'?1:0);}const ctx=document.getElementById('chart-adventure');if(advChart)advChart.destroy();advChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Strong Effort',data:doneD,backgroundColor:'rgba(58,138,110,0.7)',borderRadius:4},{label:'Some Effort',data:partD,backgroundColor:'rgba(184,137,42,0.7)',borderRadius:4},{label:'No Effort',data:missD,backgroundColor:'rgba(184,90,90,0.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#5a5448',font:{size:11}}}},scales:{x:{stacked:true,ticks:{color:'#9a9488',font:{size:9},maxTicksLimit:10},grid:{color:'#e0ddd6'}},y:{stacked:true,ticks:{color:'#9a9488',stepSize:1},grid:{color:'#e0ddd6'},max:1}}}});const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;document.getElementById('progress-milestones').textContent=msTotal===0?'No milestones added.':`${msDone} of ${msTotal} milestones completed`;document.getElementById('milestone-bar').style.width=msTotal>0?Math.round(msDone/msTotal*100)+'%':'0%';document.getElementById('milestone-pct').textContent=msTotal>0?Math.round(msDone/msTotal*100)+'% complete':'';
   // Reviews section
   const wrs=D.weeklyReviews||[],mrs=D.monthlyReviews||[],qrs=D.quarterlyReviews||[],ars=D.annualReviews||[];
   const latestW=wrs.length?wrs[wrs.length-1]:'';const latestM=mrs.length?mrs[mrs.length-1]:'';const latestQ=qrs.length?qrs[qrs.length-1]:'';const latestA=ars.length?ars[ars.length-1]:'';
@@ -2871,6 +4165,198 @@ function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>d.
     const missionTitle=(D.currentMission&&D.currentMission.title)||'';
     pmEl.innerHTML=`<div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;"><span style="color:var(--text);">${missionTitle?esc(missionTitle):'No current mission set'}</span><span style="color:var(--accent);font-weight:600;">${missionPct}%</span></div><div class="progress-wrap"><div class="progress-fill" style="width:${missionPct}%"></div></div>`;
   }
+  renderAdventureInsights();
+  renderProgressTimeline();
+}
+// ── Adventure Log → Progress integration ─────────────────────────────
+// Minimal, additive card (does not alter the existing progress-stats /
+// chart-adventure / progress-reviews / progress-mission blocks above).
+// Works at ANY point in the 1825-day journey — it simply summarises
+// whatever has been recorded in D.adventureDays up to now, so it reads
+// correctly whether the person is on Day 20, Day 300, or Day 1500.
+function renderAdventureInsights(){
+  const el=document.getElementById('progress-adventure-insights');
+  if(!el)return;
+  const dayNum=getCurrentJourneyDay();
+  const logs=Object.values(D.adventureDays||{});
+  const logged=logs.filter(d=>!d.untouched&&!d.plannedOnly); // plannedOnly future entries are a plan, not an actual logged Adventure — must never inflate this count
+  const untouched=logs.filter(d=>d.untouched);
+  const completed=logs.filter(d=>getDayCompleted(d)===true).length;
+  const notCompleted=logs.filter(d=>getDayCompleted(d)===false).length;
+  const effortCounts={vstrong:0,strong:0,some:0,normal:0,none:0};
+  logged.forEach(d=>{const e=getDayEffort(d);if(e&&effortCounts[e]!==undefined)effortCounts[e]++;});
+  const withTarget=logs.filter(d=>d.hasTarget&&d.target>0&&d.actual!==null&&d.actual!==undefined&&!isNaN(d.actual));
+  const avgAchievement=withTarget.length>0?Math.round(withTarget.reduce((s,d)=>s+(d.actual/d.target*100),0)/withTarget.length):null;
+  const perfVals=logged.map(d=>calcDayPerformance(d)).filter(v=>v!==null);
+  const avgPerf=perfVals.length>0?Math.round(perfVals.reduce((a,b)=>a+b,0)/perfVals.length):null;
+  const completionRate=(completed+notCompleted)>0?Math.round(completed/(completed+notCompleted)*100):null;
+  const realismCounts={realistic:0,ambitious:0,easy:0};
+  withTarget.forEach(d=>{if(d.targetRealism&&realismCounts[d.targetRealism]!==undefined)realismCounts[d.targetRealism]++;});
+
+  const statRow=(label,val)=>`<div class="stat-card" style="padding:12px 10px;"><div class="stat-num" style="font-size:20px;">${val}</div><div class="stat-label" style="font-size:10px;">${label}</div></div>`;
+  el.innerHTML=`
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;">
+      ${statRow('Journey Day',dayNum+' / 1825')}
+      ${statRow('Adventures Logged',logged.length)}
+      ${statRow('Untouched Days',untouched.length)}
+      ${statRow('Completed Days',completed)}
+      ${statRow('Not Completed Days',notCompleted)}
+      ${statRow('Completion Rate',completionRate!==null?completionRate+'%':'—')}
+      ${statRow('Avg Target Achievement',avgAchievement!==null?avgAchievement+'%':'—')}
+      ${statRow('Avg Day Performance',avgPerf!==null?avgPerf+'%':'—')}
+    </div>
+    <div style="margin-top:14px;font-size:12px;color:var(--text2);">
+      <b>Effort distribution</b> — Very Strong: ${effortCounts.vstrong} · Strong: ${effortCounts.strong} · Some: ${effortCounts.some} · Normal: ${effortCounts.normal} · No Effort: ${effortCounts.none}
+    </div>
+    <div style="margin-top:8px;font-size:12px;color:var(--text2);">
+      <b>Target realism (numeric tasks)</b> — Realistic: ${realismCounts.realistic} · Too Ambitious: ${realismCounts.ambitious} · Too Easy: ${realismCounts.easy}
+    </div>
+    <div style="margin-top:14px;">
+      <div style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;">What's repeatedly slowing you down</div>
+      <div id="progress-reason-patterns" style="font-size:12px;color:var(--text2);"></div>
+    </div>
+  `;
+  const patterns=computeReasonPatterns();
+  const prEl2=document.getElementById('progress-reason-patterns');
+  if(prEl2){
+    prEl2.innerHTML=patterns.length===0?'<span style="color:var(--text3);">No recurring reasons logged yet.</span>':patterns.slice(0,10).map(([reason,count])=>{
+      const isCircumstance=CIRCUMSTANCE_REASONS.includes(reason);
+      return `<div style="display:flex;justify-content:space-between;padding:4px 0;"><span>${esc(reason)}${isCircumstance?' <span style="color:var(--text3);font-size:10px;">(circumstance)</span>':' <span style="color:var(--warning);font-size:10px;">(behaviour pattern)</span>'}</span><b>${count}×</b></div>`;
+    }).join('');
+  }
+}
+// ── 18A: Complete 5-Year Adventure Timeline (Day 1 → 1825) ────────────
+// Purely a read-only, auto-generated view over D.adventureDays — it never
+// stores anything of its own and never needs manual maintenance. Every one
+// of the 1825 days is classified into exactly one category:
+//   'future'      — day number > current journey day: NOT a failure, NOT
+//                    Untouched, NOT zero-performance — simply not reached yet.
+//   'planned'     — a future day (normally just tomorrow) that has a
+//                    plan-only "Set Tomorrow's Adventure" entry.
+//   'untouched'   — resolved Untouched-day record (reason + optional note).
+//   'completed'   — Completed=true, with Effort/Achievement/Performance/
+//                    reasons shown when present.
+//   'notcompleted'— Completed=false, with the same detail fields shown.
+//   'blank'       — a past/today day with no record at all (never logged
+//                    and never resolved as Untouched) — distinct from both
+//                    a failure and a future day.
+// The whole 1825-day range is always generated fresh from D.adventureDays,
+// so it stays correct and complete whether the person is on Day 20, Day
+// 300, Day 900, or Day 1825 — nothing here is hand-maintained.
+function classifyProgressDay(dayLabel,curDay,log){
+  const isFuture=dayLabel>curDay;
+  if(isFuture)return (log&&log.plannedOnly)?'planned':'future';
+  if(log&&log.untouched)return 'untouched';
+  if(log){
+    const c=getDayCompleted(log);
+    if(c===true)return 'completed';
+    if(c===false)return 'notcompleted';
+  }
+  return 'blank';
+}
+function renderProgressTimeline(){
+  const grid=document.getElementById('progress-timeline-grid');
+  if(!grid)return;
+  const filterEl=document.getElementById('progress-timeline-filter');
+  const filter=filterEl?filterEl.value:'all';
+  const [sy,sm,sd]=D.startDate.split('-').map(Number);
+  const curDay=getCurrentJourneyDay();
+  const counts={future:0,planned:0,untouched:0,completed:0,notcompleted:0,blank:0};
+  const frag=document.createDocumentFragment();
+  for(let i=0;i<=1824;i++){
+    const dayLabel=i+1;
+    const d=new Date(sy,sm-1,sd+i);
+    const dy=d.getFullYear(),dmo=d.getMonth(),dd=d.getDate();
+    const key=dy+'-'+String(dmo+1).padStart(2,'0')+'-'+String(dd).padStart(2,'0');
+    const log=D.adventureDays[key];
+    const cat=classifyProgressDay(dayLabel,curDay,log);
+    counts[cat]++;
+    if(filter!=='all'&&filter!==cat)continue;
+    const div=document.createElement('div');
+    let cls='day-dot';
+    if(cat==='completed'){const st=getDayStatus(log);cls+=(st==='partial'?' partial':' done');}
+    else if(cat==='notcompleted')cls+=' missed';
+    else if(cat==='untouched')cls+=' untouched-resolved';
+    else if(cat==='planned')cls+=' planned';
+    else if(cat==='future')cls+=' future-locked';
+    else if(cat==='blank')cls+=' past-empty';
+    if(dayLabel===curDay)cls+=' today';
+    div.className=cls;
+    const mark=dayLabel===curDay?'⭐':cat==='completed'?'✓':cat==='notcompleted'?'✕':cat==='untouched'?'⋯':cat==='planned'?'📝':'';
+    div.innerHTML='<span class="dd-num">'+dayLabel+'</span><span class="dd-mark">'+mark+'</span>';
+    div.title='Day '+dayLabel+' — '+dd+' '+MONTH_NAMES[dmo]+' '+dy;
+    div.onclick=()=>showProgressDayDetail(dayLabel,dd,dmo,dy,log,cat);
+    frag.appendChild(div);
+  }
+  grid.innerHTML='';
+  grid.appendChild(frag);
+  const sumEl=document.getElementById('progress-timeline-summary');
+  if(sumEl){
+    sumEl.innerHTML='Journey Day '+curDay+' / 1825 · Completed '+counts.completed+' · Not Completed '+counts.notcompleted+
+      ' · Untouched '+counts.untouched+' · No record '+counts.blank+' · Planned '+counts.planned+' · Future (not yet reached) '+counts.future;
+  }
+}
+// Read-only detail panel for a single day in the 1825-day timeline —
+// shows exactly the fields relevant to that day's category, never
+// fabricating data for a future/unreached day.
+function showProgressDayDetail(dayLabel,dd,dmo,dy,log,cat){
+  const el=document.getElementById('progress-timeline-detail');
+  if(!el)return;
+  el.style.display='block';
+  const dateStr=dd+' '+MONTH_NAMES[dmo]+' '+dy;
+  let html='<div style="font-weight:600;margin-bottom:6px;color:var(--text);">Day '+dayLabel+' — '+dateStr+'</div>';
+  if(cat==='future'){
+    html+='<div style="color:var(--text3);">This day has not been reached yet. It is simply Future / Not Yet Reached — not a failure, not Untouched, and not a zero-performance day.</div>';
+  } else if(cat==='planned'){
+    html+='<div>Planned in advance via "Set Tomorrow\'s Adventure". Completed/Not Completed, Effort, Achievement and reasons remain locked until this day actually arrives.</div>';
+    if(log&&log.goals)html+='<div style="margin-top:8px;white-space:pre-wrap;">'+esc(log.goals)+'</div>';
+  } else if(cat==='untouched'){
+    html+='<div><b>Status:</b> Untouched — never logged, resolved with a reason</div>';
+    html+='<div style="margin-top:4px;"><b>Reason:</b> '+esc((log&&log.untouchedReason)||'—')+'</div>';
+    if(log&&log.untouchedNote)html+='<div style="margin-top:4px;"><b>Note:</b> '+esc(log.untouchedNote)+'</div>';
+  } else if(cat==='blank'){
+    html+='<div style="color:var(--text3);">No Adventure Log record exists for this day.</div>';
+  } else {
+    const completed=getDayCompleted(log);
+    html+='<div><b>Status:</b> '+(completed?'✔ Completed':'✕ Not Completed')+'</div>';
+    const effort=getDayEffort(log);
+    if(effort)html+='<div style="margin-top:4px;"><b>Effort:</b> '+EFFORT_META[effort].emoji+' '+EFFORT_META[effort].label+'</div>';
+    if(log.hasTarget&&log.target){
+      const pct=(log.achievementPct!==undefined&&log.achievementPct!==null)?log.achievementPct:((log.actual!==undefined&&log.actual!==null)?Math.round(log.actual/log.target*100):null);
+      html+='<div style="margin-top:4px;"><b>Target Achievement:</b> '+(pct!==null?pct+'%':'—')+' ('+(log.actual!==null&&log.actual!==undefined?log.actual:'—')+' / '+log.target+')</div>';
+    }
+    const perf=(log.dayPerformance!==undefined&&log.dayPerformance!==null)?log.dayPerformance:calcDayPerformance(log);
+    html+='<div style="margin-top:4px;"><b>Day Performance:</b> '+(perf!==null?perf+'% ('+dayPerformanceLabel(perf)+')':'—')+'</div>';
+    let reasonItems=[];
+    if(log.effortReasons&&Array.isArray(log.effortReasons.items))reasonItems=reasonItems.concat(log.effortReasons.items);
+    if(log.notCompletedReasons&&Array.isArray(log.notCompletedReasons.items))reasonItems=reasonItems.concat(log.notCompletedReasons.items);
+    if(reasonItems.length)html+='<div style="margin-top:4px;"><b>Reason(s):</b> '+reasonItems.map(esc).join(', ')+'</div>';
+    if(log.reasons&&log.reasons.some(r=>r)){
+      const label=cat==='notcompleted'?'3 Not Completed answers':'Additional notes';
+      html+='<div style="margin-top:4px;"><b>'+label+':</b> '+log.reasons.filter(r=>r).map(esc).join(' · ')+'</div>';
+    }
+    if(log.notes)html+='<div style="margin-top:8px;"><b>Notes:</b> '+esc(log.notes)+'</div>';
+  }
+  el.innerHTML=html;
+}
+// Jumps to a specific day number by switching the filter back to "all"
+// (so every day is rendered in order) then scrolling that day into view.
+function jumpToProgressDay(){
+  const input=document.getElementById('progress-timeline-jump');
+  const val=parseInt(input&&input.value);
+  if(!val||val<1||val>1825){alert('Enter a day number between 1 and 1825.');return;}
+  const filterEl=document.getElementById('progress-timeline-filter');
+  if(filterEl)filterEl.value='all';
+  renderProgressTimeline();
+  setTimeout(()=>{
+    const grid=document.getElementById('progress-timeline-grid');
+    const target=grid&&grid.children[val-1];
+    if(target){
+      target.scrollIntoView({block:'center'});
+      target.style.outline='2px solid var(--accent)';
+      setTimeout(()=>{target.style.outline='';},1500);
+    }
+  },30);
 }
 load();renderHome();renderScheduleNav();
 window.__mark('App Rendered');
@@ -2886,6 +4372,17 @@ function toggleReTools(id){
   if(!tb)return;
   const open=tb.classList.toggle('open');
   if(arr)arr.classList.toggle('open',open);
+}
+
+// Toggle the compact Symbols/Shapes panel for a given rich editor (all
+// Tools sections except Notes, which already has its own symbols in its
+// toolbar). Hidden by default; reuses the existing generic insertReSymbol
+// function for the actual insert-at-cursor behaviour — nothing here
+// duplicates or touches that function or the Notes implementation.
+function toggleReSymbols(id){
+  const panel=document.getElementById('sym-'+id);
+  if(!panel)return;
+  panel.classList.toggle('open');
 }
 
 // execCommand wrapper
@@ -3128,6 +4625,33 @@ function renderReviews(){
   if(!D.quarterlyReviews)D.quarterlyReviews=[];
   if(!D.annualReviews)D.annualReviews=[];
   renderWeeklyList();renderMonthlyList();renderQuarterlyList();renderAnnualList();
+  renderAdventureReviewSnapshot();
+}
+// Lightweight, read-only Adventure Log summary shown above the manual
+// Weekly/Monthly/Quarterly/Annual review forms below — does not alter how
+// those reviews are written or stored, just gives useful patterns
+// (recurring reasons, effort/completion mix, target realism) to reference
+// while writing them, over rolling 7/30/90-day windows.
+function renderAdventureReviewSnapshot(){
+  const el=document.getElementById('reviews-adventure-snapshot');
+  if(!el)return;
+  const windowStats=(days)=>{
+    const cutoff=new Date();cutoff.setDate(cutoff.getDate()-days);
+    const entries=Object.entries(D.adventureDays||{}).filter(([k])=>new Date(k)>=cutoff&&new Date(k)<=new Date());
+    const logs=entries.map(([,v])=>v);
+    const logged=logs.filter(d=>!d.untouched);
+    const untouched=logs.filter(d=>d.untouched).length;
+    const completed=logs.filter(d=>getDayCompleted(d)===true).length;
+    const notCompleted=logs.filter(d=>getDayCompleted(d)===false).length;
+    const perfVals=logged.map(d=>calcDayPerformance(d)).filter(v=>v!==null);
+    const avgPerf=perfVals.length>0?Math.round(perfVals.reduce((a,b)=>a+b,0)/perfVals.length):null;
+    return {logged:logged.length,untouched,completed,notCompleted,avgPerf};
+  };
+  const w7=windowStats(7),w30=windowStats(30),w90=windowStats(90);
+  const row=(label,s)=>`<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border);font-size:12px;"><span style="color:var(--text2);">${label}</span><span>Logged ${s.logged} · Untouched ${s.untouched} · Completed ${s.completed} · Not Completed ${s.notCompleted} · Avg Day Performance ${s.avgPerf!==null?s.avgPerf+'%':'—'}</span></div>`;
+  const patterns=computeReasonPatterns().slice(0,5);
+  el.innerHTML=row('Last 7 days',w7)+row('Last 30 days',w30)+row('Last 90 days',w90)+
+    `<div style="margin-top:10px;font-size:12px;"><b>Top recurring reasons:</b> ${patterns.length?patterns.map(([r,c])=>esc(r)+' ('+c+'×)').join(', '):'none logged yet'}</div>`;
 }
 
 // ── RATING BADGE helper ──────────────────────────────────────
@@ -3510,7 +5034,37 @@ function buildGSubHTML(n,sub,i){
           <div class="re-sep"></div>
           <button class="re-btn" onclick="toggleReDraw('gs${n}${i}')" id="draw-btn-gs${n}${i}">&#9998; Draw</button>
           <div class="re-sep"></div>
+          <button class="re-btn" onclick="toggleReSymbols('gs${n}${i}')" id="symbtn-gs${n}${i}" title="Symbols">&#8599; Symbols</button>
+          <div class="re-sep"></div>
           <button class="re-btn" onclick="clearGSub(${n},${i})" style="color:var(--danger);width:auto;padding:0 8px;font-size:11px;">Clear</button>
+        </div>
+        <div class="re-sym-panel" id="sym-gs${n}${i}">
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8594;')" title="Right arrow">&#8594;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8592;')" title="Left arrow">&#8592;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8593;')" title="Up arrow">&#8593;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8595;')" title="Down arrow">&#8595;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8596;')" title="Left-right arrow">&#8596;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8597;')" title="Up-down arrow">&#8597;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8658;')" title="Double right arrow">&#8658;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8656;')" title="Double left arrow">&#8656;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8599;')" title="Up-right arrow">&#8599;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8600;')" title="Down-right arrow">&#8600;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8601;')" title="Down-left arrow">&#8601;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8598;')" title="Up-left arrow">&#8598;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','=')" title="Equals">=</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8800;')" title="Not equal">&#8800;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','+')" title="Plus">+</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&minus;')" title="Minus">&minus;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&times;')" title="Multiply">&times;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&divide;')" title="Divide">&divide;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#10003;')" title="Check">&#10003;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#10007;')" title="Cross">&#10007;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8226;')" title="Bullet">&#8226;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#8212;')" title="Em dash">&#8212;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#9633;')" title="Square">&#9633;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#9675;')" title="Circle">&#9675;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#9651;')" title="Triangle">&#9651;</button>
+          <button class="re-btn" onclick="insertReSymbol('gs${n}${i}','&#9671;')" title="Diamond">&#9671;</button>
         </div>
         <div class="re-color-bar" id="cbar-gs${n}${i}"></div>
         <div class="re-draw" id="draw-gs${n}${i}">
@@ -4323,6 +5877,23 @@ function updateAutoLockSetting(val){
   D.autoLockSeconds=isNaN(secs)?30:secs;
   save();
   resetAutoLockTimer();
+}
+
+// Reflects D.hijriOffsetDays in the Settings dropdown when Settings opens.
+function renderHijriOffsetSetting(){
+  const sel=document.getElementById('hijri-offset-select');
+  if(sel)sel.value=String(parseInt(D.hijriOffsetDays,10)||0);
+}
+// Called by the Settings dropdown's onchange. Saves through the existing
+// save() path (localStorage + debounced Firestore sync), same as every
+// other JourneyOS setting. gregorianToHijri() reads D.hijriOffsetDays
+// directly, so re-rendering whichever page is currently showing a Hijri
+// date is all that's needed to reflect the change immediately.
+function updateHijriOffsetSetting(val){
+  const days=parseInt(val,10);
+  D.hijriOffsetDays=isNaN(days)?0:days;
+  save();
+  if(document.getElementById('page-home').classList.contains('active'))renderHome();
 }
 
 
