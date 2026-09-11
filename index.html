@@ -2145,7 +2145,7 @@ select option{background:var(--surface);color:var(--text)}
 <script>
 window.__mark('Classic Script Loaded');
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-09-04'; // single source of truth — Day 1 = Fri 4 Sep 2026, Day 2 = Sat 5 Sep 2026
+const JOURNEY_START='2026-09-13'; // single source of truth — Day 1 = Sun 13 Sep 2026, Day 2 = Mon 14 Sep 2026
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:'',currentMission:{title:'',milestones:[],skills:[]},autoLockSeconds:30};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -4084,7 +4084,10 @@ const HIJRI_MONTHS=['Muharram','Safar','Rabi al-Awwal','Rabi al-Thani','Jumada a
 const HIJRI_ANCHORS=[
   // Confirmed: Rabi al-Awwal 1448 AH began Sat, 15 Aug 2026 (Hyderabad
   // moon not sighted 13 Aug -> Safar completed 30 days).
-  {start:'2026-08-15',monthIndex:2,year:1448}
+  {start:'2026-08-15',monthIndex:2,year:1448},
+  // Confirmed: Rabi al-Thani 1448 AH began Sun, 13 Sep 2026 (Rabi al-Awwal
+  // completed 29 days).
+  {start:'2026-09-13',monthIndex:3,year:1448}
 ];
 function hijriFromAnchor(date){
   const dateMid=new Date(date.getFullYear(),date.getMonth(),date.getDate()).getTime();
