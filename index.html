@@ -1755,10 +1755,16 @@ select option{background:var(--surface);color:var(--text)}
       <div class="re-editor" id="ed-adv" contenteditable="true" data-ph="Write your adventure for today — goals, intentions, plans..." style="min-height:80px;"></div>
     </div>
 
+    <div id="day-completed-trigger" style="display:none;margin-top:16px;">
+      <button class="btn btn-primary" id="btn-log-result" onclick="logTodayResult()" style="width:100%;">📌 Log Today's Result</button>
+      <p style="font-size:11px;color:var(--text3);margin-top:6px;">Your Adventure and Target are saved as a plan. Come back any time — morning, afternoon, evening or late night — and tap this when you're ready to record what actually happened.</p>
+    </div>
+    <div id="day-completed-block">
     <div class="label mt16">Completed — was today's Adventure completed?</div>
     <div style="display:flex;gap:10px;margin-top:6px;">
       <button class="btn btn-ghost" id="btn-completed-y" onclick="setDayCompleted(true)" style="flex:1;">✔ Completed</button>
       <button class="btn btn-ghost" id="btn-completed-n" onclick="setDayCompleted(false)" style="flex:1;">✕ Not Completed</button>
+    </div>
     </div>
 
     <!-- Effort is only relevant for Completed days — Not Completed skips
@@ -1862,7 +1868,7 @@ select option{background:var(--surface);color:var(--text)}
       <div class="re-color-bar" id="cbar-notes"></div>
       <div class="re-editor" id="ed-notes" contenteditable="true" data-ph="Reflections, anything else about this day..." style="min-height:70px;"></div>
     </div>
-    <div class="modal-footer"><button class="btn btn-danger" onclick="clearDayLog()" style="margin-right:auto;">✕ Clear day</button><button class="btn btn-ghost" onclick="closeModal('modal-day')">Cancel</button><button class="btn btn-primary" onclick="saveDayLog()">Save day</button></div>
+    <div class="modal-footer"><button class="btn btn-danger" onclick="clearDayLog()" style="margin-right:auto;">✕ Clear day</button><button class="btn btn-ghost" onclick="closeModal('modal-day')">Cancel</button><button class="btn btn-ghost" onclick="saveDayPlan()" title="Save the Adventure and Target as a plan — Completed/Not Completed and Effort stay unanswered until you come back to finish logging">📝 Save as Plan</button><button class="btn btn-primary" onclick="saveDayLog()">Save day</button></div>
   </div>
 </div>
 
@@ -2145,7 +2151,7 @@ select option{background:var(--surface);color:var(--text)}
 <script>
 window.__mark('Classic Script Loaded');
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-09-14'; // single source of truth — Day 1 = Mon 14 Sep 2026, Day 2 = Tue 15 Sep 2026
+const JOURNEY_START='2026-09-16'; // single source of truth — Day 1 = Wed 16 Sep 2026, Day 2 = Thu 17 Sep 2026
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:'',currentMission:{title:'',milestones:[],skills:[]},autoLockSeconds:30};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -3559,6 +3565,16 @@ function openDayModalNow(key,dayNum,dd,dmo,dy){
   document.getElementById('day-actual').value=(log.actual!==undefined&&log.actual!==null)?log.actual:'';
   document.getElementById('day-realism').value=log.targetRealism||'';
   document.getElementById('day-target-row').style.display=log.hasTarget?'block':'none';
+  // A saved PLAN (plannedOnly, no completed value yet) starts with the
+  // Completed/Not Completed question hidden behind an explicit "Log
+  // Today's Result" action — the plan itself (Adventure + Target, above
+  // and below this block) stays visible regardless. Any day that's
+  // already been finally logged, or was never planned at all, shows the
+  // question directly, exactly as before. This is based only on the
+  // saved data, never on the current time of day.
+  const isUnfinishedPlan=!!(log&&log.plannedOnly&&dayCompleted===null);
+  document.getElementById('day-completed-trigger').style.display=isUnfinishedPlan?'block':'none';
+  document.getElementById('day-completed-block').style.display=isUnfinishedPlan?'none':'';
   renderEffortReasonChips();
   renderNotCompletedReasonChips();
   updateDayUI();
@@ -3588,6 +3604,14 @@ function clearDayLog(){
   save();closeModal('modal-day');renderAdventure();
 }
 function setDayEffort(e){dayEffort=e;renderEffortReasonChips();updateDayUI();}
+// Explicit trigger for moving from PLAN to FINAL LOG. Reveals the
+// Completed/Not Completed question; deliberately does NOT set dayCompleted
+// to any value — the person must still click one of the two buttons
+// themselves. No assumption is made from the time of day or anything else.
+function logTodayResult(){
+  document.getElementById('day-completed-trigger').style.display='none';
+  document.getElementById('day-completed-block').style.display='';
+}
 // Completed and Not Completed are mutually exclusive entry points into two
 // different flows: Completed shows Effort; Not Completed skips Effort
 // entirely and goes straight to its own reasons/notes. Switching between
@@ -3702,6 +3726,49 @@ function updateDayUI(){
     perfBadge.style.display='none';
   }
 }
+// Plan-only save for TODAY (or any already-reachable day): lets the person
+// record the Adventure + Target first, without being forced to answer
+// Completed/Not Completed or pick an Effort level yet. Reuses the exact
+// same plannedOnly shape already used by the future-day planning flow, so
+// every existing reader (day grid dot, "Adventures Logged" count, Day
+// Performance, etc.) already treats it correctly as a plan, not a real log.
+// A day that has already been actually logged (completed true/false) is
+// never overwritten by this — Effort/Completed/Notes/reasons already saved
+// there stay untouched.
+function saveDayPlan(){
+  if(!selDay)return;
+  const existing=D.adventureDays[selDay];
+  if(existing&&(existing.completed===true||existing.completed===false)){
+    alert('This day already has a logged entry. Open it and use "Save day" to update it.');
+    return;
+  }
+  const edAdv=document.getElementById('ed-adv');
+  const advRich=edAdv?edAdv.innerHTML:'';
+  const advPlain=edAdv?(edAdv.textContent||edAdv.innerText||'').trim():'';
+  if(!advPlain){alert("Please write today's Adventure before saving a plan.");return;}
+  const hasTarget=document.getElementById('day-has-target').checked;
+  const targetRaw=document.getElementById('day-target').value;
+  const target=(hasTarget&&targetRaw!=='')?parseFloat(targetRaw):null;
+  const targetRealism=document.getElementById('day-realism').value||null;
+  // Notes are optional at this stage (only required once the day is
+  // actually logged via "Save day"), but preserved here if already typed
+  // so nothing the person entered is lost.
+  const edNotes=document.getElementById('ed-notes');
+  const notesRich=edNotes?edNotes.innerHTML:'';
+  const notesPlain=edNotes?(edNotes.textContent||edNotes.innerText||'').trim():'';
+  D.adventureDays[selDay]={
+    plannedOnly:true,
+    goals:advPlain,
+    advRich:advRich,
+    hasTarget:hasTarget,
+    target:target,
+    targetRealism:targetRealism,
+    notes:notesPlain||undefined,
+    notesRich:notesRich||undefined,
+    plannedAt:new Date().toISOString()
+  };
+  save();closeModal('modal-day');renderAdventure();
+}
 function saveDayLog(){
   if(!selDay)return;
   if(dayCompleted===null){alert('Please mark today as Completed or Not Completed.');return;}
@@ -3782,7 +3849,15 @@ function getPendingUntouchedDays(){
     const d=new Date(sy,sm-1,sd+(i-1));
     const key=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
     if(d>=todayLocal)continue;
-    if(D.adventureDays[key])continue; // already logged or already resolved as untouched
+    // A day only counts as "already accounted for" if it has a FINAL
+    // outcome: a real Completed/Not Completed log, or an Untouched
+    // resolution. A day holding only a saved PLAN (plannedOnly, never
+    // finalized) is NOT a final Adventure Log, so it must still surface
+    // here — otherwise a past plan that was never followed up on could
+    // silently slip through the sequential hard-gate.
+    const rec=D.adventureDays[key];
+    const isFinal=!!(rec&&(rec.completed===true||rec.completed===false||rec.untouched));
+    if(isFinal)continue;
     pending.push({key,dayNum:i,dd:d.getDate(),dmo:d.getMonth(),dy:d.getFullYear()});
   }
   return pending;
@@ -4248,7 +4323,14 @@ function renderAdventureInsights(){
 // 300, Day 900, or Day 1825 — nothing here is hand-maintained.
 function classifyProgressDay(dayLabel,curDay,log){
   const isFuture=dayLabel>curDay;
-  if(isFuture)return (log&&log.plannedOnly)?'planned':'future';
+  // A plan-only entry (saveDayPlan / "Set Tomorrow's Adventure") is a plan,
+  // not a final log, on ANY day it's found on — not just future days. Today
+  // or a past day can carry an unfinished plan too (morning/anytime
+  // planning via "Save as Plan"), and it must classify as 'planned' here
+  // just like it already does in the day grid (renderAdventure), not fall
+  // through to 'blank' as if nothing was ever written.
+  if(log&&log.plannedOnly)return 'planned';
+  if(isFuture)return 'future';
   if(log&&log.untouched)return 'untouched';
   if(log){
     const c=getDayCompleted(log);
@@ -4307,11 +4389,12 @@ function showProgressDayDetail(dayLabel,dd,dmo,dy,log,cat){
   if(!el)return;
   el.style.display='block';
   const dateStr=dd+' '+MONTH_NAMES[dmo]+' '+dy;
+  const curDay=getCurrentJourneyDay();
   let html='<div style="font-weight:600;margin-bottom:6px;color:var(--text);">Day '+dayLabel+' — '+dateStr+'</div>';
   if(cat==='future'){
     html+='<div style="color:var(--text3);">This day has not been reached yet. It is simply Future / Not Yet Reached — not a failure, not Untouched, and not a zero-performance day.</div>';
   } else if(cat==='planned'){
-    html+='<div>Planned in advance via "Set Tomorrow\'s Adventure". Completed/Not Completed, Effort, Achievement and reasons remain locked until this day actually arrives.</div>';
+    html+=(dayLabel>curDay?'<div>Planned in advance via "Set Tomorrow\'s Adventure". Completed/Not Completed, Effort, Achievement and reasons remain locked until this day actually arrives.</div>':'<div>Saved as a plan — Completed/Not Completed, Effort, Achievement and reasons haven\'t been logged yet. Open this day\'s Adventure entry and tap "Log Today\'s Result" to finish it.</div>');
     if(log&&log.goals)html+='<div style="margin-top:8px;white-space:pre-wrap;">'+esc(log.goals)+'</div>';
   } else if(cat==='untouched'){
     html+='<div><b>Status:</b> Untouched — never logged, resolved with a reason</div>';
@@ -4642,7 +4725,10 @@ function renderAdventureReviewSnapshot(){
     const cutoff=new Date();cutoff.setDate(cutoff.getDate()-days);
     const entries=Object.entries(D.adventureDays||{}).filter(([k])=>new Date(k)>=cutoff&&new Date(k)<=new Date());
     const logs=entries.map(([,v])=>v);
-    const logged=logs.filter(d=>!d.untouched);
+    // Exclude plan-only entries (unfinished plans) from "Logged" — they are
+    // a plan, not a final Completed/Not Completed log, same rule already
+    // used by the Adventure Log → Progress insights count.
+    const logged=logs.filter(d=>!d.untouched&&!d.plannedOnly);
     const untouched=logs.filter(d=>d.untouched).length;
     const completed=logs.filter(d=>getDayCompleted(d)===true).length;
     const notCompleted=logs.filter(d=>getDayCompleted(d)===false).length;
