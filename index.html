@@ -2151,7 +2151,7 @@ select option{background:var(--surface);color:var(--text)}
 <script>
 window.__mark('Classic Script Loaded');
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-09-16'; // single source of truth — Day 1 = Wed 16 Sep 2026, Day 2 = Thu 17 Sep 2026
+const JOURNEY_START='2026-09-18'; // single source of truth — Day 1 = Fri 18 Sep 2026, Day 2 = Sat 19 Sep 2026
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:'',currentMission:{title:'',milestones:[],skills:[]},autoLockSeconds:30};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -2195,6 +2195,32 @@ function mkMonth(){const n=new Date();const label=n.toLocaleDateString('en-IN',{
 function cleanOldAdventureDays(){
   if(!D.adventureDays)return;
   Object.keys(D.adventureDays).forEach(k=>{ if(k<JOURNEY_START) delete D.adventureDays[k]; });
+}
+
+// Blanks out any Time Schedule day that falls before the journey start date
+// (JOURNEY_START), within the schedule month that contains the start date.
+// Whenever JOURNEY_START moves forward within the same month (e.g. Day 1
+// shifting from 16 Sep to 18 Sep), this clears any task/urgent/important
+// rows, done/exclude flags and happy/why data that were entered for the
+// now-excluded earlier days (16, 17 Sep), while leaving every other month
+// and every day on/after the start date untouched. Safe to run on every
+// load — already-blank days are simply left blank.
+function pruneScheduleBeforeStart(){
+  if(!D.scheduleMonths||!D.scheduleMonths.length)return;
+  const day1=new Date(D.startDate);
+  const startMonthLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
+  const startDayNum=day1.getDate();
+  D.scheduleMonths.forEach(m=>{
+    if(m.label===startMonthLabel&&m.days){
+      m.days.forEach(d=>{
+        if(d.dayNum<startDayNum){
+          d.rows=TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''}));
+          d.happy=null;
+          d.why='';
+        }
+      });
+    }
+  });
 }
 
 // One-time fresh-start reset for the new journey beginning 29 July 2026.
@@ -2268,6 +2294,7 @@ function load(){
     const firstMonth={label:initLabel,days:Array.from({length:initDays},(_,i)=>({dayNum:i+1,rows:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}))};
     D.scheduleMonths=[firstMonth];D.curMonth=0;
   }
+  pruneScheduleBeforeStart();
   // Init goal subs
   if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
   if(!D.reContent)D.reContent={};
@@ -2344,6 +2371,7 @@ async function cloudLoad(uid){
       D.startDate=JOURNEY_START; // always enforce correct start, cloud data may have old value
       if(D.autoLockSeconds===undefined||D.autoLockSeconds===null)D.autoLockSeconds=30;
       cleanOldAdventureDays();
+      pruneScheduleBeforeStart();
       localStorage.setItem(KEY,JSON.stringify(D));
       setSaveStatus('synced');
       resetAutoLockTimer(); // pick up this device's just-synced timeout preference
@@ -2512,6 +2540,7 @@ async function completeSignIn(user){
       }
       save();
     }
+    pruneScheduleBeforeStart();
     // Re-render whichever page is active
     const activePage=document.querySelector('.page.active');
     if(activePage){
@@ -2648,6 +2677,7 @@ async function confirmImport(){
   // Always enforce correct journey start date
   D.startDate=JOURNEY_START;
   cleanOldAdventureDays();
+  pruneScheduleBeforeStart();
   // Ensure all required keys exist (graceful upgrade for older backups)
   if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
   if(!D.reContent)D.reContent={};
