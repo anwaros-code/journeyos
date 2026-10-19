@@ -1542,7 +1542,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="card-title"><span>ℹ</span> About</div>
     <div style="font-size:13px;color:var(--text2);line-height:1.8;">
       <div><span style="color:var(--text3);">App:</span> My Life OS · JourneyOS</div>
-      <div><span style="color:var(--text3);">Journey Start:</span> 30 August 2026</div>
+      <div><span style="color:var(--text3);">Journey Start:</span> 19 October 2026</div>
       <div><span style="color:var(--text3);">Duration:</span> 5 Years · 1825 Days</div>
       <div><span style="color:var(--text3);">Storage:</span> localStorage + Firestore sync</div>
     </div>
@@ -2151,7 +2151,7 @@ select option{background:var(--surface);color:var(--text)}
 <script>
 window.__mark('Classic Script Loaded');
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-09-20'; // single source of truth — Day 1 = Sun 20 Sep 2026, Day 2 = Mon 21 Sep 2026
+const JOURNEY_START='2026-10-19'; // single source of truth — Day 1 = Mon 19 Oct 2026 (7 Jumada al-Awwal 1448), Day 2 = Tue 20 Oct 2026
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:'',currentMission:{title:'',milestones:[],skills:[]},autoLockSeconds:30};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -2206,10 +2206,27 @@ function cleanOldAdventureDays(){
 // and every day on/after the start date untouched. Safe to run on every
 // load — already-blank days are simply left blank.
 function pruneScheduleBeforeStart(){
-  if(!D.scheduleMonths||!D.scheduleMonths.length)return;
-  const day1=new Date(D.startDate);
-  const startMonthLabel=MONTH_NAMES[day1.getMonth()]+' '+day1.getFullYear();
+  if(!D.scheduleMonths)D.scheduleMonths=[];
+  const day1=parseYMDLocal(D.startDate)||new Date(D.startDate);
+  const sy=day1.getFullYear(),sm=day1.getMonth();
+  const startMonthLabel=MONTH_NAMES[sm]+' '+sy;
   const startDayNum=day1.getDate();
+  const monthKey=label=>{
+    const mi=MONTH_NAMES.findIndex(n=>(label||'').includes(n));
+    const yr=parseInt(String(label||'').split(' ').pop());
+    return (mi===-1||isNaN(yr))?null:yr*12+mi;
+  };
+  const startKey=sy*12+sm;
+  // Drop whole months that fall before the journey start month.
+  const curLabel=(D.scheduleMonths[D.curMonth]||{}).label;
+  D.scheduleMonths=D.scheduleMonths.filter(m=>{const k=monthKey(m.label);return k===null||k>=startKey;});
+  // Make sure the start month exists, in chronological position.
+  if(!D.scheduleMonths.some(m=>m.label===startMonthLabel)){
+    const n=new Date(sy,sm+1,0).getDate();
+    const fresh={label:startMonthLabel,days:Array.from({length:n},(_,i)=>({dayNum:i+1,rows:TIME_SLOTS.map(t=>({time:t,task:'',urgent:'',important:''})),happy:null,why:''}))};
+    D.scheduleMonths.unshift(fresh);
+  }
+  // Blank any day before the start date inside the start month.
   D.scheduleMonths.forEach(m=>{
     if(m.label===startMonthLabel&&m.days){
       m.days.forEach(d=>{
@@ -2221,6 +2238,10 @@ function pruneScheduleBeforeStart(){
       });
     }
   });
+  // Keep the selected month valid.
+  let ci=D.scheduleMonths.findIndex(m=>m.label===curLabel);
+  if(ci===-1)ci=Math.min(Math.max(0,D.curMonth||0),D.scheduleMonths.length-1);
+  D.curMonth=ci;
 }
 
 // One-time fresh-start reset for the new journey beginning 29 July 2026.
@@ -4192,7 +4213,9 @@ const HIJRI_ANCHORS=[
   {start:'2026-08-15',monthIndex:2,year:1448},
   // Confirmed: Rabi al-Thani 1448 AH began Mon, 14 Sep 2026 (Rabi al-Awwal
   // completed 30 days).
-  {start:'2026-09-14',monthIndex:3,year:1448}
+  {start:'2026-09-14',monthIndex:3,year:1448},
+  // Jumada al-Awwal 1448 AH began Tue, 13 Oct 2026 (so 19 Oct 2026 = 7 Jumada al-Awwal).
+  {start:'2026-10-13',monthIndex:4,year:1448}
 ];
 function hijriFromAnchor(date){
   const dateMid=new Date(date.getFullYear(),date.getMonth(),date.getDate()).getTime();
