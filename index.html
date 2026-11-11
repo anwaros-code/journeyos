@@ -526,11 +526,12 @@ select option{background:var(--surface);color:var(--text)}
     <div class="nav-item" onclick="goto('definitions')"><span class="nav-icon">📖</span> Definitions</div>
     <div class="nav-item" onclick="goto('goals')"><span class="nav-icon">🎯</span> My Goals</div>
     <div class="nav-item" onclick="goto('current-mission')"><span class="nav-icon">🚩</span> Current Mission</div>
-    <div class="nav-item" onclick="goto('spiritual')"><span class="nav-icon">✦</span> Deen &amp; Amaliyat</div>
+    <div class="nav-item" onclick="goto('spiritual')"><span class="nav-icon">✦</span> Spiritual</div>
     <div class="nav-item" onclick="goto('adventure')"><span class="nav-icon">⚔</span> Adventure Log</div>
     <div class="nav-item" onclick="goto('schedule')"><span class="nav-icon">🗓</span> Time Schedule</div>
     <div class="nav-item" onclick="goto('progress')"><span class="nav-icon">📊</span> Progress</div>
-        <div class="nav-item" onclick="goto('reviews')"><span class="nav-icon">📈</span> Reviews</div>
+    <div class="nav-item" onclick="goto('spiritual-progress')"><span class="nav-icon">✦</span> Spiritual Progress</div>
+    <div class="nav-item" onclick="goto('reviews')"><span class="nav-icon">📈</span> Reviews</div>
     <div class="nav-item" onclick="goto('search')"><span class="nav-icon">🔍</span> Search</div>
     <div class="nav-item" onclick="goto('notes')"><span class="nav-icon">📝</span> Notes</div>
     <div class="nav-item" onclick="goto('settings')"><span class="nav-icon">⚙</span> Settings</div>
@@ -569,7 +570,6 @@ select option{background:var(--surface);color:var(--text)}
 <div id="page-home" class="page active">
   <h1 class="page-title">Good day ✦</h1>
   <p class="page-sub" id="home-date"></p>
-  <div class="card" style="margin-bottom:16px;"><div class="card-title"><span>📅</span> Dual calendar</div><div id="home-dualcal"></div></div>
   <div class="grid3" id="home-stats" style="margin-bottom:20px;"></div>
   <div class="grid2">
     <div class="card"><div class="card-title"><span>🎯</span> Main goal</div><div id="home-biggoal" style="font-size:16px;color:var(--accent);font-family:'DM Serif Display',serif;line-height:1.5;"></div></div>
@@ -818,18 +818,11 @@ select option{background:var(--surface);color:var(--text)}
 <!-- SPIRITUAL -->
 <div id="page-spiritual" class="page">
   <div class="section-header">
-    <div><h1 class="page-title">Deen &amp; Amaliyat</h1><p class="page-sub">Main Goal 2 — spiritual goals, habit tracker, progress and records</p></div>
+    <div><h1 class="page-title">Spiritual Goals</h1><p class="page-sub">Inner growth, intentions, and daily habit tracking</p></div>
     <button class="btn btn-primary" onclick="openSpiritualHabitModal()">+ Add habit</button>
   </div>
 
-    <div id="sp-tabbar" class="tab-bar" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
-    <button class="tab-btn active" data-t="goals" onclick="switchSpTab('goals')">🌙 Goals &amp; Plans</button>
-    <button class="tab-btn" data-t="habits" onclick="switchSpTab('habits')">📿 Habit Tracker</button>
-    <button class="tab-btn" data-t="progress" onclick="switchSpTab('progress')">✦ Spiritual Progress</button>
-    <button class="tab-btn" data-t="records" onclick="switchSpTab('records')">🗂 Records</button>
-  </div>
-<div class="tab-panel active" id="sptab-goals">
-<!-- SPIRITUAL PROGRESS CARD -->
+  <!-- SPIRITUAL PROGRESS CARD -->
   <div class="card" id="sp-progress-card">
     <div class="card-title"><span>✦</span> Spiritual Progress</div>
     <div id="sp-progress-content"></div>
@@ -1086,42 +1079,13 @@ select option{background:var(--surface);color:var(--text)}
   </div>
 
   <!-- SPIRITUAL HABITS -->
-  </div>
-<div class="tab-panel" id="sptab-habits">
-<div class="card"><div class="card-title"><span>⚙</span> Habit manager</div><div id="sp-habit-manager"></div></div>
-<div class="card">
+  <div class="card">
     <div class="card-title"><span>📿</span> Spiritual Habits</div>
     <div id="sp-habit-list"></div>
   </div>
 </div>
-<div class="tab-panel" id="sptab-progress">
-<div class="card"><div class="card-title"><span>✦</span> Spiritual Progress — summary &amp; trends</div><div id="sp-extra-progress"></div></div>
-<div class="card">
-    <div class="card-title"><span>✦</span> Spiritual Goal Progress</div>
-    <div id="spprog-goals"></div>
-  </div>
-  <div class="card">
-    <div class="card-title"><span>📿</span> Spiritual habits — this week</div>
-    <div id="spprog-week"></div>
-  </div>
-  <div class="card">
-    <div class="card-title"><span>🌙</span> Spiritual Habit Progress</div>
-    <div id="spprog-habits"></div>
-  </div>
-  <div class="card">
-    <div class="card-title"><span>📊</span> Overall Spiritual Completion</div>
-    <div id="spprog-overall"></div>
-  </div>
-</div>
-<div class="tab-panel" id="sptab-records">
-<div class="card"><div class="card-title"><span>🗂</span> Amaliyat records (Gregorian + Hijri)</div>
- <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px;align-items:center;">
-  <input type="month" id="rec-gm" onchange="renderSpRecords()" style="width:auto;">
-  <select id="rec-hm" onchange="renderSpRecords()" style="width:auto;"></select>
-  <label style="font-size:12px;"><input type="checkbox" id="rec-missed" onchange="renderSpRecords()" checked> include missed days</label>
- </div><div id="rec-list" style="overflow-x:auto;"></div></div></div>
-</div>
 
+<!-- ADVENTURE LOG -->
 <div id="page-adventure" class="page">
   <h1 class="page-title">Adventure Log</h1>
   <p class="page-sub" id="adventure-sub">Your 1825-day journey — click any day dot to log it</p>
@@ -1229,7 +1193,6 @@ select option{background:var(--surface);color:var(--text)}
   <h1 class="page-title">Progress</h1>
   <p class="page-sub">Your journey at a glance</p>
   <div class="grid3" id="progress-stats" style="margin-bottom:20px;"></div>
-  <div class="card" id="prog-spiritual-card"><div class="card-title"><span>✦</span> Spiritual Progress <a href="#" onclick="goto('spiritual-progress');return false;" style="font-size:11px;margin-left:8px;">open in Deen &amp; Amaliyat →</a></div><div id="prog-spiritual-body"></div></div>
   <div class="card"><div class="card-title"><span>📊</span> Adventure log — last 30 days</div><div class="chart-box"><canvas id="chart-adventure"></canvas></div></div>
   <div class="card"><div class="card-title"><span>⚔</span> Adventure Log — detailed progress</div><div id="progress-adventure-insights"></div></div>
   <div class="card">
@@ -1279,6 +1242,27 @@ select option{background:var(--surface);color:var(--text)}
 </div>
 
 <!-- SPIRITUAL PROGRESS -->
+<div id="page-spiritual-progress" class="page">
+  <h1 class="page-title">Spiritual Progress</h1>
+  <p class="page-sub">Your inner journey at a glance</p>
+  <div class="card">
+    <div class="card-title"><span>✦</span> Spiritual Goal Progress</div>
+    <div id="spprog-goals"></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span>📿</span> Spiritual habits — this week</div>
+    <div id="spprog-week"></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span>🌙</span> Spiritual Habit Progress</div>
+    <div id="spprog-habits"></div>
+  </div>
+  <div class="card">
+    <div class="card-title"><span>📊</span> Overall Spiritual Completion</div>
+    <div id="spprog-overall"></div>
+  </div>
+</div>
+
 <!-- REVIEWS -->
 <div id="page-reviews" class="page">
   <h1 class="page-title">Reviews</h1>
@@ -1426,24 +1410,6 @@ select option{background:var(--surface);color:var(--text)}
 <div id="page-settings" class="page">
   <h1 class="page-title">Settings</h1>
   <p class="page-sub">Manage your data and app preferences</p>
-
-  <div class="card">
-    <div class="card-title"><span>🌙</span> Calendar &amp; Lunar Events</div>
-    <div class="label">Hijri reference</div><div style="font-size:13px;margin-bottom:10px;">Hyderabad moon-sighting (anchors confirmed manually in code; otherwise Calculated). The existing Hijri adjustment below still applies to Calculated dates only.</div>
-    <div class="label">Calendar display</div>
-    <select id="cal-view" onchange="setCalPref('view',this.value)" style="width:auto;margin-bottom:10px;"><option value="dual">Dual (Gregorian + Hijri)</option><option value="gregorian">Gregorian only</option><option value="hijri">Hijri only</option></select>
-    <div><label><input type="checkbox" id="cal-lunar" onchange="setCalPref('showLunar',this.checked)"> Show special lunar events</label></div>
-    <div><label><input type="checkbox" id="cal-status" onchange="setCalPref('showStatus',this.checked)"> Show date status (Confirmed / Calculated / Adjusted)</label></div>
-    <div class="label mt16">Add / confirm a lunar event (Nawchandi Jumerat has no built-in rule — add it here)</div>
-    <div style="display:flex;flex-wrap:wrap;gap:8px;">
-      <select id="le-name" style="width:auto;"><option>Nawchandi Jumerat</option><option>Chand Raat</option><option>Amavasya</option><option>Purnima</option></select>
-      <input type="date" id="le-date" style="width:auto;">
-      <select id="le-status" style="width:auto;"><option value="confirmed">Confirmed</option><option value="adjusted">Adjusted</option><option value="estimated">Estimated</option></select>
-      <input type="text" id="le-note" placeholder="Note / source" style="flex:1;min-width:140px;">
-      <button class="btn btn-primary" onclick="addLunarEvent()">Save</button>
-    </div>
-    <div id="le-list"></div>
-  </div>
 
   <!-- BACKUP & RESTORE CARD -->
   <div class="card">
@@ -1723,12 +1689,6 @@ select option{background:var(--surface);color:var(--text)}
     <div class="label mt16">Daily description (optional)</div><input type="text" id="habit-goal" placeholder="e.g. 70 times, 5 minutes, 2 rakats">
     <div class="label mt16">Target days</div><input type="number" id="habit-days" min="1" max="3650" placeholder="e.g. 70">
     <div class="label mt16">Start date</div><input type="date" id="habit-startdate">
-    <div class="label mt16">Frequency (optional — default daily)</div>
-    <select id="habit-freq" style="width:100%;"><option value="daily">Daily</option><option value="weekdays">Selected weekdays</option><option value="custom">Every N days</option></select>
-    <div id="habit-wd" style="font-size:12px;margin-top:6px;"><label style="margin-right:8px;"><input type="checkbox" id="habit-wd-0"> Sun</label><label style="margin-right:8px;"><input type="checkbox" id="habit-wd-1"> Mon</label><label style="margin-right:8px;"><input type="checkbox" id="habit-wd-2"> Tue</label><label style="margin-right:8px;"><input type="checkbox" id="habit-wd-3"> Wed</label><label style="margin-right:8px;"><input type="checkbox" id="habit-wd-4"> Thu</label><label style="margin-right:8px;"><input type="checkbox" id="habit-wd-5"> Fri</label><label style="margin-right:8px;"><input type="checkbox" id="habit-wd-6"> Sat</label></div>
-    <input type="number" id="habit-everyn" min="1" placeholder="Every N days (custom)" style="margin-top:6px;">
-    <div class="label mt16">Numeric target (optional)</div>
-    <div style="display:flex;gap:8px;"><input type="number" id="habit-numtarget" min="1" placeholder="e.g. 100"><input type="text" id="habit-unit" placeholder="unit e.g. times"></div>
     <div style="font-size:11px;color:var(--text3);margin-top:3px;margin-bottom:4px;">Leave blank to use today. Set an earlier date if you already started.</div>
     <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('modal-habit')">Cancel</button><button class="btn btn-primary" onclick="saveSpiritualHabit()">Save</button></div>
   </div>
@@ -2616,7 +2576,7 @@ function exportData(){exportBackup();}
 // ── BACKUP & RESTORE ──────────────────────────────────────────
 
 function exportBackup(){
-  const date=localYMD(new Date()); // YYYY-MM-DD
+  const date=new Date().toISOString().split('T')[0]; // YYYY-MM-DD
   const filename='JourneyOS-Backup-'+date+'.json';
   const blob=new Blob([JSON.stringify(D,null,2)],{type:'application/json'});
   const a=document.createElement('a');
@@ -2789,11 +2749,11 @@ async function confirmImport(){
 
 function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 
-function goto(pg){if(pg==='spiritual-progress'){pg='spiritual';setTimeout(function(){switchSpTab('progress');},0);}
+function goto(pg){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-'+pg).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
-  const map={home:0,definitions:1,goals:2,'current-mission':3,spiritual:4,adventure:5,schedule:6,progress:7,reviews:8,search:9,notes:10,settings:11};
+  const map={home:0,definitions:1,goals:2,'current-mission':3,spiritual:4,adventure:5,schedule:6,progress:7,'spiritual-progress':8,reviews:9,search:10,notes:11,settings:12};
   const items=document.querySelectorAll('.nav-item');
   if(items[map[pg]])items[map[pg]].classList.add('active');
   document.querySelectorAll('.mobile-nav-item').forEach(n=>n.classList.remove('active'));
@@ -2806,7 +2766,7 @@ function goto(pg){if(pg==='spiritual-progress'){pg='spiritual';setTimeout(functi
   if(pg==='adventure')renderAdventure();
   if(pg==='schedule')renderScheduleNav();
   if(pg==='progress')renderProgress();
-  
+  if(pg==='spiritual-progress')renderSpiritualProgressPage();
   if(pg==='reviews')renderReviews();
   if(pg==='search'){setTimeout(()=>{const si=document.getElementById('search-input');if(si)si.focus();},80);}
   if(pg==='notes'){closeNoteEditor();renderNotesList();}
@@ -3129,7 +3089,6 @@ function renderSpiritual(){
   }
   renderSpiritualHabits();
   renderSpiritualProgress();
-  renderSpiritualProgressPage();renderAmaliyatExtras();
 }
 
 function renderSpiritualHabits(){
@@ -3141,7 +3100,6 @@ function renderSpiritualHabits(){
     return;
   }
   el.innerHTML=D.spiritual.habits.map((h,hi)=>{
-    if(h.archived)return '';
     const targetDays=parseInt(h.targetDays)||30;
     const log=h.log||{};
     // Parse start date in local time to avoid UTC shift
@@ -3232,7 +3190,7 @@ function renderSpiritualProgress(){
 function renderSpiritualProgressPage(){
   if(!D.spiritualGoals)D.spiritualGoals={g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0};
   if(!D.spiritual)D.spiritual={intention:'',habits:[]};
-  const habits=(D.spiritual.habits||[]).filter(h=>!h.archived);
+  const habits=D.spiritual.habits||[];
 
   // Spiritual Goal 1/2/3 progress
   const goalsEl=document.getElementById('spprog-goals');
@@ -3246,7 +3204,7 @@ function renderSpiritualProgressPage(){
   const weekEl=document.getElementById('spprog-week');
   if(weekEl){
     const today=new Date();const week=[];
-    for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);week.push(localYMD(d));}
+    for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(today.getDate()-i);week.push(d.toISOString().split('T')[0]);}
     weekEl.innerHTML=habits.length===0?'<div style="color:var(--text3);font-size:13px;">No habits tracked yet.</div>':
       habits.map(h=>{const t=week.filter(d=>h.log&&h.log[d]).length;return`<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;margin-bottom:5px;font-size:13px;"><span>${esc(h.name)}</span><span style="color:var(--accent);">${t}/7</span></div><div class="progress-wrap"><div class="progress-fill green" style="width:${Math.round(t/7*100)}%"></div></div></div>`;}).join('');
   }
@@ -3324,7 +3282,7 @@ function openSpiritualHabitModal(){
   document.getElementById('habit-name').value='';
   document.getElementById('habit-goal').value='';
   document.getElementById('habit-days').value='';
-  document.getElementById('habit-startdate').value='';fillHabitExtras(null);
+  document.getElementById('habit-startdate').value='';
   document.getElementById('modal-habit').classList.add('open');
 }
 function openHabitModal(){openSpiritualHabitModal();}
@@ -3337,7 +3295,7 @@ function editSpiritualHabit(hi){
   document.getElementById('habit-name').value=h.name||'';
   document.getElementById('habit-goal').value=h.goal||'';
   document.getElementById('habit-days').value=h.targetDays||30;
-  document.getElementById('habit-startdate').value=h.startDate||'';fillHabitExtras(h);
+  document.getElementById('habit-startdate').value=h.startDate||'';
   document.getElementById('modal-habit').classList.add('open');
 }
 
@@ -3345,7 +3303,7 @@ function saveSpiritualHabit(){
   const n=document.getElementById('habit-name').value.trim();
   if(!n)return;
   const targetDays=parseInt(document.getElementById('habit-days').value)||30;
-  const today=localYMD(new Date());
+  const today=new Date().toISOString().split('T')[0];
   const startDate=document.getElementById('habit-startdate').value||today;
   if(!D.spiritual)D.spiritual={intention:'',habits:[]};
   const editIdx=document.getElementById('habit-edit-idx').value;
@@ -3355,10 +3313,10 @@ function saveSpiritualHabit(){
     existing.name=n;
     existing.goal=document.getElementById('habit-goal').value.trim();
     existing.targetDays=targetDays;
-    existing.startDate=startDate;readHabitExtras(existing);
+    existing.startDate=startDate;
   } else {
     // ADD new
-    const nh={name:n,goal:document.getElementById('habit-goal').value.trim(),targetDays,startDate,log:{}};readHabitExtras(nh);D.spiritual.habits.push(nh);
+    D.spiritual.habits.push({name:n,goal:document.getElementById('habit-goal').value.trim(),targetDays,startDate,log:{}});
   }
   save();closeModal('modal-habit');renderSpiritual();
 }
@@ -3366,13 +3324,12 @@ function saveHabit(){saveSpiritualHabit();}
 
 function toggleSpiritualHabit(hi,day){
   if(!D.spiritual.habits[hi].log)D.spiritual.habits[hi].log={};
-  D.spiritual.habits[hi].log[day]=!D.spiritual.habits[hi].log[day];spRecord(D.spiritual.habits[hi],day);
-  save();renderSpiritualHabits();renderSpiritualProgress();renderAmaliyatExtras();
+  D.spiritual.habits[hi].log[day]=!D.spiritual.habits[hi].log[day];
+  save();renderSpiritualHabits();renderSpiritualProgress();
 }
 function toggleHabit(hi,day){toggleSpiritualHabit(hi,day);}
 
-function delSpiritualHabit(i){const h=D.spiritual.habits[i];if(!h)return;if(!confirm('Delete "'+h.name+'"? Its history is kept in Records.'))return;if(!D.spiritualHistory)D.spiritualHistory=[];h.deletedAt=localYMD(new Date());D.spiritualHistory.push(h);D.spiritual.habits.splice(i,1);save();renderSpiritual();}
-function archiveSpiritualHabit(i){const h=D.spiritual.habits[i];if(!h)return;h.archived=!h.archived;save();renderSpiritual();}
+function delSpiritualHabit(i){D.spiritual.habits.splice(i,1);save();renderSpiritual();}
 function delHabit(i){delSpiritualHabit(i);}
 
 let selDay=null,dayEffort=null,dayHappy=null,dayCompleted=null,dayEffortReasons=[],dayNotCompletedReasons=[];
@@ -4260,8 +4217,6 @@ const HIJRI_ANCHORS=[
   // Jumada al-Awwal 1448 AH began Tue, 13 Oct 2026 (so 19 Oct 2026 = 7 Jumada al-Awwal).
   {start:'2026-10-13',monthIndex:4,year:1448}
 ];
-const HIJRI_SRC='Hyderabad moon-sighting (Sadar Majlis-e-Ulama-e-Deccan)';
-function localYMD(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function hijriFromAnchor(date){
   const dateMid=new Date(date.getFullYear(),date.getMonth(),date.getDate()).getTime();
   let best=null;
@@ -4272,10 +4227,8 @@ function hijriFromAnchor(date){
   }
   if(!best)return null;
   const dayOffset=Math.round((dateMid-best.astart)/86400000)+1;
-  if(dayOffset<1||dayOffset>31)return null; // outside confirmed month's plausible range
-  if(dayOffset===31)return{day:1,month:HIJRI_MONTHS[(best.monthIndex+1)%12],year:best.year+(best.monthIndex===11?1:0),status:'pending',source:'30-day month completed; awaiting Hyderabad announcement'};
-  if(dayOffset===30)return{day:30,month:HIJRI_MONTHS[best.monthIndex],year:best.year,status:'pending',source:'Day 30 unconfirmed: month may have ended on day 29 (awaiting Hyderabad announcement)'};
-  return{day:dayOffset,month:HIJRI_MONTHS[best.monthIndex],year:best.year,status:'confirmed',source:HIJRI_SRC};
+  if(dayOffset<1||dayOffset>30)return null; // outside confirmed month's plausible range
+  return{day:dayOffset,month:HIJRI_MONTHS[best.monthIndex],year:best.year};
 }
 function gregorianToHijri(date){
   const anchored=hijriFromAnchor(date);
@@ -4291,137 +4244,9 @@ function gregorianToHijri(date){
   const j=Math.floor((10985-jd)/5316)*Math.floor((50*jd)/17719)+Math.floor(jd/5670)*Math.floor((43*jd)/15238);
   jd=jd-Math.floor((30-j)/15)*Math.floor((17719*j)/50)-Math.floor(j/16)*Math.floor((15238*j)/43)+29;
   const hMonth=Math.floor((24*jd)/709),hDay=jd-Math.floor((709*hMonth)/24),hYear=30*n+j-30;
-  return{day:hDay,month:HIJRI_MONTHS[hMonth-1],year:hYear,status:offsetDays?'adjusted':'calculated',source:offsetDays?'Tabular calc + manual '+offsetDays+'d adjustment':'Tabular calc (not a sighting)'};
+  return{day:hDay,month:HIJRI_MONTHS[hMonth-1],year:hYear};
 }
-
-// ===== Calendar module: Maghrib-aware Hijri, status badges, lunar events =====
-const HYD={lat:17.385,lon:78.4867};
-function sunsetIST(date){ // approx. NOAA sunset for Hyderabad, returns minutes after local (IST) midnight
-  const doy=Math.round((new Date(date.getFullYear(),date.getMonth(),date.getDate())-new Date(date.getFullYear(),0,0))/864e5);
-  const g=2*Math.PI/365*(doy-1+(18-12)/24);
-  const eqt=229.18*(0.000075+0.001868*Math.cos(g)-0.032077*Math.sin(g)-0.014615*Math.cos(2*g)-0.040849*Math.sin(2*g));
-  const dec=0.006918-0.399912*Math.cos(g)+0.070257*Math.sin(g)-0.006758*Math.cos(2*g)+0.000907*Math.sin(2*g)-0.002697*Math.cos(3*g)+0.00148*Math.sin(3*g);
-  const lat=HYD.lat*Math.PI/180;
-  const ha=Math.acos(Math.cos(90.833*Math.PI/180)/(Math.cos(lat)*Math.cos(dec))-Math.tan(lat)*Math.tan(dec))*180/Math.PI;
-  const utcMin=720-4*(HYD.lon-ha)-eqt;
-  return Math.round(utcMin+330); // IST = UTC+5:30
-}
-function fmtMin(m){const h=Math.floor(m/60),mm=m%60;return (h%12||12)+':'+String(mm).padStart(2,'0')+' '+(h>=12?'PM':'AM');}
-function hijriNow(now){ // Islamic day begins at Maghrib; uses device local time (set to IST)
-  now=now||new Date();
-  const ss=sunsetIST(now), mins=now.getHours()*60+now.getMinutes();
-  const afterMaghrib=mins>=ss;
-  const g=new Date(now.getFullYear(),now.getMonth(),now.getDate()+(afterMaghrib?1:0));
-  return Object.assign({},gregorianToHijri(g),{afterMaghrib,sunset:fmtMin(ss)});
-}
-const STATUS_BADGE={confirmed:['Confirmed','var(--success)'],calculated:['Calculated','var(--text3)'],adjusted:['Adjusted','var(--accent)'],pending:['Pending','var(--danger)']};
-function statusBadge(st){const b=STATUS_BADGE[st]||STATUS_BADGE.calculated;return '<span style="font-size:10px;padding:2px 7px;border-radius:10px;border:1px solid '+b[1]+';color:'+b[1]+';margin-left:6px;">'+b[0]+'</span>';}
-function calPrefs(){if(!D.calendarPrefs)D.calendarPrefs={view:'dual',showLunar:true,showStatus:true};return D.calendarPrefs;}
-// Moon phase (mean-phase approx with main correction terms, ~±1 day; always "Estimated")
-function newMoonJD(k){const T=k/1236.85,M=(2.5534+29.1053567*k)*Math.PI/180,Mp=(201.5643+385.81693528*k)*Math.PI/180;
-  let jd=2451550.09766+29.530588861*k+0.00015437*T*T;
-  jd+=-0.4072*Math.sin(Mp)+0.17241*Math.sin(M)+0.01608*Math.sin(2*Mp)+0.01039*Math.sin(2*((160.7108+390.67050284*k)*Math.PI/180));
-  return jd;}
-function jdToLocalDate(jd){const ms=(jd-2440587.5)*864e5+330*60000;const d=new Date(ms);return new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate());}
-function lunarEventsInRange(from,to){
-  const out=[];const k0=Math.floor((from.getFullYear()+(from.getMonth())/12-2000)*12.3685)-1,k1=k0+Math.ceil((to-from)/864e5/29.5)+3;
-  for(let k=k0;k<=k1;k++){
-    [['Amavasya',0],['Purnima',0.5]].forEach(([name,off])=>{
-      const jd=newMoonJD(k+off);const d=jdToLocalDate(jd);
-      if(d>=from&&d<=to)out.push({key:name+'|'+localYMD(d),name,date:localYMD(d),category:'Lunar',status:'estimated',source:'Astronomical moon-phase estimate (IST date, ±1 day)'});
-    });
-  }
-  // Chand Raat: evening before a confirmed Hijri month start, else the estimated 29th-day evening
-  HIJRI_ANCHORS.forEach(a=>{const [y,m,d]=a.start.split('-').map(Number);const e=new Date(y,m-1,d-1);
-    if(e>=from&&e<=to)out.push({key:'Chand Raat|'+localYMD(e),name:'Chand Raat',date:localYMD(e),category:'Moon sighting',status:'confirmed',source:HIJRI_SRC+' — eve of 1 '+HIJRI_MONTHS[a.monthIndex],note:'Eve of 1 '+HIJRI_MONTHS[a.monthIndex]+' '+a.year});});
-  const lastA=HIJRI_ANCHORS[HIJRI_ANCHORS.length-1];if(lastA){const [y,m,d]=lastA.start.split('-').map(Number);
-    for(let i=1;i<=3;i++){const e=new Date(y,m-1,d+29*i-1);const mi=(lastA.monthIndex+i)%12;
-      if(e>=from&&e<=to&&!out.some(o=>o.key==='Chand Raat|'+localYMD(e)))out.push({key:'Chand Raat|'+localYMD(e),name:'Chand Raat',date:localYMD(e),category:'Moon sighting',status:'estimated',source:'Estimated (29-day month) — awaiting Hyderabad announcement',note:'Eve of 1 '+HIJRI_MONTHS[mi]});}}
-  // manual / overrides (Nawchandi Jumerat is manual-only: no reliable rule is built in)
-  (D.lunarEvents||[]).forEach(ev=>{const i=out.findIndex(o=>o.key===ev.name+'|'+ev.date);
-    if(i>-1)out[i]=Object.assign(out[i],{status:ev.status||'adjusted',note:ev.note||out[i].note,source:'Manual: '+(ev.source||'user')});
-    else{const [y,m,d]=ev.date.split('-').map(Number);const dt=new Date(y,m-1,d);if(dt>=from&&dt<=to)out.push({key:ev.name+'|'+ev.date,name:ev.name,date:ev.date,category:ev.name==='Nawchandi Jumerat'?'Traditional':'Lunar',status:ev.status||'confirmed',source:'Manual: '+(ev.source||'user'),note:ev.note});}});
-  return out.sort((a,b)=>a.date<b.date?-1:1);
-}
-function renderCalendarHome(){
-  const el=document.getElementById('home-dualcal');if(!el)return;const p=calPrefs(),now=new Date();
-  const hj=hijriNow(now);
-  const greg=now.toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-  const hTxt=hj.day+' '+hj.month+' '+hj.year+' AH';
-  let h='';
-  if(p.view!=='hijri')h+='<div style="font-size:12px;color:var(--text3);">English (Gregorian)</div><div style="font-size:16px;margin-bottom:8px;">'+greg+'</div>';
-  if(p.view!=='gregorian')h+='<div style="font-size:12px;color:var(--text3);">Hijri — Hyderabad reference</div><div style="font-size:16px;">'+hTxt+(p.showStatus?statusBadge(hj.status):'')+'</div><div style="font-size:11px;color:var(--text3);margin-top:4px;">'+esc(hj.source)+' · Approx. Maghrib '+hj.sunset+' (calculated, not a live source) — '+(hj.afterMaghrib?'Hijri date has already advanced':'Hijri date changes at Maghrib')+'</div>';
-  if(p.showLunar){const to=new Date(now.getFullYear(),now.getMonth(),now.getDate()+45),from=new Date(now.getFullYear(),now.getMonth(),now.getDate());
-    const ev=lunarEventsInRange(from,to).slice(0,6);
-    h+='<div style="margin-top:12px;font-size:12px;color:var(--text3);">Special lunar events (next 45 days)</div>'+(ev.length?ev.map(e=>'<div style="font-size:13px;margin-top:4px;">'+esc(e.name)+' — '+new Date(e.date+'T00:00:00').toLocaleDateString('en-IN',{weekday:'short',day:'numeric',month:'short'})+(p.showStatus?'<span style="font-size:10px;margin-left:6px;color:'+(e.status==='confirmed'?'var(--success)':'var(--text3)')+';">'+e.status+'</span>':'')+'</div>').join(''):'<div style="font-size:13px;color:var(--text3);">None in range</div>');}
-  el.innerHTML=h;
-}
-function setCalPref(k,v){calPrefs()[k]=v;save();renderCalendarHome();}
-function addLunarEvent(){
-  const name=document.getElementById('le-name').value,date=document.getElementById('le-date').value,status=document.getElementById('le-status').value,note=document.getElementById('le-note').value.trim();
-  if(!date){alert('Choose a date.');return;}
-  if(!D.lunarEvents)D.lunarEvents=[];
-  const i=D.lunarEvents.findIndex(e=>e.name===name&&e.date===date);
-  const rec={name,date,status,note,source:'user'};
-  if(i>-1)D.lunarEvents[i]=rec;else D.lunarEvents.push(rec); // no duplicates
-  save();renderLunarList();renderCalendarHome();
-}
-function delLunarEvent(i){D.lunarEvents.splice(i,1);save();renderLunarList();renderCalendarHome();}
-function renderLunarList(){const el=document.getElementById('le-list');if(!el)return;
-  el.innerHTML=(D.lunarEvents||[]).map((e,i)=>'<div style="font-size:13px;margin-top:6px;">'+esc(e.name)+' · '+e.date+' · '+e.status+(e.note?' · '+esc(e.note):'')+' <a href="#" onclick="delLunarEvent('+i+');return false;" style="color:var(--danger);">remove</a></div>').join('')||'<div style="font-size:12px;color:var(--text3);">No manual events yet.</div>';
-  const p=calPrefs();[['cal-view','view'],].forEach(([id,k])=>{const x=document.getElementById(id);if(x)x.value=p[k];});
-  const a=document.getElementById('cal-lunar');if(a)a.checked=!!p.showLunar;const b=document.getElementById('cal-status');if(b)b.checked=!!p.showStatus;}
-
-// ===== Amaliyat module (single source for Spiritual Progress) =====
-function switchSpTab(t){['goals','habits','progress','records'].forEach(function(x){var p=document.getElementById('sptab-'+x);if(p)p.classList.toggle('active',x===t);});document.querySelectorAll('#sp-tabbar .tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.t===t);});if(t==='records')renderSpRecords();}
-function parseY(k){var p=k.split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);}
-function pctOf(a,b){return b?Math.round(a/b*100):0;}
-function habitSched(h,k){var dt=parseY(k),f=h.freq||'daily';if(f==='weekdays')return (h.weekdays||[]).indexOf(dt.getDay())>-1;if(f==='custom'){var n=Math.max(1,parseInt(h.everyN)||1);return Math.round((dt-parseY(h.startDate||k))/864e5)%n===0;}return true;}
-function habitStats(h,endKey){
-  var tk=endKey||localYMD(new Date()),log=h.log||{},cnt=h.counts||{},st=parseY(h.startDate||tk),wk0=localYMD(new Date(parseY(tk).getFullYear(),parseY(tk).getMonth(),parseY(tk).getDate()-6));
-  var r={sched:0,done:0,missed:[],wS:0,wD:0,mS:0,mD:0,streak:0,tgtHit:0},seq=[];
-  for(var d=new Date(st);localYMD(d)<=tk;d.setDate(d.getDate()+1)){var k=localYMD(d);if(!habitSched(h,k))continue;var dn=!!log[k];
-    if(!(k<tk||dn))continue; seq.push([k,dn]);r.sched++;if(dn)r.done++;else r.missed.push(k);
-    if(k>=wk0){r.wS++;if(dn)r.wD++;} if(k.slice(0,7)===tk.slice(0,7)){r.mS++;if(dn)r.mD++;}
-    if(h.numTarget&&(parseFloat(cnt[k])||0)>=h.numTarget)r.tgtHit++;}
-  for(var i=seq.length-1;i>=0&&seq[i][1];i--)r.streak++;
-  var td=parseInt(h.targetDays)||30;r.pct=Math.min(100,Math.round(Object.keys(log).filter(function(x){return log[x];}).length/td*100));
-  r.wk=pctOf(r.wD,r.wS);r.mo=pctOf(r.mD,r.mS);r.cons=pctOf(r.done,r.sched);return r;
-}
-function spSummary(){
-  var H=(D.spiritual&&D.spiritual.habits||[]).filter(function(h){return !h.archived;}),G=D.spiritualGoals||{};
-  var gp=[1,2,3].map(function(n){return parseInt(G['g'+n+'pct'])||0;}),hasG=[1,2,3].some(function(n){return G['g'+n];}),goalAvg=Math.round(gp.reduce(function(a,b){return a+b;},0)/3);
-  var S=H.map(function(h){return habitStats(h);}),sum=function(f){return S.reduce(function(a,x){return a+f(x);},0);};
-  var habitAvg=S.length?Math.round(S.reduce(function(a,x){return a+x.pct;},0)/S.length):0,parts=[];if(hasG)parts.push(goalAvg);if(S.length)parts.push(habitAvg);
-  var trend=[];for(var w=3;w>=0;w--){var e=new Date();e.setDate(e.getDate()-7*w);var ek=localYMD(e),wd=0,ws=0;H.forEach(function(h){var x=habitStats(h,ek);/* last-7-days window ending ek */var c=0,t=0;for(var i=0;i<7;i++){var dd=parseY(ek);dd.setDate(dd.getDate()-i);var kk=localYMD(dd);if(kk<(h.startDate||kk)||!habitSched(h,kk))continue;if(kk===localYMD(new Date())&&!(h.log||{})[kk])continue;t++;if((h.log||{})[kk])c++;}wd+=c;ws+=t;});trend.push(pctOf(wd,ws));}
-  return {overall:parts.length?Math.round(parts.reduce(function(a,b){return a+b;},0)/parts.length):0,goalAvg:goalAvg,hasG:hasG,habitAvg:habitAvg,n:S.length,week:pctOf(sum(function(x){return x.wD;}),sum(function(x){return x.wS;})),month:pctOf(sum(function(x){return x.mD;}),sum(function(x){return x.mS;})),cons:pctOf(sum(function(x){return x.done;}),sum(function(x){return x.sched;})),missed:sum(function(x){return x.missed.length;}),tgt:sum(function(x){return x.tgtHit;}),trend:trend,H:H,S:S};
-}
-function bar(p){return '<div style="height:6px;background:var(--border,#e0ddd6);border-radius:4px;overflow:hidden;"><div style="height:100%;width:'+p+'%;background:var(--accent);"></div></div>';}
-function renderSpiritualSummaryCard(){var el=document.getElementById('prog-spiritual-body');if(!el)return;var s=spSummary();
-  el.innerHTML='<div style="display:flex;justify-content:space-between;font-size:13px;"><span>Overall spiritual progress</span><b>'+s.overall+'%</b></div>'+bar(s.overall)+'<div style="font-size:12px;color:var(--text3);margin-top:6px;">Goals avg '+s.goalAvg+'% · Habit avg '+(s.n?s.habitAvg+'%':'—')+' · This week '+(s.n?s.week+'%':'—')+' · This month '+(s.n?s.month+'%':'—')+' · Missed days '+s.missed+'</div>';}
-var _rp0=renderProgress;renderProgress=function(){var r=_rp0.apply(this,arguments);renderSpiritualSummaryCard();return r;};
-function spRecord(h,k){if(!h.rec)h.rec={};if((h.log||{})[k]){var hj=gregorianToHijri(parseY(k));h.rec[k]={h:hj.day+' '+hj.month+' '+hj.year,m:hj.month,y:hj.year,st:hj.status};}else delete h.rec[k];}
-function setHabitCount(hi,k,v){var h=D.spiritual.habits[hi];if(!h.counts)h.counts={};if(v===''||isNaN(v))delete h.counts[k];else h.counts[k]=parseFloat(v);save();renderAmaliyatExtras();}
-function fillHabitExtras(h){var g=function(i){return document.getElementById(i);};g('habit-freq').value=(h&&h.freq)||'daily';for(var i=0;i<7;i++)g('habit-wd-'+i).checked=!!(h&&h.weekdays&&h.weekdays.indexOf(i)>-1);g('habit-everyn').value=(h&&h.everyN)||'';g('habit-numtarget').value=(h&&h.numTarget)||'';g('habit-unit').value=(h&&h.unit)||'';}
-function readHabitExtras(h){var g=function(i){return document.getElementById(i);};h.freq=g('habit-freq').value;h.weekdays=[];for(var i=0;i<7;i++)if(g('habit-wd-'+i).checked)h.weekdays.push(i);h.everyN=parseInt(g('habit-everyn').value)||0;h.numTarget=parseFloat(g('habit-numtarget').value)||0;h.unit=g('habit-unit').value.trim();}
-function renderAmaliyatExtras(){
-  var s=spSummary(),ex=document.getElementById('sp-extra-progress'),tk=localYMD(new Date());
-  if(ex)ex.innerHTML='<div style="font-size:13px;">Overall <b>'+s.overall+'%</b></div>'+bar(s.overall)+'<div style="font-size:12px;color:var(--text3);margin:6px 0 10px;">Consistency '+s.cons+'% · Week '+s.week+'% · Month '+s.month+'% · Missed days '+s.missed+' · Numeric targets hit '+s.tgt+'</div><div style="font-size:12px;color:var(--text3);">Weekly trend (oldest → latest)</div>'+s.trend.map(function(p,i){return '<div style="display:flex;gap:8px;align-items:center;font-size:12px;margin-top:4px;"><span style="width:60px;">'+(i===3?'This wk':(3-i)+'w ago')+'</span><div style="flex:1;">'+bar(p)+'</div><span>'+p+'%</span></div>';}).join('');
-  var ov=document.getElementById('spprog-overall');if(ov)ov.innerHTML='<div style="font-size:13px;">Goals avg '+s.goalAvg+'% · Habit avg '+(s.n?s.habitAvg+'%':'—')+'</div><div style="font-size:22px;color:var(--accent);margin-top:6px;">'+s.overall+'%</div>';
-  var m=document.getElementById('sp-habit-manager');if(!m)return;var all=D.spiritual.habits;
-  m.innerHTML=all.length?all.map(function(h,i){var x=habitStats(h),dn=!!(h.log||{})[tk],c=(h.counts||{})[tk];var fq=h.freq==='weekdays'?'Weekdays':h.freq==='custom'?'Every '+h.everyN+'d':'Daily';
-    return '<div style="border-bottom:1px solid var(--border,#e0ddd6);padding:8px 0;'+(h.archived?'opacity:.55;':'')+'"><div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px;"><b style="font-size:14px;">'+esc(h.name)+(h.archived?' (archived)':'')+'</b><span style="font-size:12px;color:var(--text3);">'+fq+(h.numTarget?' · target '+h.numTarget+' '+esc(h.unit||''):'')+'</span></div><div style="font-size:12px;color:var(--text3);margin:4px 0;">Week '+x.wk+'% · Month '+x.mo+'% · Streak '+x.streak+' · Missed '+x.missed.length+(h.numTarget?' · target hit '+x.tgtHit+'d':'')+'</div><div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;">'+(h.archived?'':'<button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;" onclick="toggleSpiritualHabit('+i+',\''+tk+'\')">'+(dn?'✓ Done today':'○ Mark done today')+'</button>'+(h.numTarget?'<input type="number" value="'+(c===undefined?'':c)+'" placeholder="count" style="width:80px;" onchange="setHabitCount('+i+',\''+tk+'\',this.value)">':'')+'<button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;" onclick="editSpiritualHabit('+i+')">Edit</button>')+'<button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;" onclick="archiveSpiritualHabit('+i+')">'+(h.archived?'Restore':'Archive')+'</button><button class="btn btn-ghost" style="font-size:11px;padding:4px 10px;color:var(--danger);" onclick="delSpiritualHabit('+i+')">Delete</button></div></div>';}).join(''):'<div style="color:var(--text3);font-size:13px;">No habits yet — habits are optional. Use “+ Add habit”.</div>';
-}
-function renderSpRecords(){
-  var hm=document.getElementById('rec-hm');if(hm&&!hm.options.length){hm.innerHTML='<option value="">All Hijri months</option>'+HIJRI_MONTHS.map(function(n){return '<option>'+n+'</option>';}).join('');}
-  var gm=document.getElementById('rec-gm').value,hmv=hm.value,inc=document.getElementById('rec-missed').checked,rows=[],seen={};
-  (D.spiritual.habits.concat(D.spiritualHistory||[])).forEach(function(h,idx){var tag=h.deletedAt?' (deleted)':h.archived?' (archived)':'';
-    var add=function(k,done){var key=h.name+'|'+k;if(seen[key])return;seen[key]=1;var r=(h.rec||{})[k],hj=r?null:gregorianToHijri(parseY(k));rows.push({k:k,n:h.name+tag,done:done,c:(h.counts||{})[k],h:r?r.h:hj.day+' '+hj.month+' '+hj.year,m:r?r.m:hj.month,st:r?r.st:hj.status,der:!r});};
-    Object.keys(h.log||{}).forEach(function(k){if(h.log[k])add(k,true);});if(inc&&!h.deletedAt)habitStats(h).missed.forEach(function(k){add(k,false);});});
-  rows=rows.filter(function(r){return (!gm||r.k.slice(0,7)===gm)&&(!hmv||r.m===hmv);}).sort(function(a,b){return a.k<b.k?1:-1;}).slice(0,300);
-  document.getElementById('rec-list').innerHTML=rows.length?'<table style="width:100%;font-size:12px;border-collapse:collapse;"><tr style="text-align:left;color:var(--text3);"><th>Gregorian</th><th>Hijri (Hyderabad ref.)</th><th>Habit</th><th>Result</th></tr>'+rows.map(function(r){return '<tr><td>'+r.k+'</td><td>'+r.h+statusBadge(r.st)+(r.der?'<span style="font-size:10px;color:var(--text3);"> derived</span>':'')+'</td><td>'+esc(r.n)+'</td><td style="color:'+(r.done?'var(--success)':'var(--danger)')+'">'+(r.done?'Done':'Missed')+(r.c!==undefined?' · '+r.c:'')+'</td></tr>';}).join('')+'</table>':'<div style="color:var(--text3);font-size:13px;">No records match.</div>';
-}
-function renderHome(){const _greg=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const _hij=gregorianToHijri(new Date());document.getElementById('home-date').textContent=`${_greg} (${_hij.day} ${_hij.month} ${_hij.year} AH)`;renderCalendarHome();const dayNum=getCurrentJourneyDay();const pct=Math.min(100,Math.round(dayNum/1825*100));const done=Object.values(D.adventureDays).filter(d=>getDayStatus(d)==='done').length;const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;const wrc=(D.weeklyReviews||[]).length,mrc=(D.monthlyReviews||[]).length,qrc=(D.quarterlyReviews||[]).length,arc=(D.annualReviews||[]).length;document.getElementById('home-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Day of journey</div></div><div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days completed</div></div><div class="stat-card"><div class="stat-num">${msDone}/${msTotal}</div><div class="stat-label">Milestones done</div></div>`;document.getElementById('home-biggoal').textContent=D.goals.g1||'No main goal set yet — go to My Goals to add one';document.getElementById('home-day-num').textContent='Day '+dayNum;document.getElementById('home-progress').style.width=pct+'%';const todayKey=localYMD(new Date());document.getElementById('home-spiritual').innerHTML=D.spiritual.habits.length===0?'No spiritual habits added yet.':D.spiritual.habits.map(h=>{const d=h.log&&h.log[todayKey];return`<span style="margin-right:14px;color:${d?'var(--success)':'var(--text3)'}">${d?'✓':'○'} ${esc(h.name)}</span>`;}).join('');
+function renderHome(){const _greg=new Date().toLocaleDateString('en-IN',{weekday:'long',year:'numeric',month:'long',day:'numeric'});const _hij=gregorianToHijri(new Date());document.getElementById('home-date').textContent=`${_greg} (${_hij.day} ${_hij.month} ${_hij.year} AH)`;const dayNum=getCurrentJourneyDay();const pct=Math.min(100,Math.round(dayNum/1825*100));const done=Object.values(D.adventureDays).filter(d=>getDayStatus(d)==='done').length;const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;const wrc=(D.weeklyReviews||[]).length,mrc=(D.monthlyReviews||[]).length,qrc=(D.quarterlyReviews||[]).length,arc=(D.annualReviews||[]).length;document.getElementById('home-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Day of journey</div></div><div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Days completed</div></div><div class="stat-card"><div class="stat-num">${msDone}/${msTotal}</div><div class="stat-label">Milestones done</div></div>`;document.getElementById('home-biggoal').textContent=D.goals.g1||'No main goal set yet — go to My Goals to add one';document.getElementById('home-day-num').textContent='Day '+dayNum;document.getElementById('home-progress').style.width=pct+'%';const todayKey=new Date().toISOString().split('T')[0];document.getElementById('home-spiritual').innerHTML=D.spiritual.habits.length===0?'No spiritual habits added yet.':D.spiritual.habits.map(h=>{const d=h.log&&h.log[todayKey];return`<span style="margin-right:14px;color:${d?'var(--success)':'var(--text3)'}">${d?'✓':'○'} ${esc(h.name)}</span>`;}).join('');
   // Review stats card
   const homeReviewEl=document.getElementById('home-review-stats');
   const g1p=computeGoalPct(1),g2p=computeGoalPct(2),g3p=computeGoalPct(3);
@@ -4434,7 +4259,7 @@ function renderHome(){const _greg=new Date().toLocaleDateString('en-IN',{weekday
 }
 
 let advChart=null;
-function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>getDayStatus(d)==='done').length;const logged=Object.values(D.adventureDays).filter(d=>getDayStatus(d)).length;const start=new Date(D.startDate);const dayNum=Math.floor((new Date()-start)/86400000)+1;document.getElementById('progress-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Strong Effort days</div></div><div class="stat-card"><div class="stat-num">${Math.round(logged>0?done/logged*100:0)}%</div><div class="stat-label">Effort Performance</div></div><div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Current day</div></div>`;const labels=[],doneD=[],partD=[],missD=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=localYMD(d);const l=D.adventureDays[k];const st=l?getDayStatus(l):'';labels.push(d.toLocaleDateString('en-IN',{month:'short',day:'numeric'}));doneD.push(st==='done'?1:0);partD.push(st==='partial'?1:0);missD.push(st==='missed'?1:0);}const ctx=document.getElementById('chart-adventure');if(advChart)advChart.destroy();advChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Strong Effort',data:doneD,backgroundColor:'rgba(58,138,110,0.7)',borderRadius:4},{label:'Some Effort',data:partD,backgroundColor:'rgba(184,137,42,0.7)',borderRadius:4},{label:'No Effort',data:missD,backgroundColor:'rgba(184,90,90,0.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#5a5448',font:{size:11}}}},scales:{x:{stacked:true,ticks:{color:'#9a9488',font:{size:9},maxTicksLimit:10},grid:{color:'#e0ddd6'}},y:{stacked:true,ticks:{color:'#9a9488',stepSize:1},grid:{color:'#e0ddd6'},max:1}}}});const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;document.getElementById('progress-milestones').textContent=msTotal===0?'No milestones added.':`${msDone} of ${msTotal} milestones completed`;document.getElementById('milestone-bar').style.width=msTotal>0?Math.round(msDone/msTotal*100)+'%':'0%';document.getElementById('milestone-pct').textContent=msTotal>0?Math.round(msDone/msTotal*100)+'% complete':'';
+function renderProgress(){const done=Object.values(D.adventureDays).filter(d=>getDayStatus(d)==='done').length;const logged=Object.values(D.adventureDays).filter(d=>getDayStatus(d)).length;const start=new Date(D.startDate);const dayNum=Math.floor((new Date()-start)/86400000)+1;document.getElementById('progress-stats').innerHTML=`<div class="stat-card"><div class="stat-num">${done}</div><div class="stat-label">Strong Effort days</div></div><div class="stat-card"><div class="stat-num">${Math.round(logged>0?done/logged*100:0)}%</div><div class="stat-label">Effort Performance</div></div><div class="stat-card"><div class="stat-num">${dayNum}</div><div class="stat-label">Current day</div></div>`;const labels=[],doneD=[],partD=[],missD=[];for(let i=29;i>=0;i--){const d=new Date();d.setDate(d.getDate()-i);const k=d.toISOString().split('T')[0];const l=D.adventureDays[k];const st=l?getDayStatus(l):'';labels.push(d.toLocaleDateString('en-IN',{month:'short',day:'numeric'}));doneD.push(st==='done'?1:0);partD.push(st==='partial'?1:0);missD.push(st==='missed'?1:0);}const ctx=document.getElementById('chart-adventure');if(advChart)advChart.destroy();advChart=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label:'Strong Effort',data:doneD,backgroundColor:'rgba(58,138,110,0.7)',borderRadius:4},{label:'Some Effort',data:partD,backgroundColor:'rgba(184,137,42,0.7)',borderRadius:4},{label:'No Effort',data:missD,backgroundColor:'rgba(184,90,90,0.6)',borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#5a5448',font:{size:11}}}},scales:{x:{stacked:true,ticks:{color:'#9a9488',font:{size:9},maxTicksLimit:10},grid:{color:'#e0ddd6'}},y:{stacked:true,ticks:{color:'#9a9488',stepSize:1},grid:{color:'#e0ddd6'},max:1}}}});const msDone=D.milestones.filter(m=>m.done).length,msTotal=D.milestones.length;document.getElementById('progress-milestones').textContent=msTotal===0?'No milestones added.':`${msDone} of ${msTotal} milestones completed`;document.getElementById('milestone-bar').style.width=msTotal>0?Math.round(msDone/msTotal*100)+'%':'0%';document.getElementById('milestone-pct').textContent=msTotal>0?Math.round(msDone/msTotal*100)+'% complete':'';
   // Reviews section
   const wrs=D.weeklyReviews||[],mrs=D.monthlyReviews||[],qrs=D.quarterlyReviews||[],ars=D.annualReviews||[];
   const latestW=wrs.length?wrs[wrs.length-1]:'';const latestM=mrs.length?mrs[mrs.length-1]:'';const latestQ=qrs.length?qrs[qrs.length-1]:'';const latestA=ars.length?ars[ars.length-1]:'';
@@ -6199,7 +6024,7 @@ function updateAutoLockSetting(val){
 // Reflects D.hijriOffsetDays in the Settings dropdown when Settings opens.
 function renderHijriOffsetSetting(){
   const sel=document.getElementById('hijri-offset-select');
-  if(sel)sel.value=String(parseInt(D.hijriOffsetDays,10)||0);renderLunarList();
+  if(sel)sel.value=String(parseInt(D.hijriOffsetDays,10)||0);
 }
 // Called by the Settings dropdown's onchange. Saves through the existing
 // save() path (localStorage + debounced Firestore sync), same as every
