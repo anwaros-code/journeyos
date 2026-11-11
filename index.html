@@ -6142,7 +6142,22 @@ function updateHijriOffsetSetting(val){
     syncDone(m);save();refreshAfterTrack();
   };
 
-  // ---------- 3. milestone list with tracker grid ----------
+  // ---------- 3. milestone list: old-style rows + hidden habit tracker ----------
+  window.toggleMsOpen=function(i){var m=D.milestones[i];if(!m)return;m.trackOpen=!m.trackOpen;renderMsList();};
+
+  // Goal % = average of each milestone's fraction (normal: 0 or 1, tracker: days done / target days)
+  function msFraction(m){
+    if(m.tracker){var t=parseInt(m.targetDays)||1;return Math.min(1,doneCount(m)/t);}
+    return m.done?1:0;
+  }
+  window.computeGoalPct=function(n){
+    var list=(D.milestones||[]).filter(function(m){return (m.goalNum||1)===n;});
+    if(list.length===0)return 0;
+    var sum=list.reduce(function(a,m){return a+msFraction(m);},0);
+    var pct=Math.round(sum/list.length*1000)/10; // 1 decimal
+    return Number.isFinite(pct)?pct:0;
+  };
+
   function renderMsList(){
     var mel=document.getElementById('milestone-list');if(!mel)return;
     if(!D.milestones.length){mel.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No milestones yet.</div>';return;}
@@ -6150,25 +6165,31 @@ function updateHijriOffsetSetting(val){
     mel.innerHTML=D.milestones.map(function(m,i){
       var btns='<button class="btn btn-ghost" onclick="openMilestoneModal('+i+')" style="font-size:11px;padding:4px 10px;">Edit</button>'+
                '<button class="btn btn-danger" onclick="delMs('+i+')" style="font-size:11px;padding:4px 10px;">&#10005;</button>';
+      var titleStyle=m.done?'text-decoration:line-through;color:var(--text3)':'';
+      var meta='Goal '+(m.goalNum||1)+' · '+(m.cat?esc(m.cat)+' · ':'')+(m.date||'No target date');
+      var badge='<span class="badge '+(m.done?'badge-done':'badge-pending')+'">'+(m.done?'Done':'Pending')+'</span>';
       if(!m.tracker){
         return '<div class="item-row"><div class="check '+(m.done?'checked':'')+'" onclick="toggleMs('+i+')">'+(m.done?'✓':'')+'</div>'+
-          '<div class="item-body"><div class="item-title" style="'+(m.done?'text-decoration:line-through;color:var(--text3)':'')+'">'+esc(m.title)+'</div>'+
-          '<div class="item-meta">Goal '+(m.goalNum||1)+' · '+(m.cat?esc(m.cat)+' · ':'')+(m.date||'No target date')+'</div></div>'+
-          '<span class="badge '+(m.done?'badge-done':'badge-pending')+'">'+(m.done?'Done':'Pending')+'</span>'+btns+'</div>';
+          '<div class="item-body"><div class="item-title" style="'+titleStyle+'">'+esc(m.title)+'</div><div class="item-meta">'+meta+'</div></div>'+badge+btns+'</div>';
       }
-      var target=parseInt(m.targetDays)||1,dc=doneCount(m),pct=Math.min(100,Math.round(dc/target*100));
-      var dots='';
-      for(var d=1;d<=target;d++){
-        var key=dayKey(m,d),done=!!(m.log&&m.log[key]),future=key>today,isToday=key===today;
-        dots+='<div class="sp-habit-dot'+(done?' done':'')+(isToday?' today-dot':'')+'" title="Day '+d+' — '+key+(future?' (abhi nahi aaya)':'')+'" '+
-          (future?'style="opacity:.4;cursor:not-allowed;" ':'onclick="toggleMsTrack('+i+',\''+key+'\')" ')+'>'+(done?'✓':d)+'</div>';
+      var target=parseInt(m.targetDays)||1,dc=doneCount(m),pct=Math.min(100,Math.round(dc/target*100)),open=!!m.trackOpen;
+      var tracker='';
+      if(open){
+        var dots='';
+        for(var d=1;d<=target;d++){
+          var key=dayKey(m,d),done=!!(m.log&&m.log[key]),future=key>today,isToday=key===today;
+          dots+='<div class="sp-habit-dot'+(done?' done':'')+(isToday?' today-dot':'')+'" title="Day '+d+' — '+key+(future?' (abhi nahi aaya)':'')+'" '+
+            (future?'style="opacity:.4;cursor:not-allowed;" ':'onclick="toggleMsTrack('+i+',\''+key+'\')" ')+'>'+(done?'✓':d)+'</div>';
+        }
+        tracker='<div style="margin-top:8px;padding:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);">'+
+          '<div class="progress-wrap" style="margin-bottom:6px;"><div class="progress-fill green" style="width:'+pct+'%"></div></div>'+
+          '<div style="font-size:12px;color:var(--text2);">Start: '+m.startDate+' · '+dc+' / '+target+' din</div>'+
+          '<div class="sp-habit-day-grid">'+dots+'</div></div>';
       }
       return '<div class="item-row"><div class="check '+(m.done?'checked':'')+'" title="Tracker poora hote hi auto-done">'+(m.done?'✓':'')+'</div>'+
-        '<div class="item-body"><div class="item-title" style="'+(m.done?'color:var(--success)':'')+'">📿 '+esc(m.title)+'</div>'+
-        '<div class="item-meta">Goal '+(m.goalNum||1)+' · '+(m.cat?esc(m.cat)+' · ':'')+'Start: '+m.startDate+' · '+dc+' / '+target+' din · '+pct+'%</div>'+
-        '<div class="progress-wrap" style="margin-top:6px;"><div class="progress-fill green" style="width:'+pct+'%"></div></div>'+
-        '<div class="sp-habit-day-grid">'+dots+'</div></div>'+
-        '<span class="badge '+(m.done?'badge-done':'badge-pending')+'">'+(m.done?'Done':'Pending')+'</span>'+btns+'</div>';
+        '<div class="item-body"><div class="item-title" style="'+titleStyle+'">'+esc(m.title)+'</div><div class="item-meta">'+meta+'</div>'+
+        '<div onclick="toggleMsOpen('+i+')" style="cursor:pointer;font-size:12px;color:var(--accent);margin-top:4px;user-select:none;">📿 Habit tracker '+(open?'▾':'▸')+' <span style="color:var(--text3);">('+dc+'/'+target+' · '+pct+'%)</span></div>'+
+        tracker+'</div>'+badge+btns+'</div>';
     }).join('');
   }
   var _rge=window.renderGoalsExtended;
