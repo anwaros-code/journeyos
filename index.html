@@ -6041,4 +6041,194 @@ function updateHijriOffsetSetting(val){
 
 
 </script>
+<script> se </script> tak) paste karo.
+  Pehle Settings > Download Backup zaroor kar lo.
+============================================================ -->
+<script>
+(function(){
+  // ---------- helpers ----------
+  function localKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+  function parseLocal(s){if(!s)return new Date();var p=s.split('-').map(Number);return new Date(p[0],p[1]-1,p[2]);}
+  function doneCount(m){return Object.values(m.log||{}).filter(Boolean).length;}
+  function syncDone(m){if(m.tracker){m.done=doneCount(m)>=(parseInt(m.targetDays)||1);}}
+  function dayKey(m,d){var s=parseLocal(m.startDate);s.setDate(s.getDate()+d-1);return localKey(s);}
+
+  // ---------- 1. hide Spiritual + Spiritual Progress from sidebar (indexes stay intact) ----------
+  document.querySelectorAll('.nav-item').forEach(function(n){
+    var o=n.getAttribute('onclick')||'';
+    if(o.indexOf("goto('spiritual')")>-1||o.indexOf("goto('spiritual-progress')")>-1)n.style.display='none';
+  });
+
+  // ---------- 2. milestone modal: tracker option ----------
+  (function injectUI(){
+    var modal=document.querySelector('#modal-milestone .modal');
+    if(!modal||document.getElementById('ms-is-track'))return;
+    var footer=modal.querySelector('.modal-footer');
+    var inp='width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);color:var(--text);font-family:inherit;font-size:14px;padding:10px 14px;outline:none;';
+    var wrap=document.createElement('div');
+    wrap.innerHTML=
+      '<input type="hidden" id="ms-edit-idx" value="">'+
+      '<label style="display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text2);cursor:pointer;margin-top:18px;">'+
+        '<input type="checkbox" id="ms-is-track" onchange="toggleMsTrackUI()" style="width:16px;height:16px;"> 📿 Yeh ek daily habit hai (tracker chahiye)'+
+      '</label>'+
+      '<div id="ms-track-fields" style="display:none;margin-top:10px;">'+
+        '<div style="display:flex;gap:10px;">'+
+          '<div style="flex:1;"><div class="label">Total days</div><input type="number" id="ms-track-days" min="1" max="3650" placeholder="e.g. 41" style="'+inp+'"></div>'+
+          '<div style="flex:1;"><div class="label">Start date</div><input type="date" id="ms-track-start" style="'+inp+'"></div>'+
+        '</div>'+
+        '<div style="font-size:11px;color:var(--text3);margin-top:5px;">Start date khali = aaj. Pehle se shuru kiya ho to purani date daalo.</div>'+
+      '</div>';
+    modal.insertBefore(wrap,footer);
+  })();
+
+  window.toggleMsTrackUI=function(){
+    var on=document.getElementById('ms-is-track').checked;
+    document.getElementById('ms-track-fields').style.display=on?'block':'none';
+  };
+
+  window.openMilestoneModal=function(idx){
+    var m=(idx!==undefined)?D.milestones[idx]:null;
+    document.querySelector('#modal-milestone .modal-title').textContent=m?'Edit milestone':'Add milestone';
+    document.getElementById('ms-edit-idx').value=m?idx:'';
+    document.getElementById('ms-title').value=m?(m.title||''):'';
+    document.getElementById('ms-cat').value=m?(m.cat||''):'';
+    document.getElementById('ms-date').value=m?(m.date||''):'';
+    var mg=document.getElementById('ms-goal');if(mg)mg.value=String(m?(m.goalNum||1):1);
+    document.getElementById('ms-is-track').checked=!!(m&&m.tracker);
+    document.getElementById('ms-track-days').value=(m&&m.tracker)?(m.targetDays||''):'';
+    document.getElementById('ms-track-start').value=(m&&m.tracker)?(m.startDate||''):'';
+    toggleMsTrackUI();
+    document.getElementById('modal-milestone').classList.add('open');
+  };
+
+  window.saveMilestone=function(){
+    var t=document.getElementById('ms-title').value.trim();if(!t)return;
+    var mg=document.getElementById('ms-goal');var goalNum=mg?parseInt(mg.value)||1:1;
+    var isTrack=document.getElementById('ms-is-track').checked;
+    var days=parseInt(document.getElementById('ms-track-days').value);
+    if(isTrack&&(!days||days<1)){alert('Tracker ke liye total days daalo (e.g. 41).');return;}
+    var start=document.getElementById('ms-track-start').value||localKey(new Date());
+    var cat=document.getElementById('ms-cat').value.trim();
+    var date=document.getElementById('ms-date').value;
+    var ei=document.getElementById('ms-edit-idx').value;
+    if(ei!==''){
+      var m=D.milestones[parseInt(ei)];
+      m.title=t;m.cat=cat;m.date=date;m.goalNum=goalNum;
+      if(isTrack){m.tracker=true;m.targetDays=days;m.startDate=start;if(!m.log)m.log={};syncDone(m);}
+      else{m.tracker=false;}
+    }else{
+      var n={title:t,cat:cat,date:date,done:false,goalNum:goalNum};
+      if(isTrack){n.tracker=true;n.targetDays=days;n.startDate=start;n.log={};}
+      D.milestones.push(n);
+    }
+    save();closeModal('modal-milestone');renderGoalsExtended();
+  };
+
+  // tracker milestones auto-complete, manual tick only for normal ones
+  window.toggleMs=function(i){
+    var m=D.milestones[i];if(!m||m.tracker)return;
+    m.done=!m.done;save();renderGoalsExtended();
+  };
+
+  function refreshAfterTrack(){
+    renderMsList();
+    if(typeof renderGoalProgressBars==='function')renderGoalProgressBars();
+    var h=document.getElementById('page-home');
+    if(h&&h.classList.contains('active'))renderHome();
+  }
+  window.toggleMsTrack=function(i,key){
+    var m=D.milestones[i];if(!m||!m.tracker)return;
+    if(key==='today')key=localKey(new Date());
+    if(key>localKey(new Date()))return; // future din tick nahi ho sakte
+    if(!m.log)m.log={};
+    m.log[key]=!m.log[key];
+    syncDone(m);save();refreshAfterTrack();
+  };
+
+  // ---------- 3. milestone list with tracker grid ----------
+  function renderMsList(){
+    var mel=document.getElementById('milestone-list');if(!mel)return;
+    if(!D.milestones.length){mel.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No milestones yet.</div>';return;}
+    var today=localKey(new Date());
+    mel.innerHTML=D.milestones.map(function(m,i){
+      var btns='<button class="btn btn-ghost" onclick="openMilestoneModal('+i+')" style="font-size:11px;padding:4px 10px;">Edit</button>'+
+               '<button class="btn btn-danger" onclick="delMs('+i+')" style="font-size:11px;padding:4px 10px;">&#10005;</button>';
+      if(!m.tracker){
+        return '<div class="item-row"><div class="check '+(m.done?'checked':'')+'" onclick="toggleMs('+i+')">'+(m.done?'✓':'')+'</div>'+
+          '<div class="item-body"><div class="item-title" style="'+(m.done?'text-decoration:line-through;color:var(--text3)':'')+'">'+esc(m.title)+'</div>'+
+          '<div class="item-meta">Goal '+(m.goalNum||1)+' · '+(m.cat?esc(m.cat)+' · ':'')+(m.date||'No target date')+'</div></div>'+
+          '<span class="badge '+(m.done?'badge-done':'badge-pending')+'">'+(m.done?'Done':'Pending')+'</span>'+btns+'</div>';
+      }
+      var target=parseInt(m.targetDays)||1,dc=doneCount(m),pct=Math.min(100,Math.round(dc/target*100));
+      var dots='';
+      for(var d=1;d<=target;d++){
+        var key=dayKey(m,d),done=!!(m.log&&m.log[key]),future=key>today,isToday=key===today;
+        dots+='<div class="sp-habit-dot'+(done?' done':'')+(isToday?' today-dot':'')+'" title="Day '+d+' — '+key+(future?' (abhi nahi aaya)':'')+'" '+
+          (future?'style="opacity:.4;cursor:not-allowed;" ':'onclick="toggleMsTrack('+i+',\''+key+'\')" ')+'>'+(done?'✓':d)+'</div>';
+      }
+      return '<div class="item-row"><div class="check '+(m.done?'checked':'')+'" title="Tracker poora hote hi auto-done">'+(m.done?'✓':'')+'</div>'+
+        '<div class="item-body"><div class="item-title" style="'+(m.done?'color:var(--success)':'')+'">📿 '+esc(m.title)+'</div>'+
+        '<div class="item-meta">Goal '+(m.goalNum||1)+' · '+(m.cat?esc(m.cat)+' · ':'')+'Start: '+m.startDate+' · '+dc+' / '+target+' din · '+pct+'%</div>'+
+        '<div class="progress-wrap" style="margin-top:6px;"><div class="progress-fill green" style="width:'+pct+'%"></div></div>'+
+        '<div class="sp-habit-day-grid">'+dots+'</div></div>'+
+        '<span class="badge '+(m.done?'badge-done':'badge-pending')+'">'+(m.done?'Done':'Pending')+'</span>'+btns+'</div>';
+    }).join('');
+  }
+  var _rge=window.renderGoalsExtended;
+  window.renderGoalsExtended=function(){_rge();renderMsList();};
+
+  // ---------- 4. dashboard: Today's Amliyat ----------
+  var _rh=window.renderHome;
+  window.renderHome=function(){
+    _rh();
+    var box=document.getElementById('home-spiritual');if(!box)return;
+    var t=box.previousElementSibling;if(t)t.innerHTML='<span>📿</span> Today\'s Amliyat';
+    var today=localKey(new Date()),rows=[];
+    (D.milestones||[]).forEach(function(m,i){
+      if(!m.tracker||m.done||m.startDate>today)return;
+      var d=!!(m.log&&m.log[today]);
+      var dayNo=Math.round((parseLocal(today)-parseLocal(m.startDate))/86400000)+1;
+      rows.push('<div onclick="toggleMsTrack('+i+',\'today\')" style="cursor:pointer;display:inline-block;margin:0 14px 6px 0;color:'+(d?'var(--success)':'var(--text2)')+'">'+
+        (d?'✓':'○')+' '+esc(m.title)+' <span style="color:var(--text3);font-size:11px;">(Day '+Math.min(dayNo,parseInt(m.targetDays)||dayNo)+'/'+(m.targetDays||'?')+')</span></div>');
+    });
+    box.innerHTML=rows.length?rows.join(''):'Koi active amliyat tracker nahi. My Goals &gt; Goal 2 &gt; milestone mein "daily habit" tick karke add karo.';
+  };
+
+  // ---------- 5. one-time migration: old Spiritual -> Goal 2 ----------
+  function migrateSpiritual(){
+    if(!D||D.spiritualMigrated)return false;
+    if(!D.milestones)D.milestones=[];
+    if(!D.goalSubs)D.goalSubs={1:[],2:[],3:[]};
+    if(!D.goalSubs[2])D.goalSubs[2]=[];
+    var sp=D.spiritual||{};
+    (sp.habits||[]).forEach(function(h){
+      var m={title:h.name||'Habit',cat:h.goal||'',date:'',done:false,goalNum:2,tracker:true,
+             targetDays:parseInt(h.targetDays)||30,startDate:h.startDate||localKey(new Date()),log:Object.assign({},h.log||{})};
+      syncDone(m);D.milestones.push(m);
+    });
+    var plain=function(h){return (h||'').replace(/<[^>]*>/g,' ').replace(/&nbsp;/g,' ').trim();};
+    var intent=(D.reContent&&D.reContent['spiritual-intention'])||(sp.intention?esc(sp.intention):'');
+    if(plain(intent))D.goalSubs[2].push({title:'Spiritual Intention',content:intent,open:true,hidden:false});
+    var sg=D.spiritualGoals||{},parts=[];
+    [1,2,3].forEach(function(n){
+      var g=sg['g'+n],pl=(D.reContent&&D.reContent['sp-plan-'+n])||'';
+      if(g||plain(pl))parts.push('<p><b>'+esc(g||('Spiritual Goal '+n))+'</b></p>'+pl);
+    });
+    if(parts.length)D.goalSubs[2].push({title:'Old Spiritual Goals & Plans',content:parts.join('<br>'),open:false,hidden:false});
+    D.spiritualMigrated=true;
+    save();
+    return true;
+  }
+  // after cloud data loads (sign-in), migrate that data too, then re-render
+  var _cs=window.completeSignIn;
+  window.completeSignIn=async function(u){
+    await _cs(u);
+    if(migrateSpiritual()){
+      var ap=document.querySelector('.page.active');
+      if(ap)goto(ap.id.replace('page-',''));
+    }
+  };
+  migrateSpiritual(); // local data
+})();
+</script>
 </html>
