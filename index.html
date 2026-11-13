@@ -1542,7 +1542,7 @@ select option{background:var(--surface);color:var(--text)}
     <div class="card-title"><span>ℹ</span> About</div>
     <div style="font-size:13px;color:var(--text2);line-height:1.8;">
       <div><span style="color:var(--text3);">App:</span> My Life OS · JourneyOS</div>
-      <div><span style="color:var(--text3);">Journey Start:</span> 12 November 2026</div>
+      <div><span style="color:var(--text3);">Journey Start:</span> 13 November 2026</div>
       <div><span style="color:var(--text3);">Duration:</span> 5 Years · 1825 Days</div>
       <div><span style="color:var(--text3);">Storage:</span> localStorage + Firestore sync</div>
     </div>
@@ -2151,7 +2151,7 @@ select option{background:var(--surface);color:var(--text)}
 <script>
 window.__mark('Classic Script Loaded');
 const KEY='mylifeos_v3';
-const JOURNEY_START='2026-11-12'; // single source of truth — Day 1 = Thu 12 Nov 2026
+const JOURNEY_START='2026-11-13'; // single source of truth — Day 1 = Fri 13 Nov 2026 (2 Jumada al-Thani 1448)
 let D={startDate:JOURNEY_START,definitions:[],goals:{purpose:'',g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},milestones:[],spiritual:{intention:'',habits:[]},spiritualGoals:{g1:'',g2:'',g3:'',g1pct:0,g2pct:0,g3pct:0},adventureDays:{},scheduleMonths:[],curMonth:0,weeklyReviews:[],monthlyReviews:[],quarterlyReviews:[],annualReviews:[],motivPhoto:'',motivMsg:'',currentMission:{title:'',milestones:[],skills:[]},autoLockSeconds:30};
 const TIME_SLOTS=['4am-5am','5am-6am','6am-7am','7am-8am','8am-9am','9am-10am','10am-11am','11am-12pm','12pm-1pm','1pm-2pm','2pm-3pm','3pm-4pm','4pm-5pm','5pm-6pm','6pm-7pm','7pm-8pm','8pm-9pm','9pm-10pm','10pm-11pm','11pm-12am','12am-1am','1am-2am','2am-3am','3am-4am'];
 
@@ -2345,9 +2345,23 @@ function load(){
 
 // ── SAVE (localStorage + Firestore) ───────────────────────────
 let _saveTimer=null;
+let _cloudLoadStarted=false; // true once sign-in has begun loading cloud data; saves before that (e.g. startup migrations on a fresh browser) must never be treated as unsynced user edits
+let _saveSeq=0; // bumps on every save(); lets cloudSave() know whether newer edits arrived while it was uploading
 function save(){
-  // Always save to localStorage as offline backup
-  localStorage.setItem(KEY,JSON.stringify(D));
+  // Always save to localStorage as offline backup. Guarded so a storage
+  // error (quota/blocked) can never stop the cloud save or the UI from continuing.
+  _saveSeq++;
+  try{
+    localStorage.setItem(KEY,JSON.stringify(D));
+    // Marks "this device has changes the cloud has not confirmed yet" — cleared
+    // by cloudSave() on success. cloudLoad() uses it so an older cloud copy can
+    // never silently overwrite unsynced local changes.
+    if(_cloudLoadStarted)localStorage.setItem(KEY+'_unsynced','1');
+  }catch(e){
+    console.warn('Local save failed:',e);
+    const _se=document.getElementById('save-status');
+    if(_se){_se.textContent='Local save failed ⚠';_se.className='offline';}
+  }
   // Debounced cloud save
   clearTimeout(_saveTimer);
   _saveTimer=setTimeout(()=>cloudSave(),800);
@@ -2370,9 +2384,11 @@ function setSaveStatus(state,txt){
 async function cloudSave(){
   if(!window._fbCurrentUser||!window._fbDb)return;
   try{
+    const _seqAtStart=_saveSeq;
     setSaveStatus('syncing');
     const ref=window._fbDoc(window._fbDb,'users',window._fbCurrentUser.uid,'journeyos','main');
     await window._fbSetDoc(ref,{data:JSON.stringify(D),updatedAt:new Date().toISOString()});
+    if(_seqAtStart===_saveSeq){try{localStorage.removeItem(KEY+'_unsynced');}catch(e){}}
     setSaveStatus('synced');
   }catch(e){
     console.warn('Cloud save failed:',e);
@@ -2380,13 +2396,38 @@ async function cloudSave(){
   }
 }
 
+// Push any pending (not yet uploaded) changes immediately when the app is
+// hidden or closed, instead of waiting for the short save delay.
+function flushPendingCloudSave(){
+  let pending=false;
+  try{pending=localStorage.getItem(KEY+'_unsynced')==='1';}catch(e){}
+  if(pending&&window._fbCurrentUser){clearTimeout(_saveTimer);cloudSave();}
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)flushPendingCloudSave();});
+window.addEventListener('pagehide',flushPendingCloudSave);
+
 async function cloudLoad(uid){
   if(!window._fbDb)return false;
+  _cloudLoadStarted=true;
   try{
     setSaveStatus('syncing');
     const ref=window._fbDoc(window._fbDb,'users',uid,'journeyos','main');
     const snap=await window._fbGetDoc(ref);
     if(snap.exists()){
+      let _hasUnsynced=false;
+      try{_hasUnsynced=localStorage.getItem(KEY+'_unsynced')==='1';}catch(e){}
+      if(_hasUnsynced){
+        // This device holds edits the cloud never confirmed (e.g. the app was
+        // closed before the delayed cloud save ran). Keep them and push them up
+        // instead of replacing them with the older cloud copy.
+        D.startDate=JOURNEY_START;
+        if(D.autoLockSeconds===undefined||D.autoLockSeconds===null)D.autoLockSeconds=30;
+        cleanOldAdventureDays();
+        pruneScheduleBeforeStart();
+        resetAutoLockTimer();
+        cloudSave();
+        return true;
+      }
       const parsed=JSON.parse(snap.data().data);
       D=parsed;
       D.startDate=JOURNEY_START; // always enforce correct start, cloud data may have old value
@@ -3343,7 +3384,7 @@ let untouchedQueue=[],untouchedIdx=0,untouchedThenCallback=null;
 // v2) with no `completed` field — getDayEffort()/getDayStatus()/
 // getDayCompleted() transparently map those to the new model without ever
 // rewriting the stored historical data.
-const REASON_LIST=['Family responsibilities','Travel','Office/work responsibilities','Health issues','Unexpected work','Procrastination','Lack of time','Lack of focus','Low energy','Other'];
+const REASON_LIST=['Family responsibilities','Travel','Office/work responsibilities','Health issues','Unexpected work','Procrastination','Lack of time','Lack of focus','Low energy','Lack of proper planning','Other'];
 // Reasons that reflect life circumstances rather than controllable
 // behaviour — used only to label patterns in Progress, never to hide them.
 const CIRCUMSTANCE_REASONS=['Family responsibilities','Travel','Office/work responsibilities','Health issues','Unexpected work'];
@@ -5968,6 +6009,21 @@ function engageLock(){
 // Manual Lock button in the sidebar — reuses the exact same lock function.
 function manualLockNow(){ engageLock(); }
 
+// alert()/confirm()/prompt() pop-ups make some mobile browsers report the
+// window as blurred/hidden for a moment, which used to trigger the PIN screen
+// while saving, deleting or validating. While one of these dialogs is open
+// (plus a short grace period) the focus-loss triggers below are ignored.
+// Leaving the app for real still locks, and the inactivity timer is unchanged.
+let _nativeDialogActive=false;
+['alert','confirm','prompt'].forEach(fn=>{
+  const orig=window[fn];
+  if(typeof orig!=='function')return;
+  window[fn]=function(){
+    _nativeDialogActive=true;
+    try{return orig.apply(window,arguments);}
+    finally{setTimeout(()=>{_nativeDialogActive=false;},400);}
+  };
+});
 let autoLockTimer=null;
 let _autoLockLastPing=0;
 function resetAutoLockTimer(){
@@ -5994,12 +6050,13 @@ function _autoLockActivityPing(){
 // visibilitychange is the most reliable of these on Android; blur/pagehide
 // are kept as well for desktop and as a safety net.
 document.addEventListener('visibilitychange',()=>{
+  if(document.hidden&&_nativeDialogActive)return;
   if(document.hidden)engageLock();
   else resetAutoLockTimer();
 });
-window.addEventListener('blur',()=>{engageLock();});
+window.addEventListener('blur',()=>{if(_nativeDialogActive)return;engageLock();});
 window.addEventListener('focus',()=>{resetAutoLockTimer();});
-window.addEventListener('pagehide',()=>{engageLock();});
+window.addEventListener('pagehide',()=>{if(_nativeDialogActive)return;engageLock();});
 // Extra safety net for resume paths where visibilitychange/blur may not have
 // fired before the browser suspended the page (e.g. some bfcache restores
 // after device sleep/unlock) — re-checks the lock state as the page becomes
