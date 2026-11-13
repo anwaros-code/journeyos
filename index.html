@@ -687,6 +687,13 @@ select option{background:var(--surface);color:var(--text)}
         <button class="btn btn-ghost" onclick="addGoalSub(1)" style="font-size:12px;padding:5px 12px;">+ Add sub-section</button>
       </div>
       <div id="gsubs-1"></div>
+      <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border,#e0ddd6);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap;">
+          <div style="font-size:14px;font-weight:600;color:var(--text);">📌 Goal 1 milestones</div>
+          <button class="btn btn-ghost" onclick="openMilestoneModalFor(1)" style="font-size:12px;padding:5px 12px;">+ Add milestone</button>
+        </div>
+        <div id="gms-1"></div>
+      </div>
     </div>
 
     <!-- GOAL 2 TAB -->
@@ -696,6 +703,13 @@ select option{background:var(--surface);color:var(--text)}
         <button class="btn btn-ghost" onclick="addGoalSub(2)" style="font-size:12px;padding:5px 12px;">+ Add sub-section</button>
       </div>
       <div id="gsubs-2"></div>
+      <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border,#e0ddd6);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap;">
+          <div style="font-size:14px;font-weight:600;color:var(--text);">📌 Goal 2 milestones</div>
+          <button class="btn btn-ghost" onclick="openMilestoneModalFor(2)" style="font-size:12px;padding:5px 12px;">+ Add milestone</button>
+        </div>
+        <div id="gms-2"></div>
+      </div>
     </div>
 
     <!-- GOAL 3 TAB -->
@@ -705,17 +719,17 @@ select option{background:var(--surface);color:var(--text)}
         <button class="btn btn-ghost" onclick="addGoalSub(3)" style="font-size:12px;padding:5px 12px;">+ Add sub-section</button>
       </div>
       <div id="gsubs-3"></div>
+      <div style="margin-top:18px;padding-top:14px;border-top:1px solid var(--border,#e0ddd6);">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap;">
+          <div style="font-size:14px;font-weight:600;color:var(--text);">📌 Goal 3 milestones</div>
+          <button class="btn btn-ghost" onclick="openMilestoneModalFor(3)" style="font-size:12px;padding:5px 12px;">+ Add milestone</button>
+        </div>
+        <div id="gms-3"></div>
+      </div>
     </div>
   </div>
 
-  <!-- MILESTONES -->
-  <div class="card">
-    <div class="section-header" style="margin-bottom:12px;">
-      <div class="card-title" style="margin:0;"><span>📌</span> Step-by-step milestones</div>
-      <button class="btn btn-ghost" onclick="openMilestoneModal()" style="font-size:12px;padding:6px 14px;">+ Add milestone</button>
-    </div>
-    <div id="milestone-list"></div>
-  </div>
+
 </div>
 
 <!-- CURRENT MISSION (separate from the 3 main Goals — does not affect Goal/Overall/Spiritual Progress) -->
@@ -6217,15 +6231,12 @@ function updateHijriOffsetSetting(val){
     return Number.isFinite(pct)?pct:0;
   };
 
-  function renderMsList(){
-    var mel=document.getElementById('milestone-list');if(!mel)return;
-    if(!D.milestones.length){mel.innerHTML='<div style="color:var(--text3);font-size:13px;padding:12px 0;">No milestones yet.</div>';return;}
-    var today=localKey(new Date());
-    mel.innerHTML=D.milestones.map(function(m,i){
+  function msRow(m,i){
       var btns='<button class="btn btn-ghost" onclick="openMilestoneModal('+i+')" style="font-size:11px;padding:4px 10px;">Edit</button>'+
                '<button class="btn btn-danger" onclick="delMs('+i+')" style="font-size:11px;padding:4px 10px;">&#10005;</button>';
+      var today=localKey(new Date());
       var titleStyle=m.done?'text-decoration:line-through;color:var(--text3)':'';
-      var meta='Goal '+(m.goalNum||1)+' · '+(m.cat?esc(m.cat)+' · ':'')+(m.date||'No target date');
+      var meta=(m.cat?esc(m.cat)+' · ':'')+(m.date||'No target date');
       var badge='<span class="badge '+(m.done?'badge-done':'badge-pending')+'">'+(m.done?'Done':'Pending')+'</span>';
       if(!m.tracker){
         return '<div class="item-row"><div class="check '+(m.done?'checked':'')+'" onclick="toggleMs('+i+')">'+(m.done?'✓':'')+'</div>'+
@@ -6249,8 +6260,21 @@ function updateHijriOffsetSetting(val){
         '<div class="item-body"><div class="item-title" style="'+titleStyle+'">'+esc(m.title)+'</div><div class="item-meta">'+meta+'</div>'+
         '<div onclick="toggleMsOpen('+i+')" style="cursor:pointer;font-size:12px;color:var(--accent);margin-top:4px;user-select:none;">📿 Habit tracker '+(open?'▾':'▸')+' <span style="color:var(--text3);">('+dc+'/'+target+' · '+pct+'%)</span></div>'+
         tracker+'</div>'+badge+btns+'</div>';
-    }).join('');
   }
+  // Each goal tab shows ONLY the milestones linked to that goal (m.goalNum)
+  function renderMsList(){
+    [1,2,3].forEach(function(n){
+      var mel=document.getElementById('gms-'+n);if(!mel)return;
+      var rows=[];
+      (D.milestones||[]).forEach(function(m,i){if((m.goalNum||1)===n)rows.push(msRow(m,i));});
+      mel.innerHTML=rows.length?rows.join(''):'<div style="color:var(--text3);font-size:13px;padding:6px 0;">No milestones for Goal '+n+' yet.</div>';
+    });
+  }
+  // open the Add-milestone modal with the goal already selected
+  window.openMilestoneModalFor=function(n){
+    window.openMilestoneModal();
+    var mg=document.getElementById('ms-goal');if(mg)mg.value=String(n);
+  };
   var _rge=window.renderGoalsExtended;
   window.renderGoalsExtended=function(){_rge();renderMsList();};
 
